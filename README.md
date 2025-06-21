@@ -40,3 +40,17 @@ Sistema para avaliação de atividades acadêmicas remotas do CIC
   <li><strong>Azul</strong>: Spikes e dúvidas (pesquisas técnicas ou pontos que precisam de esclarecimento)</li>
 </ul>
 
+
+## Convenções:
+### Mensagem de Commit
+Deve ter seguinte formato {prefixo}+':'+{mensagem com verbo conjugado na 3º pessoa do presente do indicativo}. Ex.: `feat:adiciona implementação da função signIn`
+
+- **feat:** Adiciona uma nova feature
+- **fix:** Conserta bugs
+- **refactor:** Refatora código sem mudar funcionalidade
+- **test:** Adiciona ou altera testes
+- **docs:** Adiciona ou altera documentação
+
+### Nomes de Branches
+Deve ter o seguinte foramto {prefixo} + '/' + {nome da branch em kebab case}. Os prefixos são os mesmo das mensagens de commit. Por exemplo:
+`docs/corrige-documentacao-das-noticias`
