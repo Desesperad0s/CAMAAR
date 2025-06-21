@@ -34,7 +34,7 @@ Sistema para avaliação de atividades acadêmicas remotas do CIC
 <p><a href="https://miro.com/app/board/uXjVODb6Qw8=/" target="_blank">Quadro BDD no Miro</a> (https://miro.com/app/board/uXjVODb6Qw8=/)</p>
 
 <ul>
-  <li><strong>Amarelo</strong>: Feature (funcionalidade principal a ser implementada)</li>
+  <li><strong>Amarelo</strong>: Feature (funcionalidade principal a ser implementada) - ao final da feature está o nome do responsável por fazer o BDD dela</li>
   <li><strong>Verde</strong>: Happy Path (fluxo principal de sucesso da feature)</li>
   <li><strong>Vermelho</strong>: Sad Path (fluxos alternativos ou de erro)</li>
   <li><strong>Azul</strong>: Spikes e dúvidas (pesquisas técnicas ou pontos que precisam de esclarecimento)</li>
