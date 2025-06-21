@@ -11,6 +11,6 @@ Funcionalidade: Gerenciamento de templates
         E deverá ter a opção de deletar ou editar esse template
     
     Cenário: Tentativa de visualizar templates criados por outro administrador
-        Dado que o adminsitrador está na interface de template
+        Dado que o administrador está na interface de template
         Quando ele tenta acessar um template criado por outro administrador
         Então ele deverá ver uma mensagem de erro de permissão "Você não tem acesso a esse template"
