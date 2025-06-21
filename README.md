@@ -27,3 +27,16 @@ Sistema para avaliação de atividades acadêmicas remotas do CIC
         <td>Pedro Neris - 231018964</td>
     </tr>
 </table>
+
+<h2>🧭 Behavior Driven Design</h2>
+<p>O projeto utiliza a abordagem de Behavior Driven Design (BDD) para descrever e organizar os comportamentos esperados do sistema. Para facilitar a visualização e o acompanhamento das features, utilizamos um quadro no Miro:</p>
+
+<p><a href="https://miro.com/app/board/uXjVODb6Qw8=/" target="_blank">Quadro BDD no Miro</a> (https://miro.com/app/board/uXjVODb6Qw8=/)</p>
+
+<ul>
+  <li><strong>Amarelo</strong>: Feature (funcionalidade principal a ser implementada)</li>
+  <li><strong>Verde</strong>: Happy Path (fluxo principal de sucesso da feature)</li>
+  <li><strong>Vermelho</strong>: Sad Path (fluxos alternativos ou de erro)</li>
+  <li><strong>Azul</strong>: Spikes e dúvidas (pesquisas técnicas ou pontos que precisam de esclarecimento)</li>
+</ul>
+
