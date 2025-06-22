@@ -1,4 +1,4 @@
-Funcionalidade: Definir senha no primeiro acesso via e-mail de cadastro
+Funcionalidade: Usuário definir senha no primeiro acesso via e-mail de cadastro
 
   Como Usuário
   Quero definir uma senha para o meu usuário a partir do e-mail do sistema de solicitação de cadastro

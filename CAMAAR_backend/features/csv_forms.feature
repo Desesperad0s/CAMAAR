@@ -1,4 +1,4 @@
-Funcionalidade: Exportação de resultados de formulário
+Funcionalidade: Admin exporta resultados de formulário
 
   Como Administrador
   Quero baixar um arquivo CSV contendo os resultados de um formulário

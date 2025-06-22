@@ -1,7 +1,7 @@
-Funcionalidade: atualizar base de dados já existente com os dados atuais do SIGAA
+Funcionalidade: Admin atualizar base de dados já existente com os dados atuais do SIGAA
 
     Eu como Administrador
-    Quero atualizar a base de dados já existente com os dados atuais do sigaa
+    Quero atualizar a base de dados já existente com os dados atuais do SIGAA
     A fim de corrigir a base de dados do sistema.
 
     Cenário: Administrador atualiza a base de dados com sucesso

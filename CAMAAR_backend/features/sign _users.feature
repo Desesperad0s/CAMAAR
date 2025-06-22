@@ -1,4 +1,4 @@
-Funcionalidade: Cadastro de usuarios
+Funcionalidade: Administrador cadastrar participantes de turmas do SIGAA
 
     Como Administrador
     Quero cadastrar participantes de turmas do SIGAA ao importar dados de usuarios novos para o sistema

@@ -1,4 +1,4 @@
-Funcionalidade: Redefinição de senha a partir do e-mail
+Funcionalidade: Usuário redefinir senha a partir do e-mail
 
   Como Usuário
   Quero redefinir uma senha para o meu usuário a partir do e-mail recebido após a solicitação da troca de senha

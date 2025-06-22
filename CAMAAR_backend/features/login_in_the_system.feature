@@ -1,4 +1,4 @@
-Funcionalidade: Usuário logar no sistema
+Funcionalidade: Usuário fazer login no sistema
 
     Eu como Usuário do sistema
     Quero acessar o sistema utilizando um e-mail ou matrícula e uma senha já cadastrada

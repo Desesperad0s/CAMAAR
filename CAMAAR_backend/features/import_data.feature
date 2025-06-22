@@ -1,4 +1,4 @@
-Funcionalidade: Importar dados do Sigaa
+Funcionalidade: Admin importar dados do SIGAA
 
     Como Administrador
     Quero importar dados de turmas, matérias e participantes do SIGAA (caso não existam na base de dados atual)
