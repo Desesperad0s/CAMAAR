@@ -40,6 +40,25 @@ Sistema para avaliação de atividades acadêmicas remotas do CIC
   <li><strong>Azul</strong>: Spikes e dúvidas (pesquisas técnicas ou pontos que precisam de esclarecimento)</li>
 </ul>
 
+<h2>🧭 Features e pontos atribuídas para cada uma </h2>
+  <li> Admin criar template para formulários - pontos: 3 </li>
+  <li> Usuário (participante de uma turma) responder questionário da turma - pontos: 2 </li>
+  <li> Admin criar formulário a partir de um template para as turmas que escolher - pontos: 2 </li>
+  <li> Admin criar formulário a partir de um template para alunos ou professores (bônus) - pontos: 2 </li>
+  <li> Admin exportar resultados de formulário - pontos: 5 </li>
+  <li> Admin editar e deletar templates criados - pontos: 5 </li>
+  <li> Admin importar dados do SIGAA - pontos: 2 </li>
+  <li> Usuário fazer login no sistema - pontos: 2 </li>
+  <li> Admin gerenciar turmas do departamento que pertence (bônus) - pontos: 1 </li>
+  <li> Usuário definir senha no primeiro acesso via e-mail de cadastro - pontos: 3 </li>
+  <li> Usuário redefinir senha a partir do e-mail (bônus) - pontos: 3 </li>
+  <li> Administrador cadastrar participantes de turmas do SIGAA - pontos: 3 </li>
+  <li> Administrador gerenciar templates criados - pontos: 2 </li>
+  <li> Admin atualizar base de dados já existente com os dados atuais do SIGAA - pontos: 2 </li>
+  <li> Usuário (participante de uma turma) deve ver os formulários não respondidos das turmas que está matriculado - pontos: 2</li>
+  <li> Admin ver os formulários criados e gerar relatório das respostas - pontos: 5</li>
+</ul>
+
 
 ## Convenções:
 ### Mensagem de Commit
