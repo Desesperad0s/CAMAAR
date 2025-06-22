@@ -1,4 +1,4 @@
-Funcionalidade: Editar e deletar templates criados
+Funcionalidade: Admin editar e deletar templates criados
 
     Como Administrador
     Quero editar e/ou deletar um template que eu criei sem afetar os formulários já criados
@@ -16,7 +16,8 @@ Funcionalidade: Editar e deletar templates criados
         E esse template não deve aparecer mais na tela de templates.
     
     Cenário: Tentar adicionar questão com campo de texto vazio
-        Dado que estou na página de edição do templateQuando eu clico no botão '+'
+        Dado que estou na página de edição do template
+        Quando eu clico no botão '+'
         E seleciono a opção 'Texto' do campo 'Tipo:'
         E não preencho o campo 'Texto:'
         E clico no botão 'Criar'

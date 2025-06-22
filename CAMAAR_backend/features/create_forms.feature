@@ -1,4 +1,4 @@
-Funcionalidade: Criação do formulário a partir de um template para alunos ou professores
+Funcionalidade: Admin criar formulário a partir de um template para alunos ou professores
 
     Como Administrador
     Quero escolher criar um formulário para os docentes ou os dicentes de uma turma

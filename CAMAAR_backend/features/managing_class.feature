@@ -1,4 +1,4 @@
-Funcionalidade: Gerenciamento de turmas
+Funcionalidade: Admin gerenciar turmas do departamento que pertence
 
     Como Administrador
     Quero gerenciar somente as turmas do departamento o qual eu pertenço

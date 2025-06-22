@@ -1,4 +1,4 @@
-Funcionalidade: Gerenciamento de templates
+Funcionalidade: Administrador gerenciar templates criados
 
     Como Administrador
     Quero visualizar os templates criados
