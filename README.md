@@ -40,7 +40,7 @@ Sistema para avaliação de atividades acadêmicas remotas do CIC
   <li><strong>Azul</strong>: Spikes e dúvidas (pesquisas técnicas ou pontos que precisam de esclarecimento)</li>
 </ul>
 
-<h2>🧭 Features e pontos atribuídas para cada uma </h2>
+<h2> Features e pontos atribuídas para cada uma </h2>
   <li> Admin criar template para formulários - pontos: 3 </li>
   <li> Usuário (participante de uma turma) responder questionário da turma - pontos: 2 </li>
   <li> Admin criar formulário a partir de um template para as turmas que escolher - pontos: 2 </li>
