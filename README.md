@@ -31,7 +31,7 @@ Sistema para avaliação de atividades acadêmicas remotas do CIC
 <h2>🧭 Behavior Driven Design</h2>
 <p>O projeto utiliza a abordagem de Behavior Driven Design (BDD) para descrever e organizar os comportamentos esperados do sistema. Para facilitar a visualização e o acompanhamento das features, utilizamos um quadro no Miro:</p>
 
-<p><a href="https://miro.com/app/board/uXjVODb6Qw8=/" target="_blank">Quadro BDD no Miro</a> (https://miro.com/app/board/uXjVODb6Qw8=/)</p>
+<p><a href="https://miro.com/app/board/uXjVIo1uymc=/?share_link_id=280323628784" target="_blank">Quadro BDD no Miro</a> (https://miro.com/app/board/uXjVIo1uymc=/?share_link_id=280323628784)</p>
 
 <ul>
   <li><strong>Amarelo</strong>: Feature (funcionalidade principal a ser implementada) - ao final da feature está o nome do responsável por fazer o BDD dela e com uma estimativa de pontos dados para a dificuldade da tarefa (definido em conjunto). As features são definidas pelas issues abertas do  repósitório <b>EngSWCiC/CAMAAR</b>, que podem ser encontradas também na pasta de <b>features</b> desse projeto, com cenários que seguem as regras de negócio definidas e presentes nas histórias de usuário</li>
