@@ -1,4 +1,4 @@
-Funcionalidade: Responder questionário da turma
+Funcionalidade: Usuário (participante de uma turma) responder questionário da turma
 
   Como Participante de uma turma
   Quero responder o questionário sobre a turma em que estou matriculado
