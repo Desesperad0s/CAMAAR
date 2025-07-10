@@ -105,6 +105,4 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_174538) do
   add_foreign_key "questoes", "formularios", column: "formularios_id"
   add_foreign_key "questoes", "templates", column: "templates_id"
   add_foreign_key "templates", "admins"
-  add_foreign_key "turma_alunos", "alunos"
-  add_foreign_key "turma_alunos", "turmas"
 end
