@@ -6,7 +6,7 @@ class CreateTurmas < ActiveRecord::Migration[8.0]
       t.string :semester
       t.string :time
       t.string :name
-
+      t.references :disciplinas, null: false, foreign_key: true
       t.timestamps
     end
   end
