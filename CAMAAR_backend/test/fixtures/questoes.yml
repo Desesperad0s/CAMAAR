@@ -1,14 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  id: 1
-  content: MyString
-  admin: one
+  enunciado: "Pergunta exemplo"
+  templates_id: 1
+  formularios_id: 1
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
+
 two:
-  id: 2
-  content: MyString
-  admin: two
+  enunciado: "Pergunta exemplo"
+  templates_id: 2
+  formularios_id: 2
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>

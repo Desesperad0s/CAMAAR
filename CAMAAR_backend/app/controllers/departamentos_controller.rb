@@ -40,7 +40,7 @@ class DepartamentosController < ApplicationController
     respond_to do |format|
       if @departamento.save
         
-        format.json { render :show, status: :created, location: @departamento }
+        format.json { render json: @departamento, status: :created, location: @departamento }
       else
   
         format.json { render json: @departamento.errors, status: :unprocessable_entity }
