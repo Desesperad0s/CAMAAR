@@ -73,3 +73,22 @@ Deve ter seguinte formato {prefixo}+':'+{mensagem com verbo conjugado na 3º pes
 ### Nomes de Branches
 Deve ter o seguinte foramto {prefixo} + '/' + {nome da branch em kebab case}. Os prefixos são os mesmo das mensagens de commit. Por exemplo:
 `docs/corrige-documentacao-das-noticias`
+
+## 🐳 Configuração e uso com Docker Compose
+
+Para rodar o projeto utilizando Docker Compose:
+
+1. Certifique-se de ter o Docker e o Docker Compose instalados.
+2. Crie um arquivo `.env` na raiz do projeto e defina a variável de ambiente necessária, por exemplo:
+
+```
+BACKEND_PORT=3000
+```
+
+3. Execute o comando abaixo na raiz do projeto:
+
+```
+docker-compose up --build
+```
+
+O backend Rails estará disponível na porta definida em `BACKEND_PORT`.
