@@ -1,10 +1,10 @@
 services:
-  api:
+  backend:
     build:
       context: CAMAAR_backend
       dockerfile: Dockerfile
-    image: camaar
-    container_name: camaar
+    image: camaar_rails
+    container_name: camaar_rails
     env_file:
       - .env 
     ports:
