@@ -5,6 +5,7 @@ class CreateTurmas < ActiveRecord::Migration[8.0]
       t.integer :number
       t.string :semester
       t.string :time
+      t.string :name
 
       t.timestamps
     end
