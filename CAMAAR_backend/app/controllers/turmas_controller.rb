@@ -8,6 +8,9 @@ class TurmasController < ApplicationController
 
   # GET /turmas/1 or /turmas/1.json
   def show
+
+    @turma_id = params[:id]
+    @turma = Turma.find(@turma_id)
   end
 
   # GET /turmas/new
@@ -22,7 +25,6 @@ class TurmasController < ApplicationController
   # POST /turmas or /turmas.json
   def create
     @turma = Turma.new(turma_params)
-
     respond_to do |format|
       if @turma.save
         format.html { redirect_to @turma, notice: "Turma was successfully created." }
@@ -36,6 +38,10 @@ class TurmasController < ApplicationController
 
   # PATCH/PUT /turmas/1 or /turmas/1.json
   def update
+
+    @turma_id = params[:id]
+    @turma = Turma.find(@turma_id)
+    
     respond_to do |format|
       if @turma.update(turma_params)
         format.html { redirect_to @turma, notice: "Turma was successfully updated." }
@@ -49,6 +55,7 @@ class TurmasController < ApplicationController
 
   # DELETE /turmas/1 or /turmas/1.json
   def destroy
+    
     @turma.destroy!
 
     respond_to do |format|

@@ -1,10 +1,10 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  code: MyString
-  number: 1
-  semester: MyString
-  time: MyString
+  code: "CIC-069"
+  number: 24
+  semester: "26.1"
+  time: "35T23"
 
 two:
   code: MyString
