@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :alternativas
+  resources :departamentos
   resources :disciplinas
   resources :formularios
   resources :resposta
