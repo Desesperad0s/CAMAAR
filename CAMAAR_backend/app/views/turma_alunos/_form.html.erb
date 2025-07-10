@@ -1,0 +1,17 @@
+<%= form_with(model: turma_aluno) do |form| %>
+  <% if turma_aluno.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(turma_aluno.errors.count, "error") %> prohibited this turma_aluno from being saved:</h2>
+
+      <ul>
+        <% turma_aluno.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
