@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :formularios
   resources :resposta
   resources :turmas
   resources :users
