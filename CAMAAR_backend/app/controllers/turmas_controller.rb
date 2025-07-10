@@ -8,27 +8,39 @@ class TurmasController < ApplicationController
 
   # GET /turmas/1 or /turmas/1.json
   def show
+
+    set_turma
+
+    respond_to do |format|
+      format.json { render json: @turma}
+    end
   end
 
   # GET /turmas/new
   def new
     @turma = Turma.new
+    respond_to do |format|
+      format.json { render json: @turma }
+    end
   end
 
   # GET /turmas/1/edit
   def edit
+    set_turma
+    respond_to do |format|
+      format.json { render json: @turma}
+    end
   end
 
   # POST /turmas or /turmas.json
   def create
     @turma = Turma.new(turma_params)
-
     respond_to do |format|
       if @turma.save
-        format.html { redirect_to @turma, notice: "Turma was successfully created." }
+      
         format.json { render :show, status: :created, location: @turma }
       else
-        format.html { render :new, status: :unprocessable_entity }
+      
         format.json { render json: @turma.errors, status: :unprocessable_entity }
       end
     end
@@ -36,12 +48,15 @@ class TurmasController < ApplicationController
 
   # PATCH/PUT /turmas/1 or /turmas/1.json
   def update
+
+    set_turma
+    
     respond_to do |format|
       if @turma.update(turma_params)
-        format.html { redirect_to @turma, notice: "Turma was successfully updated." }
-        format.json { render :show, status: :ok, location: @turma }
+        
+        format.json { render json: @turma, status: :ok, location: @turma }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        
         format.json { render json: @turma.errors, status: :unprocessable_entity }
       end
     end
@@ -49,10 +64,11 @@ class TurmasController < ApplicationController
 
   # DELETE /turmas/1 or /turmas/1.json
   def destroy
+    
     @turma.destroy!
 
     respond_to do |format|
-      format.html { redirect_to turmas_path, status: :see_other, notice: "Turma was successfully destroyed." }
+     
       format.json { head :no_content }
     end
   end

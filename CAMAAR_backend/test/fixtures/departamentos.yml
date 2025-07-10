@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  code: MyString
-  name: MyString
-  abreviation: MyString
+  code: "CIC - 12"
+  name: "Departamento de Ciência da Computação"
+  abreviation: "CIC"
 
 two:
-  code: MyString
-  name: MyString
-  abreviation: MyString
+  code: "CIC - 10"
+  name: "Departamento de Ciência da Computação"
+  abreviation: "CIC"

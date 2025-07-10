@@ -73,11 +73,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_174538) do
 
   create_table "turma_alunos", force: :cascade do |t|
     t.integer "turma_id", null: false
-    t.integer "aluno_id", null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["aluno_id"], name: "index_turma_alunos_on_aluno_id"
     t.index ["turma_id"], name: "index_turma_alunos_on_turma_id"
+    t.index ["user_id"], name: "index_turma_alunos_on_aluno_id"
   end
 
   create_table "turmas", force: :cascade do |t|
@@ -105,4 +105,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_174538) do
   add_foreign_key "questoes", "formularios", column: "formularios_id"
   add_foreign_key "questoes", "templates", column: "templates_id"
   add_foreign_key "templates", "admins"
+  add_foreign_key "turma_alunos", "turmas"
+  add_foreign_key "turma_alunos", "users"
 end
