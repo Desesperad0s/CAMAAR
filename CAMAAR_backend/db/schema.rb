@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_10_011002) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_10_174538) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -47,10 +47,37 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_011002) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "questoes", force: :cascade do |t|
+    t.string "enunciado"
+    t.integer "templates_id", null: false
+    t.integer "formularios_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["formularios_id"], name: "index_questoes_on_formularios_id"
+    t.index ["templates_id"], name: "index_questoes_on_templates_id"
+  end
+
   create_table "resposta", force: :cascade do |t|
     t.string "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "templates", force: :cascade do |t|
+    t.string "content"
+    t.integer "admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_templates_on_admin_id"
+  end
+
+  create_table "turma_alunos", force: :cascade do |t|
+    t.integer "turma_id", null: false
+    t.integer "aluno_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["aluno_id"], name: "index_turma_alunos_on_aluno_id"
+    t.index ["turma_id"], name: "index_turma_alunos_on_turma_id"
   end
 
   create_table "turmas", force: :cascade do |t|
@@ -74,4 +101,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_011002) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "questoes", "formularios", column: "formularios_id"
+  add_foreign_key "questoes", "templates", column: "templates_id"
+  add_foreign_key "templates", "admins"
+  add_foreign_key "turma_alunos", "alunos"
+  add_foreign_key "turma_alunos", "turmas"
 end
