@@ -8,15 +8,29 @@ class DepartamentosController < ApplicationController
 
   # GET /departamentos/1 or /departamentos/1.json
   def show
+
+    set_departamento
+
+    respond_to do |format|
+      format.json { render json: @departamento }
+    end
   end
 
   # GET /departamentos/new
   def new
     @departamento = Departamento.new
+    respond_to do |format|
+      format.json { render json: @departamento }
+    end
   end
 
   # GET /departamentos/1/edit
   def edit
+    set_departamento
+
+    respond_to do |format|
+      format.json { render json: @departamento }
+    end
   end
 
   # POST /departamentos or /departamentos.json
@@ -25,10 +39,10 @@ class DepartamentosController < ApplicationController
 
     respond_to do |format|
       if @departamento.save
-        format.html { redirect_to @departamento, notice: "Departamento was successfully created." }
+        
         format.json { render :show, status: :created, location: @departamento }
       else
-        format.html { render :new, status: :unprocessable_entity }
+  
         format.json { render json: @departamento.errors, status: :unprocessable_entity }
       end
     end
@@ -36,12 +50,15 @@ class DepartamentosController < ApplicationController
 
   # PATCH/PUT /departamentos/1 or /departamentos/1.json
   def update
+
+    set_departamento
+
     respond_to do |format|
       if @departamento.update(departamento_params)
-        format.html { redirect_to @departamento, notice: "Departamento was successfully updated." }
-        format.json { render :show, status: :ok, location: @departamento }
+
+        format.json { render json: @departamento, status: :ok, location: @departamento }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        
         format.json { render json: @departamento.errors, status: :unprocessable_entity }
       end
     end
@@ -52,7 +69,7 @@ class DepartamentosController < ApplicationController
     @departamento.destroy!
 
     respond_to do |format|
-      format.html { redirect_to departamentos_path, status: :see_other, notice: "Departamento was successfully destroyed." }
+      
       format.json { head :no_content }
     end
   end
