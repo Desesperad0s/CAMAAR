@@ -1,0 +1,16 @@
+services:
+  api:
+    build:
+      context: CAMAAR_backend
+      dockerfile: Dockerfile
+    image: camaar
+    container_name: camaar
+    env_file:
+      - .env 
+    ports:
+      - ${BACKEND_PORT}:3000
+    volumes:
+      - ./CAMAAR_backend:/app
+
+networks:
+  camaar:
