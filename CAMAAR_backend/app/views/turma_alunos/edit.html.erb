@@ -1,0 +1,12 @@
+<% content_for :title, "Editing turma aluno" %>
+
+<h1>Editing turma aluno</h1>
+
+<%= render "form", turma_aluno: @turma_aluno %>
+
+<br>
+
+<div>
+  <%= link_to "Show this turma aluno", @turma_aluno %> |
+  <%= link_to "Back to turma alunos", turma_alunos_path %>
+</div>
