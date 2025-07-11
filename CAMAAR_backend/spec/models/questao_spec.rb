@@ -5,9 +5,8 @@ RSpec.describe Questao, type: :model do
     it { should belong_to(:template).with_foreign_key(:templates_id) }
     it { should belong_to(:formulario).with_foreign_key(:formularios_id).optional(true) }
     
-    # Pendente até que as tabelas sejam atualizadas com as chaves estrangeiras corretas
+    
     it "deveria ter muitas alternativas" do
-      pending "Alternativas não tem a chave estrangeira questao_id"
       should have_many(:alternativas).with_foreign_key(:questao_id)
     end
     

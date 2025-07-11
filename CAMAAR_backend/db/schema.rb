@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_030000) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_204228) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -24,6 +24,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_030000) do
     t.string "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "questao_id", null: false
+    t.index ["questao_id"], name: "index_alternativas_on_questao_id"
   end
 
   create_table "departamentos", force: :cascade do |t|
@@ -103,6 +105,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_030000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "alternativas", "questoes"
   add_foreign_key "questoes", "formularios", column: "formularios_id"
   add_foreign_key "questoes", "templates", column: "templates_id"
   add_foreign_key "templates", "admins"
