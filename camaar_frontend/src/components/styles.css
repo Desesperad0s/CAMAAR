@@ -1,0 +1,172 @@
+/* styles.css - Estilo global para Navbar, Sidebar e Layout */
+
+/* Reset básico */
+body, h1, h2, h3, h4, h5, h6, p, div, span {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Layout principal */
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background-color: white;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-custom {
+  width: 180px;
+  background: #fff;
+  border-right: 1px solid #d1c4e9;
+  min-height: 100vh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.sidebar h2 {
+  font-size: 1.2rem;
+  padding: 1rem;
+  color: #5e2760;
+}
+
+.sidebar-list {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar-item {
+  padding: 8px 16px;
+  font-size: 0.95em;
+  color: #333;
+  background: transparent;
+  border-left: 4px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-item.active {
+  background: #7c4dff;
+  color: #fff;
+  border-left: 4px solid #7c4dff;
+  font-weight: 500;
+}
+
+.sidebar-item:not(.active):hover {
+  background: #f3eaff;
+}
+
+/* Navbar (Header) */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 8px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  min-height: 48px;
+}
+
+.navbar .title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.navbar-title {
+  font-size: 1.05em;
+  margin-left: 8px;
+}
+
+.navbar .right-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar input[type="text"] {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  width: 200px;
+  background-color: #f9f9f9;
+}
+
+.navbar-search {
+  width: 180px;
+  padding: 6px 28px 6px 12px;
+  border-radius: 16px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  font-size: 1em;
+  outline: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99c.41.41 1.09.41 1.5 0s.41-1.09 0-1.5l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.navbar .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #5e2760;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Conteúdo principal */
+.main-content {
+  flex: 1;
+  background-color: #f3f3f3;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Responsivo */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .navbar .right-section input {
+    width: 120px;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+}
