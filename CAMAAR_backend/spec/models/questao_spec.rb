@@ -33,11 +33,10 @@ RSpec.describe Questao, type: :model do
       template = Template.create(content: "Template de teste")
       questao = Questao.create(enunciado: 'Questão sem formulário', templates_id: template.id)
       
-      # Criar um formulário diretamente
-      formulario = Formulario.create(name: "Formulário de teste")
+      formulario = Formulario.create(name: "Formulário de teste", date: Date.today)
       
-      # Associar o formulário à questão
-      questao.update(formularios_id: formulario.id)
+      questao.formulario = formulario
+      questao.save
       
       # Verificar se a associação foi feita
       expect(questao.reload.formulario).to eq(formulario)
