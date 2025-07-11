@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema[8.0].define(version: 2025_07_11_124421) do
+=======
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
+>>>>>>> a1de6245982ed2d58d6765a8a1852bcb8fd8c70a
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -24,6 +28,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_124421) do
     t.string "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "questao_id", null: false
+    t.index ["questao_id"], name: "index_alternativas_on_questao_id"
   end
 
   create_table "departamentos", force: :cascade do |t|
@@ -46,6 +52,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_124421) do
     t.date "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "template_id"
+    t.integer "turma_id"
+    t.index ["template_id"], name: "index_formularios_on_template_id"
+    t.index ["turma_id"], name: "index_formularios_on_turma_id"
   end
 
   create_table "questoes", force: :cascade do |t|
@@ -62,6 +72,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_124421) do
     t.string "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "questao_id", null: false
+    t.integer "formulario_id", null: false
+    t.index ["formulario_id"], name: "index_resposta_on_formulario_id"
+    t.index ["questao_id"], name: "index_resposta_on_questao_id"
   end
 
   create_table "templates", force: :cascade do |t|
@@ -105,7 +119,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_124421) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "alternativas", "questoes"
+  add_foreign_key "formularios", "templates"
+  add_foreign_key "formularios", "turmas"
   add_foreign_key "questoes", "formularios", column: "formularios_id"
   add_foreign_key "questoes", "templates", column: "templates_id"
+  add_foreign_key "resposta", "formularios"
+  add_foreign_key "resposta", "questoes"
   add_foreign_key "templates", "admins"
 end

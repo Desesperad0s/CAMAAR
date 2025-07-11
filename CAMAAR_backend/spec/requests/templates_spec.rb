@@ -91,6 +91,41 @@ RSpec.describe "Templates API", type: :request do
       expect(questao_com_formulario.formularios_id).to eq(formulario.id)
     end
     
+    it "cria um template com questões e alternativas aninhadas" do
+      expect {
+        post "/templates", params: { 
+          template: { 
+            content: "Template com questões e alternativas", 
+            admin_id: admin.id,
+            questoes_attributes: [
+              { 
+                enunciado: "Questão com alternativas 1", 
+                alternativas_attributes: [
+                  { content: "Alternativa 1" },
+                  { content: "Alternativa 2" }
+                ]
+              },
+              { 
+                enunciado: "Questão com alternativas 2", 
+                alternativas_attributes: [
+                  { content: "Alternativa 3" },
+                  { content: "Alternativa 4" }
+                ]
+              }
+            ]
+          } 
+        }
+      }.to change(Questao, :count).by(2).and change(Alternativa, :count).by(4)
+      
+      expect(response).to have_http_status(201)
+      json_response = JSON.parse(response.body)
+      expect(json_response['questoes'].length).to eq(2)
+      
+      questao_ids = json_response['questoes'].map { |q| q['id'] }
+      alternativas_count = Alternativa.where(questao_id: questao_ids).count
+      expect(alternativas_count).to eq(4)
+    end
+    
     it "retorna erro para templates inválidos" do
       post "/templates", params: { template: { content: "", admin_id: nil } }
       expect(response).to have_http_status(422)

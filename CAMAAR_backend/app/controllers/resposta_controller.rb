@@ -1,70 +1,79 @@
 class RespostaController < ApplicationController
-  before_action :set_respostum, only: %i[ show edit update destroy ]
+  before_action :set_resposta, only: %i[show update destroy]
 
-  # GET /resposta or /resposta.json
+  # GET /resposta
   def index
-    @resposta = Respostum.all
+    @respostas = Resposta.all
+    render json: @respostas
   end
 
-  # GET /resposta/1 or /resposta/1.json
+  # GET /resposta/1
   def show
+    render json: @resposta
   end
 
-  # GET /resposta/new
-  def new
-    @respostum = Respostum.new
-  end
-
-  # GET /resposta/1/edit
-  def edit
-  end
-
-  # POST /resposta or /resposta.json
+  # POST /resposta
   def create
-    @respostum = Respostum.new(respostum_params)
+    @resposta = Resposta.new(resposta_params)
 
-    respond_to do |format|
-      if @respostum.save
-        format.html { redirect_to @respostum, notice: "Respostum was successfully created." }
-        format.json { render :show, status: :created, location: @respostum }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @respostum.errors, status: :unprocessable_entity }
-      end
+    if @resposta.save
+      render json: @resposta, status: :created
+    else
+      render json: { errors: @resposta.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /resposta/1 or /resposta/1.json
+  # PATCH/PUT /resposta/1
   def update
-    respond_to do |format|
-      if @respostum.update(respostum_params)
-        format.html { redirect_to @respostum, notice: "Respostum was successfully updated." }
-        format.json { render :show, status: :ok, location: @respostum }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @respostum.errors, status: :unprocessable_entity }
-      end
+    if @resposta.update(resposta_params)
+      render json: @resposta
+    else
+      render json: { errors: @resposta.errors }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /resposta/1 or /resposta/1.json
+  # DELETE /resposta/1
   def destroy
-    @respostum.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to resposta_path, status: :see_other, notice: "Respostum was successfully destroyed." }
-      format.json { head :no_content }
+    @resposta.destroy!
+    head :no_content
+  end
+  
+  # POST /resposta/batch_create
+  def batch_create
+    ActiveRecord::Base.transaction do
+      @respostas = []
+      
+      if params[:respostas].present?
+        params[:respostas].each do |resposta_params|
+          resposta = Resposta.new(
+            content: resposta_params[:content],
+            questao_id: resposta_params[:questao_id],
+            formulario_id: resposta_params[:formulario_id]
+          )
+          
+          if resposta.save
+            @respostas << resposta
+          else
+            render json: { errors: resposta.errors }, status: :unprocessable_entity
+            raise ActiveRecord::Rollback
+          end
+        end
+        
+        render json: @respostas, status: :created
+      else
+        render json: { error: "Respostas not provided" }, status: :unprocessable_entity
+      end
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_respostum
-      @respostum = Respostum.find(params.expect(:id))
+    def set_resposta
+      @resposta = Resposta.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
-    def respostum_params
-      params.expect(respostum: [ :content ])
+    def resposta_params
+      params.require(:resposta).permit(:content, :questao_id, :formulario_id)
     end
 end

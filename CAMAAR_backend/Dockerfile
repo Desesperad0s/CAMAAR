@@ -10,6 +10,6 @@ RUN gem install bundler:1.15.0
 
 RUN bundle install
 
-EXPOSE 3000
+EXPOSE 3333
 
 CMD rm -f /app/tmp/pids/server.pid && rails server -b 0.0.0.0
