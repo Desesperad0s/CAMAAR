@@ -1,70 +1,94 @@
 class TemplatesController < ApplicationController
-  before_action :set_template, only: %i[ show edit update destroy ]
+  before_action :set_template, only: [:show, :update, :destroy]
+  rescue_from ActiveRecord::RecordNotFound, with: :template_not_found
 
-  # GET /templates or /templates.json
+  # GET /templates
   def index
     @templates = Template.all
+    render json: @templates.as_json(include: :questoes)
   end
 
-  # GET /templates/1 or /templates/1.json
+  # GET /templates/1
   def show
+    render json: @template.as_json(include: :questoes)
   end
 
-  # GET /templates/new
-  def new
-    @template = Template.new
-  end
-
-  # GET /templates/1/edit
-  def edit
-  end
-
-  # POST /templates or /templates.json
+  # POST /templates
   def create
     @template = Template.new(template_params)
-
-    respond_to do |format|
-      if @template.save
-        format.html { redirect_to @template, notice: "Template was successfully created." }
-        format.json { render :show, status: :created, location: @template }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @template.errors, status: :unprocessable_entity }
+    
+    if @template.save
+      if params[:questoes].present? && params[:questoes].is_a?(Array)
+        params[:questoes].each do |questao_params|
+          questao = Questao.new(
+            enunciado: questao_params[:enunciado],
+            templates_id: @template.id
+          )
+          
+          if questao_params[:formularios_id].present?
+            questao.formularios_id = questao_params[:formularios_id]
+          end
+          
+          questao.save!
+        end
+        
+        @template.reload
       end
+      
+      render json: @template.as_json(include: :questoes), status: :created, location: @template
+    else
+      render json: { errors: @template.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /templates/1 or /templates/1.json
+  # PATCH/PUT /templates/1
   def update
-    respond_to do |format|
-      if @template.update(template_params)
-        format.html { redirect_to @template, notice: "Template was successfully updated." }
-        format.json { render :show, status: :ok, location: @template }
+    if params[:template] && params[:template][:questoes_attributes].present?
+      template_basic_params = params[:template].except(:questoes_attributes)
+      template_basic_params = template_basic_params.empty? ? {} : template_basic_params.permit(:content, :admin_id)
+      
+      if @template.update(template_basic_params)
+        params[:template][:questoes_attributes].each do |questao_attr|
+          next if questao_attr[:id].present? 
+          
+          @template.questoes.create!(enunciado: questao_attr[:enunciado])
+        end
+        
+        @template.reload
+        render json: @template.as_json(include: :questoes)
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @template.errors, status: :unprocessable_entity }
+        render json: { errors: @template.errors }, status: :unprocessable_entity
+      end
+    else
+      # Normal update without questoes_attributes
+      if @template.update(template_params)
+        render json: @template.as_json(include: :questoes)
+      else
+        render json: { errors: @template.errors }, status: :unprocessable_entity
       end
     end
   end
 
-  # DELETE /templates/1 or /templates/1.json
+  # DELETE /templates/1
   def destroy
     @template.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to templates_path, status: :see_other, notice: "Template was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_template
-      @template = Template.find(params.expect(:id))
+      @template = Template.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def template_params
-      params.expect(template: [ :content ])
+      params.require(:template).permit(
+        :content, 
+        :admin_id,
+        questoes_attributes: [:id, :enunciado, :formularios_id, :_destroy]
+      )
+    end
+
+    def template_not_found
+      render json: { error: "Template não encontrado" }, status: :not_found
     end
 end
