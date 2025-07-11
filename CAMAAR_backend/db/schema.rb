@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_204228) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_212238) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -47,6 +47,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_204228) do
     t.date "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "template_id"
+    t.index ["template_id"], name: "index_formularios_on_template_id"
   end
 
   create_table "questoes", force: :cascade do |t|
@@ -63,6 +65,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_204228) do
     t.string "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "questao_id", null: false
+    t.index ["questao_id"], name: "index_resposta_on_questao_id"
   end
 
   create_table "templates", force: :cascade do |t|
@@ -106,7 +110,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_204228) do
   end
 
   add_foreign_key "alternativas", "questoes"
+  add_foreign_key "formularios", "templates"
   add_foreign_key "questoes", "formularios", column: "formularios_id"
   add_foreign_key "questoes", "templates", column: "templates_id"
+  add_foreign_key "resposta", "questoes"
   add_foreign_key "templates", "admins"
 end

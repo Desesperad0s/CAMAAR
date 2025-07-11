@@ -11,7 +11,6 @@ RSpec.describe Questao, type: :model do
     end
     
     it "deveria ter muitas respostas" do
-      pending "Resposta não tem a chave estrangeira questao_id"
       should have_many(:respostas).class_name('Resposta').with_foreign_key(:questao_id)
     end
   end
