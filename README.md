@@ -28,6 +28,76 @@ Sistema para avaliação de atividades acadêmicas remotas do CIC
     </tr>
 </table>
 
+## 🐳 Configuração e uso com Docker Compose
+
+Para rodar o projeto utilizando Docker Compose:
+
+1. Certifique-se de ter o Docker e o Docker Compose instalados.
+2. Crie um arquivo `.env` na raiz do projeto e defina a variável de ambiente necessária, por exemplo:
+
+```
+BACKEND_PORT=3000
+FRONTEND_PORT=3333
+```
+
+3. Execute o comando abaixo na raiz do projeto:
+
+```
+docker-compose up --build
+```
+
+O backend Rails estará disponível na porta definida em `BACKEND_PORT`.
+
+
+---
+
+## ⚙️ Configuração Manual (Sem Docker)
+
+### Backend (Rails)
+
+1. Instale o Ruby (versão recomendada: 3.x) e o bundler.
+2. Instale as dependências:
+
+   ```bash
+   cd CAMAAR_backend
+   bundle install
+   ```
+
+3. Configure o banco de dados (ajuste as configurações em `config/database.yml` se necessário):
+
+   ```bash
+   rails db:setup
+   ```
+
+4. Inicie o servidor Rails:
+
+   ```bash
+   rails server -p 3000
+   ```
+
+O backend estará disponível em `http://localhost:3000` (ou na porta configurada).
+
+### Frontend (React)
+
+1. Instale o Node.js (versão recomendada: 18.x ou superior) e o npm/yarn.
+2. Instale as dependências:
+
+   ```bash
+   cd CAMAAR_frontend
+   npm install
+
+   ```
+
+3. Crie um arquivo `.env` na pasta `CAMAAR_frontend` se necessário, configurando as variáveis de ambiente.
+4. Inicie o servidor de desenvolvimento:
+
+   ```bash
+   npm start
+   ```
+
+O frontend estará disponível em `http://localhost:3333` (ou na porta configurada).
+
+
 <h2>🧭 Behavior Driven Design</h2>
 <p>O projeto utiliza a abordagem de Behavior Driven Design (BDD) para descrever e organizar os comportamentos esperados do sistema. Para facilitar a visualização e o acompanhamento das features, utilizamos um quadro no Miro:</p>
 
@@ -74,21 +144,3 @@ Deve ter seguinte formato {prefixo}+':'+{mensagem com verbo conjugado na 3º pes
 Deve ter o seguinte foramto {prefixo} + '/' + {nome da branch em kebab case}. Os prefixos são os mesmo das mensagens de commit. Por exemplo:
 `docs/corrige-documentacao-das-noticias`
 
-## 🐳 Configuração e uso com Docker Compose
-
-Para rodar o projeto utilizando Docker Compose:
-
-1. Certifique-se de ter o Docker e o Docker Compose instalados.
-2. Crie um arquivo `.env` na raiz do projeto e defina a variável de ambiente necessária, por exemplo:
-
-```
-BACKEND_PORT=3000
-```
-
-3. Execute o comando abaixo na raiz do projeto:
-
-```
-docker-compose up --build
-```
-
-O backend Rails estará disponível na porta definida em `BACKEND_PORT`.
