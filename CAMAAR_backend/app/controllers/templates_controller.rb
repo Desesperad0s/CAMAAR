@@ -5,37 +5,82 @@ class TemplatesController < ApplicationController
   # GET /templates
   def index
     @templates = Template.all
-    render json: @templates.as_json(include: :questoes)
+    render json: @templates.as_json(include: { questoes: { include: :alternativas } })
   end
 
   # GET /templates/1
   def show
-    render json: @template.as_json(include: :questoes)
+    render json: @template.as_json(include: { questoes: { include: :alternativas } })
   end
 
   # POST /templates
   def create
-    @template = Template.new(template_params)
+    # Create a new template based on basic attributes
+    @template = Template.new(
+      content: params[:template][:content],
+      admin_id: params[:template][:admin_id]
+    )
     
     if @template.save
-      if params[:questoes].present? && params[:questoes].is_a?(Array)
-        params[:questoes].each do |questao_params|
-          questao = Questao.new(
-            enunciado: questao_params[:enunciado],
-            templates_id: @template.id
-          )
-          
-          if questao_params[:formularios_id].present?
-            questao.formularios_id = questao_params[:formularios_id]
+      if params[:template][:questoes_attributes].present?
+        if params[:template][:questoes_attributes].is_a?(Array)
+          params[:template][:questoes_attributes].each do |questao_attrs|
+            questao = @template.questoes.create!(
+              enunciado: questao_attrs[:enunciado],
+              formularios_id: questao_attrs[:formularios_id]
+            )
+            
+            # Process alternativas if present
+            if questao_attrs[:alternativas_attributes].present?
+              # If alternativas_attributes is an array
+              if questao_attrs[:alternativas_attributes].is_a?(Array)
+                questao_attrs[:alternativas_attributes].each do |alt_attrs|
+                  questao.alternativas.create!(content: alt_attrs[:content])
+                end
+              # If alternativas_attributes is a hash
+              else
+                questao_attrs[:alternativas_attributes].each do |_, alt_attrs|
+                  questao.alternativas.create!(content: alt_attrs[:content])
+                end
+              end
+            end
           end
-          
-          questao.save!
+        # If questoes_attributes is a hash (from strong params)
+        else
+          params[:template][:questoes_attributes].each do |_, questao_attrs|
+            questao = @template.questoes.create!(
+              enunciado: questao_attrs[:enunciado],
+              formularios_id: questao_attrs[:formularios_id]
+            )
+            
+            # Process alternativas if present
+            if questao_attrs[:alternativas_attributes].present?
+              questao_attrs[:alternativas_attributes].each do |_, alt_attrs|
+                questao.alternativas.create!(content: alt_attrs[:content])
+              end
+            end
+          end
         end
-        
-        @template.reload
       end
       
-      render json: @template.as_json(include: :questoes), status: :created, location: @template
+      # Handle questões provided as a separate array (for backward compatibility)
+      if params[:questoes].present? && params[:questoes].is_a?(Array)
+        params[:questoes].each do |questao_params|
+          questao = @template.questoes.create!(
+            enunciado: questao_params[:enunciado],
+            formularios_id: questao_params[:formularios_id]
+          )
+          
+          if questao_params[:alternativas].present? && questao_params[:alternativas].is_a?(Array)
+            questao_params[:alternativas].each do |alternativa_content|
+              questao.alternativas.create!(content: alternativa_content)
+            end
+          end
+        end
+      end
+      
+      @template.reload
+      render json: @template.as_json(include: { questoes: { include: :alternativas } }), status: :created, location: @template
     else
       render json: { errors: @template.errors }, status: :unprocessable_entity
     end
@@ -43,29 +88,10 @@ class TemplatesController < ApplicationController
 
   # PATCH/PUT /templates/1
   def update
-    if params[:template] && params[:template][:questoes_attributes].present?
-      template_basic_params = params[:template].except(:questoes_attributes)
-      template_basic_params = template_basic_params.empty? ? {} : template_basic_params.permit(:content, :admin_id)
-      
-      if @template.update(template_basic_params)
-        params[:template][:questoes_attributes].each do |questao_attr|
-          next if questao_attr[:id].present? 
-          
-          @template.questoes.create!(enunciado: questao_attr[:enunciado])
-        end
-        
-        @template.reload
-        render json: @template.as_json(include: :questoes)
-      else
-        render json: { errors: @template.errors }, status: :unprocessable_entity
-      end
+    if @template.update(template_params)
+      render json: @template.as_json(include: { questoes: { include: :alternativas } })
     else
-      # Normal update without questoes_attributes
-      if @template.update(template_params)
-        render json: @template.as_json(include: :questoes)
-      else
-        render json: { errors: @template.errors }, status: :unprocessable_entity
-      end
+      render json: { errors: @template.errors }, status: :unprocessable_entity
     end
   end
 
@@ -74,6 +100,8 @@ class TemplatesController < ApplicationController
     @template.destroy!
     head :no_content
   end
+
+
 
   private
     def set_template
@@ -84,7 +112,13 @@ class TemplatesController < ApplicationController
       params.require(:template).permit(
         :content, 
         :admin_id,
-        questoes_attributes: [:id, :enunciado, :formularios_id, :_destroy]
+        questoes_attributes: [
+          :id, 
+          :enunciado, 
+          :formularios_id, 
+          :_destroy,
+          alternativas_attributes: [:id, :content, :_destroy]
+        ]
       )
     end
 
