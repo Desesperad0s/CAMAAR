@@ -1,0 +1,88 @@
+.login-bg {
+  min-height: 100vh;
+  background: #dedede;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  display: flex;
+  width: 600px;
+  height: 320px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px #0001;
+  background: #fff;
+}
+
+.login-form-side {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.login-form-side h2 {
+  text-align: left;
+  font-weight: 500;
+  margin-bottom: 24px;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.login-form-side label {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.login-form-side input {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.login-form-side input[type="password"] {
+  margin-bottom: 24px;
+}
+
+.login-form-side button {
+  width: 100%;
+  background: #22b455;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 0;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-form-side button:hover {
+  background: #1a9444;
+}
+
+.login-welcome-side {
+  flex: 1;
+  background: #6d2567;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.login-welcome-side p {
+  font-size: 28px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}

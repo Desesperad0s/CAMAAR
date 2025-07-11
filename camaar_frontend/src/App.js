@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Gerenciamento from './pages/Gerenciamento';
+import Login from './pages/Login';
 import Resultados from './pages/Resultados';
 import EnviarFormulario from './pages/EnviarFormulario';
 import Templates from './pages/Templates';
@@ -15,6 +16,7 @@ function App() {
         <Route path="/enviar" element={<EnviarFormulario />} />
         <Route path="/templates" element={<Templates />} />
         <Route path="/criar-template" element={<CriarTemplate />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
