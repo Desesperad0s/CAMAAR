@@ -17,3 +17,5 @@ function CriarTemplate() {
     </div>
   );
 }
+
+export default CriarTemplate;

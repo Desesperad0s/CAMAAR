@@ -1,4 +1,4 @@
-function EnviarForm() {
+function EnviarFormulario() {
   return (
     <div className="modal">
       <div className="modal-content">
@@ -19,7 +19,7 @@ function EnviarForm() {
           </thead>
           <tbody>
             <tr>
-              <td><input type="checkbox" checked /></td>
+              <td><input type="checkbox" defaultChecked /></td>
               <td>Estudos Em</td>
               <td>2024.1</td>
               <td>CIC1024</td>
@@ -37,3 +37,5 @@ function EnviarForm() {
     </div>
   );
 }
+
+export default EnviarFormulario;

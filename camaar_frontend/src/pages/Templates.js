@@ -1,3 +1,6 @@
+import Sidebar from '../components/Sidebar';
+import Navbar from '../components/Navbar';
+
 function Templates() {
   return (
     <div className="page">
@@ -18,3 +21,5 @@ function Templates() {
     </div>
   );
 }
+
+export default Templates;
