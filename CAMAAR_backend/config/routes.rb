@@ -2,8 +2,19 @@ Rails.application.routes.draw do
   resources :alternativas
   resources :departamentos
   resources :disciplinas
-  resources :formularios
-  resources :resposta
+  
+  resources :formularios do
+    collection do
+      post :create_with_questions
+    end
+  end
+  
+  resources :resposta do
+    collection do
+      post :batch_create
+    end
+  end
+  
   resources :turmas
   resources :users
   resources :admins
