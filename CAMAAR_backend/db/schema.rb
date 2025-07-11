@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_212238) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -48,7 +48,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_212238) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "template_id"
+    t.integer "turma_id"
     t.index ["template_id"], name: "index_formularios_on_template_id"
+    t.index ["turma_id"], name: "index_formularios_on_turma_id"
   end
 
   create_table "questoes", force: :cascade do |t|
@@ -66,6 +68,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_212238) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "questao_id", null: false
+    t.integer "formulario_id", null: false
+    t.index ["formulario_id"], name: "index_resposta_on_formulario_id"
     t.index ["questao_id"], name: "index_resposta_on_questao_id"
   end
 
@@ -111,8 +115,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_212238) do
 
   add_foreign_key "alternativas", "questoes"
   add_foreign_key "formularios", "templates"
+  add_foreign_key "formularios", "turmas"
   add_foreign_key "questoes", "formularios", column: "formularios_id"
   add_foreign_key "questoes", "templates", column: "templates_id"
+  add_foreign_key "resposta", "formularios"
   add_foreign_key "resposta", "questoes"
   add_foreign_key "templates", "admins"
 end
