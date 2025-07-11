@@ -58,13 +58,11 @@ class AlternativasController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_alternativa
-      @alternativa = Alternativa.find(params.expect(:id))
+      @alternativa = Alternativa.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def alternativa_params
-      params.expect(alternativa: [ :content ])
+      params.require(:alternativa).permit(:content, :questao_id)
     end
 end

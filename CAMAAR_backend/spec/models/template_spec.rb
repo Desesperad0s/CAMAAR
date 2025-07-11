@@ -6,7 +6,6 @@ RSpec.describe Template, type: :model do
     it { should have_many(:questoes).with_foreign_key(:templates_id).dependent(:destroy) }
     
     it "deveria ter muitos formulários" do
-      pending "Formulario não tem a chave estrangeira template_id"
       should have_many(:formularios).with_foreign_key(:template_id)
     end
     

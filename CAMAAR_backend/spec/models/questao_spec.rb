@@ -5,14 +5,12 @@ RSpec.describe Questao, type: :model do
     it { should belong_to(:template).with_foreign_key(:templates_id) }
     it { should belong_to(:formulario).with_foreign_key(:formularios_id).optional(true) }
     
-    # Pendente até que as tabelas sejam atualizadas com as chaves estrangeiras corretas
+    
     it "deveria ter muitas alternativas" do
-      pending "Alternativas não tem a chave estrangeira questao_id"
       should have_many(:alternativas).with_foreign_key(:questao_id)
     end
     
     it "deveria ter muitas respostas" do
-      pending "Resposta não tem a chave estrangeira questao_id"
       should have_many(:respostas).class_name('Resposta').with_foreign_key(:questao_id)
     end
   end
@@ -35,11 +33,10 @@ RSpec.describe Questao, type: :model do
       template = Template.create(content: "Template de teste")
       questao = Questao.create(enunciado: 'Questão sem formulário', templates_id: template.id)
       
-      # Criar um formulário diretamente
-      formulario = Formulario.create(name: "Formulário de teste")
+      formulario = Formulario.create(name: "Formulário de teste", date: Date.today)
       
-      # Associar o formulário à questão
-      questao.update(formularios_id: formulario.id)
+      questao.formulario = formulario
+      questao.save
       
       # Verificar se a associação foi feita
       expect(questao.reload.formulario).to eq(formulario)
