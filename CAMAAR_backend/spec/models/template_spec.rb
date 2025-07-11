@@ -26,7 +26,6 @@ RSpec.describe Template, type: :model do
 
   describe 'criação com questões aninhadas' do
     it 'permite criar um template com questões via atributos aninhados' do
-      # Criamos sem depender do admin para simplificar
       template_attrs = {
         content: 'Template com questões aninhadas',
         questoes_attributes: [

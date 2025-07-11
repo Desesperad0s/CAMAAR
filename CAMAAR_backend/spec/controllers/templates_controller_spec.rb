@@ -88,7 +88,6 @@ RSpec.describe TemplatesController, type: :controller do
         
         expect(response).to have_http_status(:created)
         
-        # Verificamos também se a questão foi realmente criada
         template = Template.last
         expect(template.questoes.count).to eq(1)
         expect(template.questoes.first.enunciado).to eq("Questão A")
@@ -97,7 +96,6 @@ RSpec.describe TemplatesController, type: :controller do
 
     context "com parâmetros inválidos" do
       it "não cria um novo Template" do
-        # Stub para simular falha de validação
         allow_any_instance_of(Template).to receive(:save).and_return(false)
         expect {
           post :create, params: { template: { content: "" } }
@@ -105,7 +103,6 @@ RSpec.describe TemplatesController, type: :controller do
       end
 
       it "retorna um status :unprocessable_entity" do
-        # Stub para simular falha de validação
         allow_any_instance_of(Template).to receive(:save).and_return(false)
         post :create, params: { template: { content: "" } }
         expect(response).to have_http_status(:unprocessable_entity)
@@ -152,19 +149,15 @@ RSpec.describe TemplatesController, type: :controller do
     end
 
     it "destrói também as questões associadas" do
-      # Criamos um template com uma questão
       template_with_question = Template.create(content: "Template com questão")
       
-      # Verificar se a tabela existe antes de tentar criar
       begin
-        # Criar a questão usando a associação para garantir a relação correta
         questao = template_with_question.questoes.create(enunciado: "Questão teste")
         
         expect {
           delete :destroy, params: { id: template_with_question.id }
         }.to change(Questao, :count).by(-1)
       rescue => e
-        # Se ocorrer um erro, marcar o teste como pendente
         pending "Não foi possível criar a questão: #{e.message}"
       end
     end

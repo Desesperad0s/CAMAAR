@@ -49,7 +49,7 @@ class TemplatesController < ApplicationController
       
       if @template.update(template_basic_params)
         params[:template][:questoes_attributes].each do |questao_attr|
-          next if questao_attr[:id].present? # Skip existing questions
+          next if questao_attr[:id].present? 
           
           @template.questoes.create!(enunciado: questao_attr[:enunciado])
         end
