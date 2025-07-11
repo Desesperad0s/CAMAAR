@@ -47,6 +47,7 @@ docker-compose up --build
 ```
 
 O backend Rails estará disponível na porta definida em `BACKEND_PORT`.
+O frontend React estará disponível na porta definida em `FRONTEND_PORT`.
 
 
 ---
