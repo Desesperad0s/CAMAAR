@@ -11,6 +11,24 @@ services:
       - ${BACKEND_PORT}:3000
     volumes:
       - ./CAMAAR_backend:/app
+    networks:
+      - camaar
+
+  frontend:
+    build:
+      context: CAMAAR_frontend
+      dockerfile: Dockerfile
+    image: camaar_react
+    container_name: camaar_react
+    env_file:
+      - .env 
+    ports:
+      - ${FRONTEND_PORT}:3333
+    volumes:
+      - ./CAMAAR_frontend:/app
+    networks:
+      - camaar
+
 
 networks:
   camaar:
