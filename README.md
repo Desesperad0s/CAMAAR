@@ -36,8 +36,8 @@ Para rodar o projeto utilizando Docker Compose:
 2. Crie um arquivo `.env` na raiz do projeto e defina a variável de ambiente necessária, por exemplo:
 
 ```
-BACKEND_PORT=3000
-FRONTEND_PORT=3333
+BACKEND_PORT=3333
+FRONTEND_PORT=3000
 ```
 
 3. Execute o comando abaixo na raiz do projeto:
@@ -73,10 +73,10 @@ O frontend React estará disponível na porta definida em `FRONTEND_PORT`.
 4. Inicie o servidor Rails:
 
    ```bash
-   rails server -p 3000
+   rails server -p 3333
    ```
 
-O backend estará disponível em `http://localhost:3000` (ou na porta configurada).
+O backend estará disponível em `http://localhost:3333` (ou na porta configurada).
 
 ### Frontend (React)
 
@@ -96,7 +96,7 @@ O backend estará disponível em `http://localhost:3000` (ou na porta configurad
    npm start
    ```
 
-O frontend estará disponível em `http://localhost:3333` (ou na porta configurada).
+O frontend estará disponível em `http://localhost:3000` (ou na porta configurada).
 
 
 <h2>🧭 Behavior Driven Design</h2>
