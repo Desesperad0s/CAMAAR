@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_030000) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_124421) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -36,6 +36,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_030000) do
 
   create_table "disciplinas", force: :cascade do |t|
     t.string "name"
+    t.integer "departamento_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -88,6 +89,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_030000) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "disciplina_id"
   end
 
   create_table "users", force: :cascade do |t|
