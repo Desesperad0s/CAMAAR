@@ -15,7 +15,6 @@ function App() {
         <Route path="/enviar" element={<EnviarFormulario />} />
         <Route path="/templates" element={<Templates />} />
         <Route path="/criar-template" element={<CriarTemplate />} />
-        {/* outras rotas existentes */}
       </Routes>
     </Router>
   );
