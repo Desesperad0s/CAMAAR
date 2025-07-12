@@ -1,70 +1,51 @@
 class AdminsController < ApplicationController
-  before_action :set_admin, only: %i[ show edit update destroy ]
+  before_action :set_admin, only: %i[show update destroy]
 
-  # GET /admins or /admins.json
+  # GET /admins
   def index
     @admins = Admin.all
+    render json: @admins
   end
 
-  # GET /admins/1 or /admins/1.json
+  # GET /admins/1
   def show
+    render json: @admin
   end
 
-  # GET /admins/new
-  def new
-    @admin = Admin.new
-  end
-
-  # GET /admins/1/edit
-  def edit
-  end
-
-  # POST /admins or /admins.json
+  # POST /admins
   def create
     @admin = Admin.new(admin_params)
 
-    respond_to do |format|
-      if @admin.save
-        format.html { redirect_to @admin, notice: "Admin was successfully created." }
-        format.json { render :show, status: :created, location: @admin }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @admin.errors, status: :unprocessable_entity }
-      end
+    if @admin.save
+      render json: @admin, status: :created
+    else
+      render json: { errors: @admin.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /admins/1 or /admins/1.json
+  # PATCH/PUT /admins/1
   def update
-    respond_to do |format|
-      if @admin.update(admin_params)
-        format.html { redirect_to @admin, notice: "Admin was successfully updated." }
-        format.json { render :show, status: :ok, location: @admin }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @admin.errors, status: :unprocessable_entity }
-      end
+    if @admin.update(admin_params)
+      render json: @admin
+    else
+      render json: { errors: @admin.errors }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /admins/1 or /admins/1.json
+  # DELETE /admins/1
   def destroy
     @admin.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to admins_path, status: :see_other, notice: "Admin was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    head :no_content
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_admin
-      @admin = Admin.find(params.expect(:id))
+      @admin = Admin.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def admin_params
-      params.expect(admin: [ :registration, :name, :email, :password ])
+      params.require(:admin).permit(:registration, :name, :email, :password)
     end
 end
