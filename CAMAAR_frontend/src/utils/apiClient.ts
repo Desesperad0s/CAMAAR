@@ -1,5 +1,5 @@
 import { HttpClient } from "./httpClient.ts";
-const BACK_URL = "http://caamar_rails:3000";
+const BACK_URL = "http://localhost:3333";
 
 export class Api {
     api;
@@ -11,7 +11,6 @@ export class Api {
     }
 
     async login(email, password) {
-        const response = await this.api.post(`/login`, { email, password });
-        return response.data;
+        return await this.api.post(`/login`, { email, password });    
     }
 }
