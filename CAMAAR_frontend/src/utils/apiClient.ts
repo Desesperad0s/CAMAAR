@@ -1,5 +1,5 @@
 import { HttpClient } from "./httpClient.ts";
-const BACK_URL = "http://localhost:3333";
+const BACK_URL = "http://backend:3333";
 
 export class Api {
     api;
