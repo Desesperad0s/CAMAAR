@@ -25,7 +25,8 @@ export class HttpClient {
   }
 
   async get<T>(url: string, queryParams?: Record<string, any>): Promise<T> {
-    const normalizedUrl = this.normalizeUrl(url) + this.buildQueryString(queryParams);
+    const normalizedUrl =
+      this.normalizeUrl(url) + "/" + this.buildQueryString(queryParams);
     const res = await fetch(`${this.baseUrl}${normalizedUrl}`, {
       method: 'GET',
       headers: this.headers,
