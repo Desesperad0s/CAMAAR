@@ -4,7 +4,6 @@ class TurmasController < ApplicationController
   # GET /turmas or /turmas.json
   def index
     @turmas = Turma.all
-    render json: @turmas
   end
 
   # GET /turmas/1 or /turmas/1.json
@@ -12,28 +11,38 @@ class TurmasController < ApplicationController
 
     set_turma
 
-    render json: @turma
+    respond_to do |format|
+      format.json { render json: @turma}
+    end
   end
 
   # GET /turmas/new
   def new
     @turma = Turma.new
-    render json: @turma
+    respond_to do |format|
+      format.json { render json: @turma }
+    end
   end
 
   # GET /turmas/1/edit
   def edit
     set_turma
-    render json: @turma
+    respond_to do |format|
+      format.json { render json: @turma}
+    end
   end
 
   # POST /turmas or /turmas.json
   def create
     @turma = Turma.new(turma_params)
-    if @turma.save
-      render json: @turma, status: :created
-    else
-      render json: @turma.errors, status: :unprocessable_entity
+    respond_to do |format|
+      if @turma.save
+      
+        format.json { render :show, status: :created, location: @turma }
+      else
+      
+        format.json { render json: @turma.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -41,13 +50,15 @@ class TurmasController < ApplicationController
   def update
 
     set_turma
-
+    
+    respond_to do |format|
       if @turma.update(turma_params)
         
-        render json: @turma, status: :ok, location: @turma
+        format.json { render json: @turma, status: :ok, location: @turma }
       else
         
-        render json: @turma.errors, status: :unprocessable_entity
+        format.json { render json: @turma.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -56,17 +67,20 @@ class TurmasController < ApplicationController
     
     @turma.destroy!
 
-     head :no_content
+    respond_to do |format|
+     
+      format.json { head :no_content }
+    end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_turma
-      @turma = Turma.find(params[:id])
+      @turma = Turma.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
     def turma_params
-      params.require(:turma).permit(:code, :number, :semester, :time, :disciplina_id)
+      params.expect(turma: [ :code, :number, :semester, :time ])
     end
 end

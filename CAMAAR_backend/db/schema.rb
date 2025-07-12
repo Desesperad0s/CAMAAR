@@ -10,15 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_124421) do
-=======
 ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
->>>>>>> a1de6245982ed2d58d6765a8a1852bcb8fd8c70a
-=======
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
->>>>>>> a1de6245982ed2d58d6765a8a1852bcb8fd8c70a
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -46,7 +38,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
 
   create_table "disciplinas", force: :cascade do |t|
     t.string "name"
-    t.integer "departamento_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -107,7 +98,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "disciplina_id"
   end
 
   create_table "users", force: :cascade do |t|

@@ -4,58 +4,57 @@ class DisciplinasController < ApplicationController
   # GET /disciplinas or /disciplinas.json
   def index
     @disciplinas = Disciplina.all
-
-    render json: @disciplinas
   end
 
   # GET /disciplinas/1 or /disciplinas/1.json
   def show
-
-    set_disciplina
-
-    render json: @disciplina
   end
 
   # GET /disciplinas/new
   def new
     @disciplina = Disciplina.new
-    render json: @disciplina
   end
 
   # GET /disciplinas/1/edit
   def edit
-    set_turma
-    render json: @turma
   end
 
   # POST /disciplinas or /disciplinas.json
   def create
     @disciplina = Disciplina.new(disciplina_params)
 
-    if @disciplina.save
-      render json: @disciplina, status: :created, location: @disciplina
-    else
-      render json: @disciplina.errors, status: :unprocessable_entity
+    respond_to do |format|
+      if @disciplina.save
+        format.html { redirect_to @disciplina, notice: "Disciplina was successfully created." }
+        format.json { render :show, status: :created, location: @disciplina }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @disciplina.errors, status: :unprocessable_entity }
+      end
     end
   end
 
   # PATCH/PUT /disciplinas/1 or /disciplinas/1.json
   def update
-
-    set_disciplina
-
-    if @disciplina.update(disciplina_params)
-        render json: @disciplina, status: :ok, location: @disciplina
-    else
-        render json: @disciplina.errors, status: :unprocessable_entity 
+    respond_to do |format|
+      if @disciplina.update(disciplina_params)
+        format.html { redirect_to @disciplina, notice: "Disciplina was successfully updated." }
+        format.json { render :show, status: :ok, location: @disciplina }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @disciplina.errors, status: :unprocessable_entity }
+      end
     end
   end
 
   # DELETE /disciplinas/1 or /disciplinas/1.json
   def destroy
     @disciplina.destroy!
-  
-    head :no_content
+
+    respond_to do |format|
+      format.html { redirect_to disciplinas_path, status: :see_other, notice: "Disciplina was successfully destroyed." }
+      format.json { head :no_content }
+    end
   end
 
   private
