@@ -1,11 +1,16 @@
-import { HttpClient } from "./httpClient";
+import { HttpClient } from "./httpClient.ts";
+const BACK_URL = "http://backend:3333";
 
 export class Api {
     api;
     constructor() {
         this.api = new HttpClient(
-            process.env.REACT_APP_BACKEND_URL, 
+            BACK_URL, 
             { credentials: 'include' }
         );
+    }
+
+    async login(email, password) {
+        return await this.api.post(`/login`, { email, password });    
     }
 }
