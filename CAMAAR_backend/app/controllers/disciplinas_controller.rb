@@ -37,9 +37,6 @@ class DisciplinasController < ApplicationController
     else
       render json: @disciplina.errors, status: :unprocessable_entity
 
-
-
-
     end
   end
 
@@ -66,11 +63,11 @@ class DisciplinasController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_disciplina
-      @disciplina = Disciplina.find(params.expect(:id))
+      @disciplina = Disciplina.find(params.require(:id))
     end
 
     # Only allow a list of trusted parameters through.
     def disciplina_params
-      params.expect(disciplina: [ :name ])
+      params.require(:disciplina).permit(:name, :code, :departamento_id)
     end
 end
