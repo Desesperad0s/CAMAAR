@@ -1,7 +1,7 @@
-import React from 'react';
-import './styles.css';
+import React from "react";
+import "./styles.css";
 
-function Sidebar({ selected, setSelected }) {
+function Sidebar({ selected, setSelected = () => {} }) {
   return (
     <div className="sidebar sidebar-custom">
       <div className="sidebar-list">
