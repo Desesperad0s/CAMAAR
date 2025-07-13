@@ -3,7 +3,7 @@ class Questao < ApplicationRecord
   
   belongs_to :template, foreign_key: :templates_id, inverse_of: :questoes
   has_many :alternativas, foreign_key: :questao_id, dependent: :destroy
-  has_many :respostas, dependent: :destroy
+  has_many :respostas, foreign_key: :questao_id, dependent: :destroy
   has_many :formularios, through: :respostas
   
   validates :enunciado, presence: true

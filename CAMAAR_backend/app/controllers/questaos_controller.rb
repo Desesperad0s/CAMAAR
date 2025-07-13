@@ -4,7 +4,17 @@ class QuestaosController < ApplicationController
   # GET /questaos or /questaos.json
   def index
     if params[:formulario_id].present?
-      @questaos = Questao.where(formularios_id: params[:formulario_id])
+      formulario = Formulario.find_by(id: params[:formulario_id])
+      if formulario
+        # Buscando questões através da relação com template
+        if formulario.template_id
+          @questaos = Questao.where(templates_id: formulario.template_id)
+        else
+          @questaos = []
+        end
+      else
+        @questaos = []
+      end
     else
       @questaos = Questao.all
     end

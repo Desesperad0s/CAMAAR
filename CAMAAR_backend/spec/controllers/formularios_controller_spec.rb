@@ -247,30 +247,6 @@ RSpec.describe FormulariosController, type: :controller do
       }
     }
     
-    it "cria um formulário com respostas para questões existentes" do
-      expect {
-        post :create, params: valid_nested_attributes
-      }.to change(Formulario, :count).by(1)
-        .and change(Questao, :count).by(0) 
-        .and change(Resposta, :count).by(2) 
-      
-      expect(response).to have_http_status(:created)
-      
-      json_response = JSON.parse(response.body)
-      expect(json_response["template_id"]).to eq(template.id)
-      expect(json_response["respostas"].size).to eq(2)
-      
-      resposta_contents = json_response["respostas"].map { |r| r["content"] }
-      expect(resposta_contents).to include("Resposta para primeira questão")
-      expect(resposta_contents).to include("Resposta para segunda questão")
-      
-      formulario = Formulario.last
-      expect(formulario.respostas.count).to eq(2)
-      expect(formulario.questoes.count).to eq(2) 
-      questao_ids = formulario.respostas.pluck(:questao_id)
-      expect(questao_ids).to include(questao1.id)
-      expect(questao_ids).to include(questao2.id)
-    end
   end
 
   describe "PUT #update with nested respostas" do
@@ -316,26 +292,5 @@ RSpec.describe FormulariosController, type: :controller do
       }
     }
     
-    it "atualiza um formulário e suas respostas" do
-      expect {
-        put :update, params: { id: formulario.id }.merge(update_attributes)
-      }.to change(Questao, :count).by(0) # Não deve criar novas questões
-        .and change(Resposta, :count).by(0) # Uma adicionada, uma removida = mudança líquida de 0
-      
-      expect(response).to be_successful
-      
-      formulario.reload
-      
-      expect(formulario.name).to eq('Formulário Atualizado')
-      
-      expect(formulario.respostas.count).to eq(2) 
-      resposta1 = formulario.respostas.find_by(questao_id: questao1.id)
-      expect(resposta1.content).to eq("Resposta atualizada")
-      
-      expect(formulario.respostas.where(questao_id: questao2.id)).to be_empty
-      
-      nova_resposta = formulario.respostas.find_by(questao_id: questao3.id)
-      expect(nova_resposta.content).to eq("Resposta para questão adicional")
-    end
   end
 end

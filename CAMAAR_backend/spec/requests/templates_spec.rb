@@ -172,7 +172,7 @@ RSpec.describe "Templates API", type: :request do
       }.to change(Questao, :count).by(1)
       
       expect(response).to have_http_status(200)
-      expect(template.reload.questoes.count).to eq(4) # 3 originais + 1 nova
+      expect(template.reload.questoes.count).to eq(4)
     end
   end
   

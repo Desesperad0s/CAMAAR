@@ -63,13 +63,22 @@ class TurmasController < ApplicationController
     end
   end
 
-def destroy
+  def destroy
    
 
     @turma.destroy!
 
      head :no_content
 
+  end
+  
+  # GET /turmas/1/formularios
+  # Retorna todos os formulários associados a uma turma específica
+  def formularios
+    @turma = Turma.find(params[:id])
+    @formularios = @turma.formularios
+    
+    render json: @formularios
   end
 
   private

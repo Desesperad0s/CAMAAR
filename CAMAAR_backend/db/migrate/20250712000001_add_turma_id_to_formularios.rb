@@ -1,5 +1,5 @@
-class AddTurmaIdToFormularios < ActiveRecord::Migration[8.0]
-  def change
-    add_reference :formularios, :turma, null: true, foreign_key: true
-  end
-end
+# class AddTurmaIdToFormularios < ActiveRecord::Migration[8.0]
+#   def change
+#     add_reference :formularios, :turma, null: true, foreign_key: true
+#   end
+# end

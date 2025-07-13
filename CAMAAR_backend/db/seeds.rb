@@ -32,21 +32,26 @@ puts "#{departamentos.size} departamentos criados!"
 
 # Criar Disciplinas
 puts "Criando disciplinas..."
-disciplinas = [
-  { name: 'Algoritmos e Programação de Computadores', departamento: departamentos_criados['CIC'] },
-  { name: 'Estruturas de Dados', departamento: departamentos_criados['CIC'] },
-  { name: 'Engenharia de Software', departamento: departamentos_criados['CIC'] },
-  { name: 'Cálculo 1', departamento: departamentos_criados['MAT'] },
-  { name: 'Álgebra Linear', departamento: departamentos_criados['MAT'] },
-  { name: 'Estatística Aplicada', departamento: departamentos_criados['EST'] },
-  { name: 'Física 1', departamento: departamentos_criados['FIS'] },
-  { name: 'Macroeconomia', departamento: departamentos_criados['ECO'] }
+disciplinas_info = [
+  { name: 'Algoritmos e Programação de Computadores', departamento_code: 'CIC' },
+  { name: 'Estruturas de Dados', departamento_code: 'CIC' },
+  { name: 'Engenharia de Software', departamento_code: 'CIC' },
+  { name: 'Cálculo 1', departamento_code: 'MAT' },
+  { name: 'Álgebra Linear', departamento_code: 'MAT' },
+  { name: 'Estatística Aplicada', departamento_code: 'EST' },
+  { name: 'Física 1', departamento_code: 'FIS' },
+  { name: 'Macroeconomia', departamento_code: 'ECO' }
 ]
 
-# disciplinas.each do |disc|
-#   Disciplina.create!(disc)
-# end
-puts "#{disciplinas.size} disciplinas criadas!"
+disciplinas_criadas = {}
+disciplinas_info.each do |disc_info|
+  disciplina = Disciplina.new(name: disc_info[:name])
+  disciplina.departamento = departamentos_criados[disc_info[:departamento_code]]
+  disciplina.save!
+  disciplinas_criadas[disc_info[:name]] = disciplina
+  puts "Criada disciplina: #{disciplina.name} no departamento: #{disc_info[:departamento_code]}"
+end
+# puts "#{disciplinas.size} disciplinas criadas!"
 
 # Criar Usuários - Admins, Professores e Estudantes
 puts "Criando usuários..."
@@ -84,12 +89,16 @@ puts "#{all_users.size} usuários criados com sucesso!"
 
 # Criar Turmas
 puts "Criando turmas..."
-# Pegar as disciplinas criadas
-disciplinas_criadas = Disciplina.all.to_a
 professores_criados = User.where(role: 'professor').to_a
 
-# Criar algumas turmas
-# Nota: A associação com disciplinas será tratada depois se necessário através de uma migração
+disciplina_por_codigo = {
+  'APC-01': 'Algoritmos e Programação de Computadores',
+  'EDA-01': 'Estruturas de Dados',
+  'ESW-01': 'Engenharia de Software',
+  'CAL-01': 'Cálculo 1',
+  'ALG-01': 'Álgebra Linear'
+}
+
 turmas = [
   { name: 'Turma A1', code: 'APC-01', semester: '2025/1', time: 'SEG-QUA 14:00-16:00' }, 
   { name: 'Turma B1', code: 'EDA-01', semester: '2025/1', time: 'TER-QUI 10:00-12:00' },
@@ -100,26 +109,34 @@ turmas = [
 
 turmas_criadas = []
 turmas.each do |turma_data|
-  turma = Turma.create!(turma_data)
-  turmas_criadas << turma
-  puts "Turma criada: #{turma.name} (#{turma.code})"
+  # Associar a turma à disciplina correspondente
+  codigo = turma_data[:code].to_sym
+  disciplina_nome = disciplina_por_codigo[codigo]
+  
+  if disciplina_nome && disciplinas_criadas[disciplina_nome]
+    turma_data[:disciplina_id] = disciplinas_criadas[disciplina_nome].id
+    turma = Turma.create!(turma_data)
+    turmas_criadas << turma
+    puts "Turma criada: #{turma.name} (#{turma.code}) - Disciplina: #{disciplina_nome}"
+  else
+    puts "AVISO: Não foi possível associar uma disciplina à turma #{turma_data[:code]}"
+  end
 end
 
 puts "#{turmas_criadas.size} turmas criadas!"
 
-# Associar alunos às turmas
 puts "Associando alunos às turmas..."
 alunos = User.where(role: 'student').to_a
 
-# Cada aluno se matricula em 2-3 turmas aleatoriamente
 alunos.each do |aluno|
-  # Seleciona 2 ou 3 turmas aleatoriamente para cada aluno
   num_turmas = rand(2..3)
   turmas_do_aluno = turmas_criadas.sample(num_turmas)
   
   turmas_do_aluno.each do |turma|
-    # Inserção direta para evitar problemas de associação
-    TurmaAluno.create!(turma_id: turma.id, aluno_id: aluno.id)
+    # Usar a associação através do modelo
+    aluno.turma_alunos.create!(turma_id: turma.id)
+    # Alternativamente, podemos usar:
+    # TurmaAluno.create!(turma_id: turma.id, aluno_id: aluno.id)
     puts "Aluno #{aluno.name} matriculado na turma #{turma.name}"
   end
 end
@@ -143,7 +160,6 @@ if defined?(Template)
     templates.each do |template_data|
       template = Template.create!(template_data)
       
-      # Criar algumas questões para cada template
       questoes_exemplos = [
         { enunciado: 'Como você avalia o conteúdo da disciplina?' },
         { enunciado: 'O professor explica bem o conteúdo?' },

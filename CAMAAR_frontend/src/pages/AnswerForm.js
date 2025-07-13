@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Api } from "../utils/apiClient.ts";
 import "./AnswerForm.css";
@@ -12,7 +12,7 @@ function AnswerForm() {
   const [error, setError] = useState(null);
   const [searchParams] = useSearchParams();
   
-  const api = new Api();
+  const api = useMemo(() => new Api(), []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,20 +47,25 @@ function AnswerForm() {
             }
           }
           try {
+            console.log(`Buscando questões para o formulário ${formId}...`);
             const questoesResponse = await api.getQuestoes(formId);
+            console.log("Resposta de questões:", questoesResponse);
+            
             if (questoesResponse && Array.isArray(questoesResponse)) {
               const formattedQuestions = [];
               
               for (const questao of questoesResponse) {
                 try {
+                  console.log(`Buscando alternativas para a questão ${questao.id}...`);
                   const alternativasResponse = await api.getAlternativas(questao.id);
+                  console.log("Alternativas encontradas:", alternativasResponse);
                   
                   if (alternativasResponse && Array.isArray(alternativasResponse) && alternativasResponse.length > 0) {
                     formattedQuestions.push({
                       id: questao.id,
                       text: questao.enunciado,
                       type: "radio",
-                      options: alternativasResponse.map(alternativas => alternativas.content),
+                      options: alternativasResponse.map(alternativa => alternativa.content),
                       required: true
                     });
                   } else {
@@ -72,6 +77,7 @@ function AnswerForm() {
                     });
                   }
                 } catch (alternativasError) {
+                  console.error(`Erro ao buscar alternativas para questão ${questao.id}:`, alternativasError);
                 }
               }
               
@@ -91,7 +97,7 @@ function AnswerForm() {
     };
 
     fetchData();
-  }, [searchParams]);
+  }, [searchParams, api]);
 
   const handleAnswerChange = (questionId, value) => {
     setAnswers(prev => ({
@@ -100,15 +106,52 @@ function AnswerForm() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      setSubmitting(true);
+      setSubmitError(null);
+      
+      const unansweredQuestions = form.questions
+        .filter(q => q.required && !answers[q.id]);
+      
+      if (unansweredQuestions.length > 0) {
+        setSubmitError(`Por favor, responda todas as questões obrigatórias. Faltam ${unansweredQuestions.length} respostas.`);
+        return;
+      }
+      
+      const formattedAnswers = Object.keys(answers).map(questionId => ({
+        content: answers[questionId],
+        questao_id: parseInt(questionId),
+        formulario_id: form.id
+      }));
+      
+      await api.submitFormAnswers(formattedAnswers);
+      
+      setSubmitSuccess(true);
+      
+      setTimeout(() => {
+        window.location.href = '/available-forms';
+      }, 3000);
+      
+    } catch (error) {
+      console.error("Erro ao enviar formulário:", error);
+      setSubmitError("Ocorreu um erro ao enviar suas respostas. Por favor, tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
     return (
         <div className="loading-container">
-
+          <div className="loading-spinner"></div>
+          <p>Carregando formulário...</p>
         </div>
     );
   }
@@ -175,13 +218,27 @@ function AnswerForm() {
         </div>
       </main>
 
-      <button 
-        type="submit" 
-        className="floating-submit-button"
-        onClick={handleSubmit}
-      >
-        ✓
-      </button>
+      {submitSuccess ? (
+        <div className="success-message floating-message">
+          <p>✅ Respostas enviadas com sucesso!</p>
+          <p>Você será redirecionado em instantes...</p>
+        </div>
+      ) : (
+        <button 
+          type="submit" 
+          className={`floating-submit-button ${submitting ? 'submitting' : ''}`}
+          onClick={handleSubmit}
+          disabled={submitting}
+        >
+          {submitting ? '...' : '✓'}
+        </button>
+      )}
+
+      {submitError && (
+        <div className="error-message floating-message">
+          <p>{submitError}</p>
+        </div>
+      )}
     </div>
   );
 }

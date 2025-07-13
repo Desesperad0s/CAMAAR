@@ -1,10 +1,12 @@
 class Resposta < ApplicationRecord
+  self.table_name = "resposta"
+  
   belongs_to :questao
   belongs_to :formulario
 
   validates :questao_id, presence: true
   validates :formulario_id, presence: true
   
-  # Prevent duplicate associations between the same form and question
-  validates :questao_id, uniqueness: { scope: :formulario_id }
+  # A resposta precisa ter conteúdo
+  validates :content, presence: true
 end

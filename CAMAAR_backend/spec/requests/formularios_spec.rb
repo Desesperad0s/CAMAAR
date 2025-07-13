@@ -135,6 +135,15 @@ RSpec.describe "Formularios", type: :request do
 
   describe "POST /formularios/create_with_questions" do
     let(:template) { create(:template) }
+    let!(:questao1) { create(:questao, templates_id: template.id) }
+    let!(:questao2) { create(:questao, templates_id: template.id) }
+    
+    before do
+      create(:alternativa, content: "Alternativa 1", questao: questao1)
+      create(:alternativa, content: "Alternativa 2", questao: questao1)
+      create(:alternativa, content: "Alternativa 3", questao: questao2)
+      create(:alternativa, content: "Alternativa 4", questao: questao2)
+    end
     
     let(:valid_form_with_questions) {
       {
@@ -143,17 +152,11 @@ RSpec.describe "Formularios", type: :request do
         template_id: template.id,
         respostas: [
           {
-            questao_id: create(:questao, templates_id: template.id).tap { |q|
-              create(:alternativa, content: "Alternativa 1", questao: q)
-              create(:alternativa, content: "Alternativa 2", questao: q)
-            }.id,
+            questao_id: questao1.id,
             content: "Resposta para primeira questão"
           },
           {
-            questao_id: create(:questao, templates_id: template.id).tap { |q|
-              create(:alternativa, content: "Alternativa 3", questao: q)
-              create(:alternativa, content: "Alternativa 4", questao: q)
-            }.id,
+            questao_id: questao2.id,
             content: "Resposta para segunda questão"
           }
         ]
