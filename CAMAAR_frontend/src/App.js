@@ -11,6 +11,8 @@ import { AuthProvider } from './context/AuthContext';
 import AnswerForm from './pages/AnswerForm';
 import AdminCreateForm from './pages/AdminCreateForm';
 import AvailableForms from './pages/AvailableForms';
+import RedefinirSenha from './pages/RedefinirSenha';
+import NovaSenha from './pages/NovaSenha';
 import './App.css';
 
 function App() {
@@ -20,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+          <Route path="/nova-senha" element={<NovaSenha />} />
           
           <Route path="/gerenciamento" element={
             <AdminRoute>
