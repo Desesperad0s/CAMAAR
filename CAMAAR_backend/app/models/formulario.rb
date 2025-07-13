@@ -9,19 +9,28 @@ class Formulario < ApplicationRecord
   
   attr_accessor :remove_missing_respostas
   
-  accepts_nested_attributes_for :respostas, allow_destroy: true, reject_if: :all_blank
+  # Permitir que respostas sejam criadas, atualizadas e excluídas via formulário
+  accepts_nested_attributes_for :respostas, 
+                               allow_destroy: true, 
+                               reject_if: :all_blank, 
+                               update_only: true
   
   after_update :process_remove_missing_respostas
   
   private
   
   def process_remove_missing_respostas
-    if remove_missing_respostas == true || remove_missing_respostas == "1" || remove_missing_respostas == 1
-      updated_resposta_ids = respostas_attributes_changed? ? 
-        respostas.where("updated_at >= ?", updated_at - 5.seconds).pluck(:id) : 
-        []
-      
-      respostas.where.not(id: updated_resposta_ids).destroy_all if updated_resposta_ids.present?
+    return unless remove_missing_respostas == true || remove_missing_respostas == "1" || remove_missing_respostas == 1
+    
+    # Identificar IDs de respostas que foram atualizadas recentemente
+    updated_resposta_ids = []
+    if respostas_attributes_changed?
+      updated_resposta_ids = respostas.where("updated_at >= ?", updated_at - 5.seconds).pluck(:id)
+    end
+    
+    # Remover respostas que não foram atualizadas
+    if updated_resposta_ids.present?
+      respostas.where.not(id: updated_resposta_ids).destroy_all
     end
   end
   

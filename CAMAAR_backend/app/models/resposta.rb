@@ -1,4 +1,6 @@
 class Resposta < ApplicationRecord
+  self.table_name = "resposta"
+  
   belongs_to :questao
   belongs_to :formulario
 
