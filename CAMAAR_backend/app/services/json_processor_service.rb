@@ -1,4 +1,4 @@
-class JsonProcessor
+class JsonProcessorService
   def self.process_classes(data)
     parsed_data = JSON.parse(data)
 
