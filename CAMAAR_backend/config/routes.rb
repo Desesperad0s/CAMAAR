@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   resources :resposta do
     collection do
       post :batch_create
+      get 'formulario/:formulario_id', to: 'resposta#by_formulario'
     end
   end
   

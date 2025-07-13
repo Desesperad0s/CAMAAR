@@ -45,7 +45,6 @@ class RespostaController < ApplicationController
       
       if params[:respostas].present?
         params[:respostas].each do |resposta_params|
-          # Cria a resposta sem associação ao usuário
           resposta = Resposta.new(
             content: resposta_params[:content],
             questao_id: resposta_params[:questao_id],
@@ -65,6 +64,50 @@ class RespostaController < ApplicationController
         render json: { error: "Respostas not provided" }, status: :unprocessable_entity
       end
     end
+  end
+    
+  # GET /resposta/formulario/:formulario_id
+  def by_formulario
+    formulario_id = params[:formulario_id]
+    
+    # Verificar se o formulário existe
+    formulario = Formulario.find_by(id: formulario_id)
+    
+    if formulario.nil?
+      render json: { error: "Formulário não encontrado" }, status: :not_found
+      return
+    end
+    
+    # Se o usuário não for admin, verificar se o formulário está associado a alguma turma do usuário
+    unless @current_user.admin?
+      turma_ids = @current_user.turmas.pluck(:id)
+      unless turma_ids.include?(formulario.turma_id)
+        render json: { error: "Unauthorized" }, status: :unauthorized
+        return
+      end
+    end
+    
+    @respostas = Resposta.where(formulario_id: formulario_id)
+                         .includes(:questao)
+    
+    # Agrupar respostas por questão
+    result = @respostas.group_by(&:questao_id).map do |questao_id, questao_respostas|
+      questao = questao_respostas.first.questao
+      {
+        questao_id: questao_id,
+        questao_texto: questao&.content || "Questão desconhecida",
+        tipo: questao&.kind || "text",
+        respostas: questao_respostas.map do |resposta|
+          {
+            id: resposta.id,
+            resposta: resposta.content,
+            created_at: resposta.created_at
+          }
+        end
+      }
+    end
+    
+    render json: result
   end
 
   private
