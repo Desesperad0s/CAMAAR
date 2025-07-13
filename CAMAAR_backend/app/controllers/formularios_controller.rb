@@ -154,6 +154,21 @@ class FormulariosController < ApplicationController
     end
   end
 
+  # GET /formularios/1/questoes
+  def questoes
+    @formulario = Formulario.find(params[:id])
+    
+    if @formulario.template
+      @questoes = @formulario.template.questoes
+    else
+      # Tenta buscar questões associadas através das respostas
+      questoes_ids = @formulario.respostas.pluck(:questao_id).uniq
+      @questoes = Questao.where(id: questoes_ids)
+    end
+    
+    render json: @questoes
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_formulario

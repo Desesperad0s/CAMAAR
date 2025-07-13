@@ -45,6 +45,7 @@ class RespostaController < ApplicationController
       
       if params[:respostas].present?
         params[:respostas].each do |resposta_params|
+          # Cria a resposta sem associação ao usuário
           resposta = Resposta.new(
             content: resposta_params[:content],
             questao_id: resposta_params[:questao_id],
