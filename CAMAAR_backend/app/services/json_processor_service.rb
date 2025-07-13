@@ -41,12 +41,14 @@ class JsonProcessor
 
         #TODO: add the email to send
         if aluno.persisted?
-            TurmaAluno.create!(
-                turma_id: turma.id,
-                aluno_id: aluno.id
-            )
+          TurmaAluno.create!(
+            turma_id: turma.id,
+            aluno_id: aluno.id
+          )
+
+          # UserMailer.with(user: aluno).send_password_email.deliver_now
         else
-                raise "Erro ao criar o usuário: #{aluno.errors.full_messages.join(', ')}"
+          raise "Erro ao criar o usuário: #{aluno.errors.full_messages.join(', ')}"
         end
       end
     end
