@@ -5,7 +5,7 @@ RSpec.describe "Users API", type: :request do
     {
       'Content-Type' => 'application/json',
       'Accept' => 'application/json'
-    }
+    }.merge(auth_headers)
   }
 
   let(:valid_attributes) {
@@ -35,7 +35,11 @@ RSpec.describe "Users API", type: :request do
       User.create! valid_attributes
       User.create! valid_attributes.merge(registration: '87654321', email: 'outro@example.com')
 
-      get '/users', headers: valid_headers
+      # Mockando o auth_headers para não criar um usuário adicional
+      allow_any_instance_of(AuthHelpers).to receive(:auth_headers).and_return({ 'Authorization' => 'Bearer fake-token' })
+      allow_any_instance_of(UsersController).to receive(:authenticate_request).and_return(true)
+      
+      get '/users', headers: { 'Authorization' => 'Bearer fake-token' }
       
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(2)
@@ -65,26 +69,43 @@ RSpec.describe "Users API", type: :request do
   describe "POST /users" do
     context "com parâmetros válidos" do
       it "cria um novo usuário" do
+        # Usar um token real para autenticação
+        admin = create(:user, :admin)
+        token = JwtService.encode(user_id: admin.id)
+        
         expect {
-          post '/users', params: { user: valid_attributes }.to_json, headers: valid_headers
+          post '/users', 
+               params: { user: valid_attributes }.to_json, 
+               headers: { 
+                 'Authorization' => "Bearer #{token}", 
+                 'Content-Type' => 'application/json'
+               }
         }.to change(User, :count).by(1)
         
         expect(response).to have_http_status(:created)
         
         json_response = JSON.parse(response.body)
-        expect(json_response['name']).to eq(valid_attributes[:name])
-        expect(json_response['email']).to eq(valid_attributes[:email])
+        expect(json_response['user']['name']).to eq(valid_attributes[:name])
+        expect(json_response['user']['email']).to eq(valid_attributes[:email])
       end
     end
 
     context "com parâmetros inválidos" do
       it "não cria o usuário e retorna erros" do
+        admin = create(:user, :admin)
+        token = JwtService.encode(user_id: admin.id)
+        
         expect {
-          post '/users', params: { user: invalid_attributes }.to_json, headers: valid_headers
+          post '/users', 
+               params: { user: invalid_attributes }.to_json, 
+               headers: { 
+                 'Authorization' => "Bearer #{token}", 
+                 'Content-Type' => 'application/json'
+               }
         }.not_to change(User, :count)
         
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(JSON.parse(response.body)).to include('errors')
+        expect(JSON.parse(response.body)).to have_key('errors')
       end
     end
   end
@@ -126,8 +147,15 @@ RSpec.describe "Users API", type: :request do
     it "deleta o usuário" do
       user = User.create! valid_attributes
       
+      admin = create(:user, :admin)
+      token = JwtService.encode(user_id: admin.id)
+      
       expect {
-        delete "/users/#{user.id}", headers: valid_headers
+        delete "/users/#{user.id}", 
+               headers: { 
+                 'Authorization' => "Bearer #{token}", 
+                 'Content-Type' => 'application/json'
+               }
       }.to change(User, :count).by(-1)
       
       expect(response).to have_http_status(:no_content)

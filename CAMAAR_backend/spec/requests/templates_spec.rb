@@ -7,14 +7,14 @@ RSpec.describe "Templates API", type: :request do
     end
     
     it "retorna todos os templates" do
-      get "/templates"
+      get "/templates", headers: auth_headers
       expect(response).to have_http_status(200)
       json_response = JSON.parse(response.body)
       expect(json_response.length).to eq(3)
     end
     
     it "inclui questões nos templates" do
-      get "/templates"
+      get "/templates", headers: auth_headers
       json_response = JSON.parse(response.body)
       expect(json_response.first['questoes'].length).to eq(2)
     end
@@ -24,27 +24,27 @@ RSpec.describe "Templates API", type: :request do
     let(:template) { create(:template_with_questions) }
     
     it "retorna o template específico" do
-      get "/templates/#{template.id}"
+      get "/templates/#{template.id}", headers: auth_headers
       expect(response).to have_http_status(200)
       json_response = JSON.parse(response.body)
       expect(json_response['id']).to eq(template.id)
     end
     
     it "retorna erro 404 para template inexistente" do
-      get "/templates/99999"
+      get "/templates/99999", headers: auth_headers
       expect(response).to have_http_status(404)
     end
   end
   
   describe "POST /templates" do
-    let(:admin) { create(:admin) }
+    let(:admin_user) { create(:user, :admin) }
     let(:formulario) { create(:formulario) }
     
     it "cria um novo template" do
       expect {
-        post "/templates", params: { 
-          template: { content: "Novo template", admin_id: admin.id } 
-        }
+        post "/templates", 
+             params: { template: { content: "Novo template", user_id: admin_user.id } },
+             headers: auth_headers(admin_user)
       }.to change(Template, :count).by(1)
       
       expect(response).to have_http_status(201)
@@ -52,16 +52,18 @@ RSpec.describe "Templates API", type: :request do
     
     it "cria um template com questões aninhadas" do
       expect {
-        post "/templates", params: { 
-          template: { 
-            content: "Template com questões aninhadas", 
-            admin_id: admin.id,
-            questoes_attributes: [
-              { enunciado: "Questão aninhada 1" },
-              { enunciado: "Questão aninhada 2" }
-            ]
-          } 
-        }
+        post "/templates", 
+             params: { 
+               template: { 
+                 content: "Template com questões aninhadas", 
+                 user_id: admin_user.id,
+                 questoes_attributes: [
+                   { enunciado: "Questão aninhada 1" },
+                   { enunciado: "Questão aninhada 2" }
+                 ]
+               } 
+             },
+             headers: auth_headers(admin_user)
       }.to change(Questao, :count).by(2)
       
       expect(response).to have_http_status(201)
@@ -71,50 +73,55 @@ RSpec.describe "Templates API", type: :request do
     
     it "cria um template com questões em array separado" do
       expect {
-        post "/templates", params: { 
-          template: { 
-            content: "Template com questões em array", 
-            admin_id: admin.id
-          },
-          questoes: [
-            { enunciado: "Questão array 1" },
-            { enunciado: "Questão array 2", formularios_id: formulario.id }
-          ]
-        }
+        post "/templates", 
+             params: { 
+               template: { 
+                 content: "Template com questões em array", 
+                 user_id: admin_user.id
+               },
+               questoes: [
+                 { enunciado: "Questão array 1" },
+                 { enunciado: "Questão array 2" }
+               ]
+             },
+             headers: auth_headers(admin_user)
       }.to change(Questao, :count).by(2)
       
       expect(response).to have_http_status(201)
       json_response = JSON.parse(response.body)
       expect(json_response['questoes'].length).to eq(2)
       
-      questao_com_formulario = Questao.find_by(enunciado: "Questão array 2")
-      expect(questao_com_formulario.formularios_id).to eq(formulario.id)
+      # Verificar que as questões foram criadas com sucesso
+      questao = Questao.find_by(enunciado: "Questão array 2")
+      expect(questao).to be_present
     end
     
     it "cria um template com questões e alternativas aninhadas" do
       expect {
-        post "/templates", params: { 
-          template: { 
-            content: "Template com questões e alternativas", 
-            admin_id: admin.id,
-            questoes_attributes: [
-              { 
-                enunciado: "Questão com alternativas 1", 
-                alternativas_attributes: [
-                  { content: "Alternativa 1" },
-                  { content: "Alternativa 2" }
-                ]
-              },
-              { 
-                enunciado: "Questão com alternativas 2", 
-                alternativas_attributes: [
-                  { content: "Alternativa 3" },
-                  { content: "Alternativa 4" }
-                ]
-              }
-            ]
-          } 
-        }
+        post "/templates", 
+             params: { 
+               template: { 
+                 content: "Template com questões e alternativas", 
+                 user_id: admin_user.id,
+                 questoes_attributes: [
+                   { 
+                     enunciado: "Questão com alternativas 1", 
+                     alternativas_attributes: [
+                       { content: "Alternativa 1" },
+                       { content: "Alternativa 2" }
+                     ]
+                   },
+                   { 
+                     enunciado: "Questão com alternativas 2", 
+                     alternativas_attributes: [
+                       { content: "Alternativa 3" },
+                       { content: "Alternativa 4" }
+                     ]
+                   }
+                 ]
+               } 
+             },
+             headers: auth_headers(admin_user)
       }.to change(Questao, :count).by(2).and change(Alternativa, :count).by(4)
       
       expect(response).to have_http_status(201)
@@ -127,7 +134,9 @@ RSpec.describe "Templates API", type: :request do
     end
     
     it "retorna erro para templates inválidos" do
-      post "/templates", params: { template: { content: "", admin_id: nil } }
+      post "/templates", 
+           params: { template: { content: "", user_id: nil } },
+           headers: auth_headers(admin_user)
       expect(response).to have_http_status(422)
     end
   end
@@ -136,9 +145,9 @@ RSpec.describe "Templates API", type: :request do
     let(:template) { create(:template_with_questions) }
     
     it "atualiza um template existente" do
-      put "/templates/#{template.id}", params: { 
-        template: { content: "Template atualizado" } 
-      }
+      put "/templates/#{template.id}", 
+          params: { template: { content: "Template atualizado" } },
+          headers: auth_headers
       
       expect(response).to have_http_status(200)
       expect(template.reload.content).to eq("Template atualizado")
@@ -151,13 +160,15 @@ RSpec.describe "Templates API", type: :request do
       3.times { |i| template.questoes.create!(enunciado: "Questão original #{i+1}") }
       
       expect {
-        put "/templates/#{template.id}", params: { 
-          template: { 
-            questoes_attributes: [
-              { enunciado: "Nova questão no update" }
-            ]
-          } 
-        }
+        put "/templates/#{template.id}", 
+            params: { 
+              template: { 
+                questoes_attributes: [
+                  { enunciado: "Nova questão no update" }
+                ]
+              } 
+            },
+            headers: auth_headers
       }.to change(Questao, :count).by(1)
       
       expect(response).to have_http_status(200)
@@ -170,7 +181,7 @@ RSpec.describe "Templates API", type: :request do
     
     it "remove o template e suas questões" do
       expect {
-        delete "/templates/#{template.id}"
+        delete "/templates/#{template.id}", headers: auth_headers
       }.to change(Template, :count).by(-1)
       .and change(Questao, :count).by(-2)
       

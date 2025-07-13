@@ -1,5 +1,5 @@
 class Template < ApplicationRecord
-  belongs_to :admin, foreign_key: :admin_id, optional: true
+  belongs_to :user, foreign_key: :user_id, optional: true
   has_many :questoes, foreign_key: :templates_id, dependent: :destroy, inverse_of: :template
   has_many :formularios, foreign_key: :template_id
   

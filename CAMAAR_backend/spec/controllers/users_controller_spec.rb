@@ -23,6 +23,12 @@ RSpec.describe UsersController, type: :controller do
     }
   }
 
+  # Ignorar autenticação para testes de controller
+  before(:each) do
+    allow_any_instance_of(described_class).to receive(:authenticate_request).and_return(true)
+    allow_any_instance_of(described_class).to receive(:current_user).and_return(mock_admin_user)
+  end
+
   describe "GET #index" do
     it "retorna uma resposta de sucesso" do
       User.create! valid_attributes
@@ -79,8 +85,8 @@ RSpec.describe UsersController, type: :controller do
         post :create, params: { user: valid_attributes }
         
         json_response = JSON.parse(response.body)
-        expect(json_response['name']).to eq(valid_attributes[:name])
-        expect(json_response['email']).to eq(valid_attributes[:email])
+        expect(json_response['user']['name']).to eq(valid_attributes[:name])
+        expect(json_response['user']['email']).to eq(valid_attributes[:email])
       end
     end
 

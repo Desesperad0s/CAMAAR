@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe FormulariosController, type: :controller do
+  before(:each) do
+    allow_any_instance_of(described_class).to receive(:authenticate_request).and_return(true)
+    allow_any_instance_of(described_class).to receive(:current_user).and_return(create(:user, :admin))
+  end
+
   before do
     request.env['HTTP_ACCEPT'] = 'application/json'
   end
@@ -95,44 +100,106 @@ RSpec.describe FormulariosController, type: :controller do
 
   describe "POST #create_with_questions" do
     let(:template) { create(:template) }
+    let!(:questao1) { create(:questao, templates_id: template.id) }
+    let!(:questao2) { create(:questao, templates_id: template.id) }
+    
+    before do
+      create(:alternativa, content: "Alternativa 1", questao: questao1)
+      create(:alternativa, content: "Alternativa 2", questao: questao1)
+      create(:alternativa, content: "Alternativa 3", questao: questao2)
+      create(:alternativa, content: "Alternativa 4", questao: questao2)
+    end
+    
     let(:valid_question_params) {
       {
         name: "Formulário com Questões",
         date: Date.today.to_s,
         template_id: template.id,
-        questoes: [
+        respostas: [
           {
-            enunciado: "Primeira questão",
-            template_id: template.id,
-            alternativas: [
-              { content: "Alternativa 1" },
-              { content: "Alternativa 2" }
-            ]
+            questao_id: questao1.id,
+            content: "Resposta para primeira questão"
           },
           {
-            enunciado: "Segunda questão",
-            template_id: template.id,
-            alternativas: [
-              { content: "Alternativa 3" },
-              { content: "Alternativa 4" }
-            ]
+            questao_id: questao2.id,
+            content: "Resposta para segunda questão"
           }
         ]
       }
     }
 
     context "com parâmetros válidos" do
-      it "cria um formulário com questões e alternativas" do
+      it "cria um formulário com respostas para questões existentes" do
         expect {
           post :create_with_questions, params: valid_question_params
         }.to change(Formulario, :count).by(1)
-          .and change(Questao, :count).by(2)
-          .and change(Alternativa, :count).by(4)
+          .and change(Questao, :count).by(0) 
+          .and change(Resposta, :count).by(2)
         
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
-        expect(json_response["questoes"].size).to eq(2)
-        expect(json_response["questoes"][0]["alternativas"].size).to eq(2)
+        
+        # Verificar a presença do template_id
+        expect(json_response["template_id"]).to eq(template.id)
+        
+        # Verificar as respostas e suas questões
+        expect(json_response["respostas"].size).to eq(2)
+        expect(json_response["respostas"][0]["questao"]["alternativas"].size).to eq(2)
+        expect(json_response["respostas"][0]["questao_id"]).to be_present
+        
+        # Verificar que as associações estão corretamente estabelecidas
+        formulario = Formulario.last
+        expect(formulario.template_id).to eq(template.id)
+        expect(formulario.respostas.count).to eq(2)
+        expect(formulario.questoes.count).to eq(2) # via the through association
+        
+        # Verificar que cada resposta está vinculada a uma questão existente
+        formulario.respostas.each do |resposta|
+          expect(resposta.questao).to be_present
+          expect([questao1.id, questao2.id]).to include(resposta.questao_id)
+        end
+        
+        # Verificar o conteúdo das respostas
+        resposta_contents = formulario.respostas.pluck(:content)
+        expect(resposta_contents).to include("Resposta para primeira questão")
+        expect(resposta_contents).to include("Resposta para segunda questão")
+      end
+
+      it "cria um formulário com template associado e conteúdo de resposta" do
+        # Criando um template específico para este teste
+        specific_template = create(:template)
+        # Criar uma questão para o template específico
+        specific_questao = create(:questao, templates_id: specific_template.id)
+        # Criar alternativas para a questão
+        create_list(:alternativa, 2, questao: specific_questao)
+        
+        params_with_template = {
+          name: "Formulário com Template",
+          date: Date.today.to_s,
+          template_id: specific_template.id,
+          respostas: [
+            {
+              questao_id: specific_questao.id,
+              content: "Conteúdo da resposta personalizada"
+            }
+          ]
+        }
+        
+        post :create_with_questions, params: params_with_template
+        
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+        
+        # Verificar a associação com o template
+        expect(json_response["template_id"]).to eq(specific_template.id)
+        expect(json_response).to have_key("template")
+        expect(json_response["template"]["id"]).to eq(specific_template.id)
+        
+        # Verificar o conteúdo da resposta
+        expect(json_response["respostas"].size).to eq(1)
+        expect(json_response["respostas"][0]).to have_key("content")
+        expect(json_response["respostas"][0]["content"]).to eq("Conteúdo da resposta personalizada")
+        expect(json_response["respostas"][0]["questao_id"]).to eq(specific_questao.id)
       end
     end
 
@@ -145,6 +212,130 @@ RSpec.describe FormulariosController, type: :controller do
         
         expect(response).to have_http_status(:unprocessable_entity)
       end
+    end
+  end
+
+  describe "POST #create with nested questoes e respostas" do
+    let(:template) { create(:template) }
+    let!(:questao1) { create(:questao, templates_id: template.id) }
+    let!(:questao2) { create(:questao, templates_id: template.id) }
+    
+    before do
+      create(:alternativa, content: "Alternativa 1", questao: questao1)
+      create(:alternativa, content: "Alternativa 2", questao: questao1)
+      create(:alternativa, content: "Alternativa 3", questao: questao2)
+      create(:alternativa, content: "Alternativa 4", questao: questao2)
+    end
+    
+    let(:valid_nested_attributes) {
+      {
+        formulario: {
+          name: 'Formulário com Questões',
+          date: Date.today,
+          template_id: template.id,
+          respostas_attributes: [
+            {
+              questao_id: questao1.id,
+              content: "Resposta para primeira questão"
+            },
+            {
+              questao_id: questao2.id,
+              content: "Resposta para segunda questão"
+            }
+          ]
+        }
+      }
+    }
+    
+    it "cria um formulário com respostas para questões existentes" do
+      expect {
+        post :create, params: valid_nested_attributes
+      }.to change(Formulario, :count).by(1)
+        .and change(Questao, :count).by(0) 
+        .and change(Resposta, :count).by(2) 
+      
+      expect(response).to have_http_status(:created)
+      
+      json_response = JSON.parse(response.body)
+      expect(json_response["template_id"]).to eq(template.id)
+      expect(json_response["respostas"].size).to eq(2)
+      
+      resposta_contents = json_response["respostas"].map { |r| r["content"] }
+      expect(resposta_contents).to include("Resposta para primeira questão")
+      expect(resposta_contents).to include("Resposta para segunda questão")
+      
+      formulario = Formulario.last
+      expect(formulario.respostas.count).to eq(2)
+      expect(formulario.questoes.count).to eq(2) 
+      questao_ids = formulario.respostas.pluck(:questao_id)
+      expect(questao_ids).to include(questao1.id)
+      expect(questao_ids).to include(questao2.id)
+    end
+  end
+
+  describe "PUT #update with nested respostas" do
+    let(:template) { create(:template) }
+    let!(:questao1) { create(:questao, templates_id: template.id) }
+    let!(:questao2) { create(:questao, templates_id: template.id) }
+    let!(:questao3) { create(:questao, templates_id: template.id, enunciado: "Questão adicional") }
+    let(:formulario) { create(:formulario, template_id: template.id) }
+    
+    before do
+      create(:alternativa, content: "Alt 1", questao: questao1)
+      create(:alternativa, content: "Alt 2", questao: questao2)
+      create(:alternativa, content: "Alt 3", questao: questao3)
+      
+      create(:resposta, formulario: formulario, questao: questao1, content: "Resposta inicial 1")
+      create(:resposta, formulario: formulario, questao: questao2, content: "Resposta inicial 2")
+    end
+    
+    let(:update_attributes) {
+      resposta1 = formulario.respostas.find_by(questao: questao1)
+      resposta2 = formulario.respostas.find_by(questao: questao2)
+      
+      {
+        formulario: {
+          name: 'Formulário Atualizado',
+          respostas_attributes: [
+            {
+              id: resposta1.id, 
+              questao_id: questao1.id,
+              content: "Resposta atualizada" 
+            },
+            {
+              questao_id: questao3.id,
+              content: "Resposta para questão adicional"
+            },
+            {
+              id: resposta2.id,
+              _destroy: '1'
+            }
+          ],
+          remove_missing_respostas: true
+        }
+      }
+    }
+    
+    it "atualiza um formulário e suas respostas" do
+      expect {
+        put :update, params: { id: formulario.id }.merge(update_attributes)
+      }.to change(Questao, :count).by(0) # Não deve criar novas questões
+        .and change(Resposta, :count).by(0) # Uma adicionada, uma removida = mudança líquida de 0
+      
+      expect(response).to be_successful
+      
+      formulario.reload
+      
+      expect(formulario.name).to eq('Formulário Atualizado')
+      
+      expect(formulario.respostas.count).to eq(2) 
+      resposta1 = formulario.respostas.find_by(questao_id: questao1.id)
+      expect(resposta1.content).to eq("Resposta atualizada")
+      
+      expect(formulario.respostas.where(questao_id: questao2.id)).to be_empty
+      
+      nova_resposta = formulario.respostas.find_by(questao_id: questao3.id)
+      expect(nova_resposta.content).to eq("Resposta para questão adicional")
     end
   end
 end

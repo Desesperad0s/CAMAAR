@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Template, type: :model do
   describe 'associações' do
-    it { should belong_to(:admin).with_foreign_key(:admin_id).optional(true) }
+    it { should belong_to(:user).with_foreign_key(:user_id).optional(true) }
     it { should have_many(:questoes).with_foreign_key(:templates_id).dependent(:destroy) }
     
     it "deveria ter muitos formulários" do

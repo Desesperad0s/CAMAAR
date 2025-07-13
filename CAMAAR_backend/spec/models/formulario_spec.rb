@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe Formulario, type: :model do
   describe "associações" do
     it { should belong_to(:template).optional }
-    it { should have_many(:questoes).with_foreign_key('formularios_id') }
     it { should have_many(:respostas) }
+    it { should have_many(:questoes).through(:respostas) }
   end
   
   describe "validações" do
@@ -25,20 +25,22 @@ RSpec.describe Formulario, type: :model do
   end
   
   describe "comportamentos" do
-    it "pode ser criado com questões" do
+    it "pode ser associado a questões através de respostas" do
       template = create(:template)
       formulario = create(:formulario, template: template)
-      questao = create(:questao, template: template, formulario: formulario)
+      questao = create(:questao, templates_id: template.id)
+      resposta = create(:resposta, formulario: formulario, questao: questao)
       
       expect(formulario.questoes).to include(questao)
     end
     
     it "pode ter respostas associadas" do
       formulario = create(:formulario)
-      questao = create(:questao, formulario: formulario, template: create(:template))
+      questao = create(:questao, templates_id: create(:template).id)
       resposta = create(:resposta, formulario: formulario, questao: questao)
       
       expect(formulario.respostas).to include(resposta)
+      expect(formulario.questoes).to include(questao)
     end
   end
 end
