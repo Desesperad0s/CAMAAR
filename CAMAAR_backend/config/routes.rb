@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+  get 'health_check', to: 'application#health_check'
+  
+  post 'auth/login', to: 'authentication#login'
+  delete 'auth/logout', to: 'authentication#logout'
+  get 'auth/me', to: 'authentication#me'
+  post 'register', to: 'users#register'
+  
+  post 'passwords/forgot', to: 'passwords#forgot'
+  post 'passwords/reset', to: 'passwords#reset'
+  
   resources :alternativas
   resources :departamentos
   resources :disciplinas

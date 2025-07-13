@@ -11,6 +11,20 @@ export class HttpClient {
     };
   }
   
+  updateHeaders(headers: Record<string, string>) {
+    this.headers = {
+      ...this.headers,
+      ...headers,
+    };
+    
+    // Remover headers nulos ou undefined
+    Object.keys(this.headers).forEach(key => {
+      if (this.headers[key] === null || this.headers[key] === undefined) {
+        delete this.headers[key];
+      }
+    });
+  }
+  
 
   private buildQueryString(params?: Record<string, any>): string {
     if (!params) return '';
@@ -25,7 +39,8 @@ export class HttpClient {
   }
 
   async get<T>(url: string, queryParams?: Record<string, any>): Promise<T> {
-    const normalizedUrl = this.normalizeUrl(url) + this.buildQueryString(queryParams);
+    const normalizedUrl =
+      this.normalizeUrl(url) + this.buildQueryString(queryParams);
     const res = await fetch(`${this.baseUrl}${normalizedUrl}`, {
       method: 'GET',
       headers: this.headers,
@@ -74,7 +89,7 @@ export class HttpClient {
   }
 
   private normalizeUrl(url: string): string {
-    return url.replace(/^\//, '');
+    return "/"+url.replace(/^\//, '') ;
   }
 
 }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_13_002500) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -76,10 +76,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
 
   create_table "templates", force: :cascade do |t|
     t.string "content"
-    t.integer "admin_id"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["admin_id"], name: "index_templates_on_admin_id"
+    t.index ["user_id"], name: "index_templates_on_user_id"
   end
 
   create_table "turma_alunos", force: :cascade do |t|
@@ -122,5 +122,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_220000) do
   add_foreign_key "questoes", "templates", column: "templates_id"
   add_foreign_key "resposta", "formularios"
   add_foreign_key "resposta", "questoes"
-  add_foreign_key "templates", "admins"
+  add_foreign_key "templates", "users"
 end
