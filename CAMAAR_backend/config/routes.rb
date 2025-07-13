@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   
   post 'passwords/forgot', to: 'passwords#forgot'
   post 'passwords/reset', to: 'passwords#reset'
+
+  get 'turmas/code/:code', to: 'turmas#find_by_code'
   
   resources :alternativas
   resources :departamentos
