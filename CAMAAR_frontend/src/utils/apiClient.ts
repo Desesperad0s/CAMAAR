@@ -1,6 +1,5 @@
 import { HttpClient } from "./httpClient.ts";
 const BACK_URL = "http://localhost:3333"; 
-
 export class Api {
     api;
     token;
@@ -24,6 +23,7 @@ export class Api {
                 localStorage.setItem('user', JSON.stringify(response.user));
                 this.token = response.token;
                 
+                // Atualizar os headers com o novo token
                 this.api.updateHeaders({ 
                     'Authorization': `Bearer ${response.token}`
                 });
@@ -118,132 +118,7 @@ export class Api {
         }
     }
 
-    async getFormulario(id) {
-        return await this.api.get(`/formularios/${id}`);
-    }
-
-    async createFormularioWithTemplate(templateId, turmaId, name, date) {
-        try {
-            if (!templateId) throw new Error("ID do template é obrigatório");
-            if (!turmaId) throw new Error("ID da turma é obrigatório");
-            
-            // Se name não for fornecido, crie um nome padrão
-            const formName = name || `Formulário ${new Date().toLocaleDateString()}`;
-            // Se date não for fornecido, use a data atual
-            const formDate = date || new Date().toISOString().split('T')[0];
-            
-            console.log("Enviando request para criar formulário:", {
-                template_id: templateId,
-                turma_id: turmaId,
-                name: formName,
-                date: formDate
-            });
-            
-            return await this.api.post('/formularios/create_with_questions', {
-                template_id: templateId,
-                turma_id: turmaId,
-                name: formName,
-                date: formDate
-            });
-        } catch (error) {
-            console.error("Erro ao criar formulário com template:", error);
-            throw error;
-        }
-    }
-
-    async getTurmas() {
-        return await this.api.get('/turmas');
-    }
-
-    async getTurma(id) {
-        return await this.api.get(`/turmas/${id}`);
-    }
-
-    async getDisciplinas() {
-        return await this.api.get('/disciplinas');
-    }
-
-    async getDisciplina(id) {
-        return await this.api.get(`/disciplinas/${id}`);
-    }
-
-    async getQuestoes(formularioId) {
-        return await this.api.get(`/formularios/${formularioId}/questoes`);
-    }
-
-    async getAlternativas(questaoId) {
-        return await this.api.get(`/alternativas?questao_id=${questaoId}`);
-    }
-
-    async getAdmins() {
-        return await this.api.get('/admins');
-    }
-    
-    // Métodos para AvailableForms
-    async getUserTurmas() {
-        try {
-            return await this.api.get('/user/turmas');
-        } catch (error) {
-            console.error("Erro ao buscar turmas do usuário:", error);
-            return null;
-        }
-    }
-    
-    async getTurmaForms(turmaId) {
-        try {
-            return await this.api.get(`/turmas/${turmaId}/formularios`);
-        } catch (error) {
-            console.error(`Erro ao buscar formulários da turma ${turmaId}:`, error);
-            return null;
-        }
-    }
-    
-    async getFormularioDetails(formularioId) {
-        try {
-            return await this.api.get(`/formularios/${formularioId}`);
-        } catch (error) {
-            console.error(`Erro ao buscar detalhes do formulário ${formularioId}:`, error);
-            return null;
-        }
-    }
-    
-    async submitFormAnswers(formRespostas) {
-        try {
-            return await this.api.post('/resposta/batch_create', { respostas: formRespostas });
-        } catch (error) {
-            console.error("Erro ao enviar respostas do formulário:", error);
-            throw error;
-        }
-    }
-    
     async getFormularios() {
-        try {
-            return await this.api.get('/formularios');
-        } catch (error) {
-            console.error("Erro ao buscar formulários:", error);
-            throw error;
-        }
-    }
-    
-    async getFormulariosRespondidos() {
-        try {
-            // Como não temos mais relação com usuários, esta função pode verificar
-            // os formulários que têm pelo menos uma resposta
-            const response = await this.api.get('/formularios');
-            // Aqui poderíamos fazer alguma lógica adicional para filtrar formulários respondidos
-            return response;
-        } catch (error) {
-            console.error("Erro ao buscar formulários respondidos:", error);
-            return { data: [] };
-        }
-    }
-    
-    async getRespostasByForm(formId) {
-        try {
-            return await this.api.get(`/resposta/formulario/${formId}`);
-        } catch (error) {
-            console.error(`Erro ao buscar respostas do formulário ${formId}:`, error);
-            return { data: [] };
-        }
+        return await this.api.get(`/formularios`);
     }
 }

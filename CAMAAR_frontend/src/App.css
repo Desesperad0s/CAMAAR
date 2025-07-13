@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background-color: #e0e0e0;
 }
 
@@ -13,7 +13,7 @@ body {
   justify-content: space-between;
   padding: 0.5rem 1rem;
   background-color: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -64,7 +64,7 @@ body {
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   padding: 0.5rem;
 }
 
@@ -73,7 +73,7 @@ body {
   background-color: white;
   width: 240px;
   height: 100vh;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
 }
@@ -100,7 +100,7 @@ body {
   background-color: white;
   border-radius: 8px;
   padding: 1rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   font-size: 0.9rem;
 }
 
@@ -189,7 +189,7 @@ body {
   padding: 2rem;
   max-width: 600px;
   margin: 3rem auto;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .dialog input,
@@ -231,11 +231,77 @@ body {
 }
 
 .icon-edit::before {
-  content: '\270E';
+  content: "\270E";
 }
 
 .icon-delete::before {
-  content: '\1F5D1';
+  content: "\1F5D1";
+}
+
+/* Estilos para a página Templates */
+.page {
+  display: flex;
+  height: 100vh;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 24px;
+}
+
+.card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.card strong {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.card span {
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 4px;
+}
+
+.card.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #999;
+  cursor: pointer;
+  border: 2px dashed #ddd;
+  background-color: #f9f9f9;
+}
+
+.card.add:hover {
+  background-color: #f0f0f0;
+  border-color: #bbb;
 }
 
 /* Responsivo */
