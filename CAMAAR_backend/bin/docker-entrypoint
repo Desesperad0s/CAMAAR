@@ -1,1 +1,14 @@
-#!/bin/bash -e\n\n# Enable jemalloc for reduced memory usage and latency.\nif [ -z "${LD_PRELOAD+x}" ]; then\n    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)\n    export LD_PRELOAD\nfi\n\n# If running the rails server then create or migrate existing database\nif [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then\n  ./bin/rails db:prepare\nfi\n\nexec "${@}"\n
+#!/bin/bash -e
+
+# Enable jemalloc for reduced memory usage and latency.
+if [ -z "${LD_PRELOAD+x}" ]; then
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    export LD_PRELOAD
+fi
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"

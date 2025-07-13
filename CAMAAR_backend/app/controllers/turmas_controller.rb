@@ -13,8 +13,6 @@ class TurmasController < ApplicationController
     set_turma
 
     render json: @turma
-
-
   end
 
   # GET /turmas/new
