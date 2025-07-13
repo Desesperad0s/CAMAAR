@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Respostas", type: :request do
-  let(:valid_headers) { { "Accept" => "application/json" } }
+  let(:valid_headers) { { "Accept" => "application/json" }.merge(auth_headers) }
   
   let(:formulario) { create(:formulario) }
   let(:questao) { create(:questao, formulario: formulario, template: create(:template)) }
