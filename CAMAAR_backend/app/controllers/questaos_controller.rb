@@ -3,11 +3,18 @@ class QuestaosController < ApplicationController
 
   # GET /questaos or /questaos.json
   def index
-    @questaos = Questao.all
+    if params[:formulario_id].present?
+      @questaos = Questao.where(formularios_id: params[:formulario_id])
+    else
+      @questaos = Questao.all
+    end
+    
+    render json: @questaos
   end
 
   # GET /questaos/1 or /questaos/1.json
   def show
+    render json: @questao
   end
 
   # GET /questaos/new

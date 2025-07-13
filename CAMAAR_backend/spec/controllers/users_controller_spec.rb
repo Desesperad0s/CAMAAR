@@ -26,7 +26,6 @@ RSpec.describe UsersController, type: :controller do
   # Ignorar autenticação para testes de controller
   before(:each) do
     allow_any_instance_of(described_class).to receive(:authenticate_request).and_return(true)
-    # Usar um usuário mockado em vez de criar um no banco
     allow_any_instance_of(described_class).to receive(:current_user).and_return(mock_admin_user)
   end
 

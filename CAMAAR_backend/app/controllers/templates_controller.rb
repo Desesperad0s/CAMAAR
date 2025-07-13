@@ -35,18 +35,15 @@ class TemplatesController < ApplicationController
         if params[:template][:questoes_attributes].is_a?(Array)
           params[:template][:questoes_attributes].each do |questao_attrs|
             questao = @template.questoes.create!(
-              enunciado: questao_attrs[:enunciado],
-              formularios_id: questao_attrs[:formularios_id]
+              enunciado: questao_attrs[:enunciado]
             )
             
             # Process alternativas if present
             if questao_attrs[:alternativas_attributes].present?
-              # If alternativas_attributes is an array
               if questao_attrs[:alternativas_attributes].is_a?(Array)
                 questao_attrs[:alternativas_attributes].each do |alt_attrs|
                   questao.alternativas.create!(content: alt_attrs[:content])
                 end
-              # If alternativas_attributes is a hash
               else
                 questao_attrs[:alternativas_attributes].each do |_, alt_attrs|
                   questao.alternativas.create!(content: alt_attrs[:content])
@@ -54,15 +51,12 @@ class TemplatesController < ApplicationController
               end
             end
           end
-        # If questoes_attributes is a hash (from strong params)
         else
           params[:template][:questoes_attributes].each do |_, questao_attrs|
             questao = @template.questoes.create!(
-              enunciado: questao_attrs[:enunciado],
-              formularios_id: questao_attrs[:formularios_id]
+              enunciado: questao_attrs[:enunciado]
             )
             
-            # Process alternativas if present
             if questao_attrs[:alternativas_attributes].present?
               questao_attrs[:alternativas_attributes].each do |_, alt_attrs|
                 questao.alternativas.create!(content: alt_attrs[:content])
@@ -76,8 +70,7 @@ class TemplatesController < ApplicationController
       if params[:questoes].present? && params[:questoes].is_a?(Array)
         params[:questoes].each do |questao_params|
           questao = @template.questoes.create!(
-            enunciado: questao_params[:enunciado],
-            formularios_id: questao_params[:formularios_id]
+            enunciado: questao_params[:enunciado]
           )
           
           if questao_params[:alternativas].present? && questao_params[:alternativas].is_a?(Array)
@@ -110,8 +103,6 @@ class TemplatesController < ApplicationController
     head :no_content
   end
 
-
-
   private
     def set_template
       @template = Template.find(params[:id])
@@ -124,7 +115,6 @@ class TemplatesController < ApplicationController
         questoes_attributes: [
           :id, 
           :enunciado, 
-          :formularios_id, 
           :_destroy,
           alternativas_attributes: [:id, :content, :_destroy]
         ]
