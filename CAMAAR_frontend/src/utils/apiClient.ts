@@ -121,4 +121,95 @@ export class Api {
     async getFormularios() {
         return await this.api.get(`/formularios`);
     }
+    
+    async generateExcelReport() {
+        try {
+            return await this.api.get(`/formularios/report/excel`, { responseType: 'blob' });
+        } catch (error) {
+            console.error("Erro ao gerar relatório Excel:", error);
+            throw error;
+        }
+    }
+    
+    // Métodos para AvailableForms
+    async getUserTurmas() {
+        try {
+            return await this.api.get('/user/turmas');
+        } catch (error) {
+            console.error("Erro ao buscar turmas do usuário:", error);
+            return [];
+        }
+    }
+    
+    async getTurmaForms(turmaId) {
+        try {
+            return await this.api.get(`/turmas/${turmaId}/formularios`);
+        } catch (error) {
+            console.error(`Erro ao buscar formulários da turma ${turmaId}:`, error);
+            return [];
+        }
+    }
+    
+    async getFormularioDetails(formId) {
+        try {
+            return await this.api.get(`/formularios/${formId}`);
+        } catch (error) {
+            console.error(`Erro ao buscar detalhes do formulário ${formId}:`, error);
+            return null;
+        }
+    }
+    
+    async getTurma(turmaId) {
+        try {
+            return await this.api.get(`/turmas/${turmaId}`);
+        } catch (error) {
+            console.error(`Erro ao buscar turma ${turmaId}:`, error);
+            return null;
+        }
+    }
+    
+    async getDisciplina(disciplinaId) {
+        try {
+            return await this.api.get(`/disciplinas/${disciplinaId}`);
+        } catch (error) {
+            console.error(`Erro ao buscar disciplina ${disciplinaId}:`, error);
+            return null;
+        }
+    }
+    
+    async getFormulario(formId) {
+        try {
+            return await this.api.get(`/formularios/${formId}`);
+        } catch (error) {
+            console.error(`Erro ao buscar formulário ${formId}:`, error);
+            return null;
+        }
+    }
+    
+    async getQuestoes(formId) {
+        try {
+            return await this.api.get(`/formularios/${formId}/questoes`);
+        } catch (error) {
+            console.error(`Erro ao buscar questões do formulário ${formId}:`, error);
+            return [];
+        }
+    }
+    
+    async getAlternativas(questaoId) {
+        try {
+            return await this.api.get(`/alternativas?questao_id=${questaoId}`);
+        } catch (error) {
+            console.error(`Erro ao buscar alternativas para questão ${questaoId}:`, error);
+            return [];
+        }
+    }
+    
+    async submitFormAnswers(answers) {
+        try {
+            return await this.api.post('/resposta/batch_create', { respostas: answers });
+        } catch (error) {
+            console.error("Erro ao enviar respostas:", error);
+            throw error;
+        }
+    }
 }

@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :formularios do
     collection do
       post :create_with_questions
+      get 'report/excel', to: 'formularios#excel_report'
     end
     member do
       get :questoes
