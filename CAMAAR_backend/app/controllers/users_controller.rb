@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  skip_before_action :authenticate_request, only: [:register]
   before_action :set_user, only: [:show, :update, :destroy]
   rescue_from ActiveRecord::RecordNotFound, with: :user_not_found
 
@@ -18,7 +19,30 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
-      render json: @user, status: :created, location: @user
+      token = JwtService.encode(user_id: @user.id)
+      @user.auth_token = token
+      render json: { 
+        user: @user.as_json(except: [:password_digest]), 
+        token: token 
+      }, status: :created
+    else
+      render json: { errors: @user.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # POST /register
+  # Endpoint público para registro de novos usuários
+  def register
+    @user = User.new(user_params)
+    @user.role = 'student' # Por padrão, novos registros são estudantes
+
+    if @user.save
+      token = JwtService.encode(user_id: @user.id)
+      @user.auth_token = token
+      render json: { 
+        user: @user.as_json(except: [:password_digest]), 
+        token: token 
+      }, status: :created
     else
       render json: { errors: @user.errors }, status: :unprocessable_entity
     end

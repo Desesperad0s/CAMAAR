@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import './CriarTemplateModal.css';
+import { Api } from '../utils/apiClient.ts';
 
 const tipos = [
   { value: 'texto', label: 'Texto' },
   { value: 'radio', label: 'Alternativas' },
 ];
 
-function CriarTemplateModal({ open, onClose }) {
+function CriarTemplateModal({ open, onClose, onSuccess }) {
   const [nome, setNome] = useState('');
   const [questoes, setQuestoes] = useState([
     { tipo: 'radio', texto: '', opcoes: [''] },
   ]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const api = new Api();
 
   if (!open) return null;
 
@@ -39,6 +44,81 @@ function CriarTemplateModal({ open, onClose }) {
       i === qIdx ? { ...q, opcoes: [...q.opcoes, ''] } : q
     );
     setQuestoes(novas);
+  };
+  
+  const handleSubmit = async () => {
+    // Validações básicas
+    if (!nome.trim()) {
+      setError('O nome do template não pode estar vazio');
+      return;
+    }
+    
+    if (questoes.length === 0) {
+      setError('O template precisa ter pelo menos uma questão');
+      return;
+    }
+    
+    // Validar cada questão
+    for (let i = 0; i < questoes.length; i++) {
+      const questao = questoes[i];
+      if (!questao.texto.trim()) {
+        setError(`O texto da questão ${i+1} não pode estar vazio`);
+        return;
+      }
+      
+      if (questao.tipo === 'radio') {
+        // Verificar se há pelo menos uma opção e se nenhuma está vazia
+        if (questao.opcoes.length === 0) {
+          setError(`A questão ${i+1} precisa ter pelo menos uma opção`);
+          return;
+        }
+      }
+    }
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      const currentUser = api.getCurrentUser();
+      
+      const templateData = {
+        template: {
+          content: nome,
+          admin_id: currentUser?.id,
+          questoes_attributes: questoes.map(q => {
+            const questaoObj = {
+              enunciado: q.texto
+            };
+            
+            if (q.tipo === 'radio' && q.opcoes && q.opcoes.length > 0) {
+              questaoObj.alternativas_attributes = q.opcoes.map(opcao => ({
+                content: opcao
+              }));
+            }
+            
+            return questaoObj;
+          })
+        }
+      };
+      
+      console.log('Enviando dados para o backend:', JSON.stringify(templateData, null, 2));
+      await api.createTemplate(templateData);
+      
+      setNome('');
+      setQuestoes([{ tipo: 'radio', texto: '', opcoes: [''] }]);
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+      
+      onClose();
+      
+    } catch (err) {
+      console.error('Erro ao criar template:', err);
+      setError('Ocorreu um erro ao criar o template. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -93,8 +173,19 @@ function CriarTemplateModal({ open, onClose }) {
             </div>
           ))}
           <button type="button" className="modal-add-questao" onClick={handleAddQuestao}>+</button>
+          {error && (
+            <div className="modal-error">
+              {error}
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
-            <button className="modal-criar">Criar</button>
+            <button 
+              className="modal-criar" 
+              onClick={handleSubmit} 
+              disabled={loading}
+            >
+              {loading ? 'Criando...' : 'Criar'}
+            </button>
           </div>
         </div>
       </div>

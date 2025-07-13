@@ -88,4 +88,28 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  # Testes de associações
+  describe 'associações' do
+    it 'tem muitas turma_alunos' do
+      expect(User.new).to respond_to(:turma_alunos)
+    end
+    
+    it 'tem muitos templates' do
+      expect(User.new).to respond_to(:templates)
+    end
+    
+    it 'pode criar templates associados' do
+      admin = User.create!(
+        registration: 'ADMIN123',
+        name: 'Admin Teste', 
+        email: 'admin@example.com',
+        password: 'senha123',
+        role: 'admin'
+      )
+      
+      template = admin.templates.create!(content: 'Template de teste')
+      expect(template.user).to eq(admin)
+    end
+  end
 end

@@ -1,9 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe TemplatesController, type: :controller do
+  # Ignorar autenticação para testes de controller
+  before(:each) do
+    allow_any_instance_of(described_class).to receive(:authenticate_request).and_return(true)
+    allow_any_instance_of(described_class).to receive(:current_user).and_return(create(:user, :admin))
+  end
+
   # Fixture simples para os testes
   before(:each) do
-    @template = Template.create(content: "Template de teste")
+    @admin_user = create(:user, :admin)
+    @template = Template.create(content: "Template de teste", user_id: @admin_user.id)
   end
 
   describe "GET #index" do
@@ -42,17 +49,17 @@ RSpec.describe TemplatesController, type: :controller do
     context "com parâmetros válidos" do
       it "cria um novo Template" do
         expect {
-          post :create, params: { template: { content: "Novo template" } }
+          post :create, params: { template: { content: "Novo template", user_id: @admin_user.id } }
         }.to change(Template, :count).by(1)
       end
 
       it "retorna um status :created" do
-        post :create, params: { template: { content: "Novo template" } }
+        post :create, params: { template: { content: "Novo template", user_id: @admin_user.id } }
         expect(response).to have_http_status(:created)
       end
 
       it "retorna o novo template como JSON" do
-        post :create, params: { template: { content: "Novo template" } }
+        post :create, params: { template: { content: "Novo template", user_id: @admin_user.id } }
         json = JSON.parse(response.body)
         expect(json["content"]).to eq("Novo template")
       end
@@ -65,6 +72,7 @@ RSpec.describe TemplatesController, type: :controller do
         post :create, params: { 
           template: { 
             content: "Template com questões", 
+            user_id: @admin_user.id,
             questoes_attributes: questoes_attributes 
           } 
         }
@@ -82,7 +90,7 @@ RSpec.describe TemplatesController, type: :controller do
         ]
         
         post :create, params: { 
-          template: { content: "Template separado" },
+          template: { content: "Template separado", user_id: @admin_user.id },
           questoes: questoes
         }
         

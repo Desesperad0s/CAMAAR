@@ -16,9 +16,18 @@ class TemplatesController < ApplicationController
   # POST /templates
   def create
     # Create a new template based on basic attributes
+    # Obter o user_id do parâmetro admin_id ou user_id
+    user_id = params[:template][:admin_id] || params[:template][:user_id]
+    
+    # Se não houver um user_id válido, tenta encontrar um admin
+    unless user_id.present? && User.exists?(user_id)
+      admin = User.where(role: 'admin').first
+      user_id = admin&.id
+    end
+    
     @template = Template.new(
       content: params[:template][:content],
-      admin_id: params[:template][:admin_id]
+      user_id: user_id
     )
     
     if @template.save
@@ -111,7 +120,7 @@ class TemplatesController < ApplicationController
     def template_params
       params.require(:template).permit(
         :content, 
-        :admin_id,
+        :user_id,
         questoes_attributes: [
           :id, 
           :enunciado, 
