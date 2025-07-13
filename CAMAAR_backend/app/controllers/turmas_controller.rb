@@ -18,6 +18,15 @@ class TurmasController < ApplicationController
     render json: @turma
   end
 
+  def find_by_code
+  @turma = Turma.find_by(code: params[:code])
+  if @turma
+    render json: @turma, status: :ok
+  else
+    render json: { error: 'Turma não encontrada' }, status: :not_found
+  end
+end
+
   # GET /turmas/new
   def new
     
