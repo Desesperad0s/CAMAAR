@@ -11,6 +11,8 @@ function Templates() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [downloadingReport, setDownloadingReport] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedForm, setSelectedForm] = useState(null);
   const navigate = useNavigate();
   const api = useMemo(() => new Api(), []);
 
@@ -55,6 +57,55 @@ function Templates() {
       });
   };
 
+  const handleCardClick = (form) => {
+    setSelectedForm(form);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedForm(null);
+  };
+
+  const FormularioModal = () => {
+    if (!selectedForm) return null;
+
+    return (
+      <div className="modal-overlay" onClick={closeModal}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2>{selectedForm.nome || selectedForm.name || `Formulário #${selectedForm.id}`}</h2>
+            <button className="close-button" onClick={closeModal}>×</button>
+          </div>
+          <div className="modal-body">
+            {selectedForm.respostas && selectedForm.respostas.length > 0 ? (
+              <div className="questoes-respostas">
+                <h3>Questões e Respostas</h3>
+                <ul>
+                  {selectedForm.respostas.map((resposta) => (
+                    <li key={resposta.id} className="questao-resposta-item">
+                      <div className="questao">
+                        <strong>Questão:</strong> {resposta.questao ? resposta.questao.enunciado || `Questão #${resposta.questao.id}` : 'Questão não encontrada'}
+                      </div>
+                      <div className="resposta">
+                        <strong>Resposta:</strong> {resposta.content || 'Sem resposta'}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="no-respostas">Este formulário não possui respostas.</p>
+            )}
+          </div>
+          <div className="modal-footer">
+            <button onClick={closeModal} className="modal-button">Fechar</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="page">
       <Sidebar selected={selected} setSelected={setSelected} />
@@ -91,7 +142,7 @@ function Templates() {
             ) : (
               <div className="grid">
                 {formularios.map((form) => (
-                  <div className="card" key={form.id}>
+                  <div className="card" key={form.id} onClick={() => handleCardClick(form)}>
                     <strong>
                       {form.nome || form.titulo || `Formulário #${form.id}`}
                     </strong>
@@ -108,6 +159,7 @@ function Templates() {
             )}
           </div>
         )}
+        {showModal && <FormularioModal />}
       </div>
     </div>
   );
