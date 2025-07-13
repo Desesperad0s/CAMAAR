@@ -1,8 +1,10 @@
 class TurmasController < ApplicationController
   before_action :set_turma, only: %i[ show edit update destroy ]
+  
 
  # GET /turmas or /turmas.json
   def index
+    
     @turmas = Turma.all
     render json: @turmas
   end
@@ -10,6 +12,7 @@ class TurmasController < ApplicationController
   # GET /turmas/1 or /turmas/1.json
   def show
 
+    
     set_turma
 
     render json: @turma
@@ -17,14 +20,14 @@ class TurmasController < ApplicationController
 
   # GET /turmas/new
   def new
+    
     @turma = Turma.new
     render json: @turma
-
-
   end
 
   # GET /turmas/1/edit
   def edit
+    
     set_turma
     render json: @turma
 
@@ -33,20 +36,19 @@ class TurmasController < ApplicationController
 
   # POST /turmas or /turmas.json
   def create
+    
     @turma = Turma.new(turma_params)
     if @turma.save
       render json: @turma, status: :created
     else
       render json: @turma.errors, status: :unprocessable_entity
 
-
-
-
     end
   end
 
   # PATCH/PUT /turmas/1 or /turmas/1.json
   def update
+    
 
     set_turma
 
@@ -62,6 +64,7 @@ class TurmasController < ApplicationController
   end
 
 def destroy
+   
 
     @turma.destroy!
 
