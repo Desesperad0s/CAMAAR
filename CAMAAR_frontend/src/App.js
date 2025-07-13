@@ -5,6 +5,8 @@ import Resultados from './pages/Resultados';
 import EnviarFormulario from './pages/EnviarFormulario';
 import Templates from './pages/Templates';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
+import AdminRedirect from './components/AdminRedirect';
 import { AuthProvider } from './context/AuthContext';
 import AnswerForm from './pages/AnswerForm';
 import AdminCreateForm from './pages/AdminCreateForm';
@@ -16,29 +18,27 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Rotas públicas */}
           <Route path="/login" element={<Login />} />
           
-          {/* Rotas protegidas */}
           <Route path="/gerenciamento" element={
-            <ProtectedRoute>
-              <Gerenciamento />
-            </ProtectedRoute>
+            <AdminRoute>
+              <Templates />
+            </AdminRoute>
           } />
           <Route path="/resultados" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <Resultados />
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="/enviar" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <EnviarFormulario />
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="/templates" element={
-            <ProtectedRoute>
-              <Templates />
-            </ProtectedRoute>
+            <AdminRoute>
+              <Gerenciamento />
+            </AdminRoute>
           } />
           <Route path="/answer-form" element={
             <ProtectedRoute>
@@ -46,9 +46,9 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/admin/create-form" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminCreateForm />
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="/available-forms" element={
             <ProtectedRoute>
@@ -56,7 +56,11 @@ function App() {
             </ProtectedRoute>
           } />
           
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <AdminRedirect />
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
       </Router>

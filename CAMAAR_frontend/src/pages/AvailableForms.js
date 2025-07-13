@@ -57,9 +57,7 @@ function AvailableForms() {
                 const disciplinaResponse = await api.getDisciplina(turmaResponse.disciplina_id);
                 
                 if (disciplinaResponse) {
-                  // Verificar se o formulário já foi respondido pelo usuário
-                  const isResponded = false; // Aqui seria implementado a lógica para verificar se o usuário já respondeu
-                  
+                  const isResponded = false;
                   formsWithDetails.push({
                     id: form.id,
                     name: form.name,

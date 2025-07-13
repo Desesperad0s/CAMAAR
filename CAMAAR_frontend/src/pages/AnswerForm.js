@@ -22,12 +22,12 @@ function AnswerForm() {
         
         const formId = searchParams.get('formId') || '1';
         
-        const formularioResponse = await api.getFormulario(formId);
+        const formularioResponse = await api.getFormularioDetails(formId);
         if (formularioResponse) {
           setForm({
             id: formularioResponse.id,
-            title: formularioResponse.name ,
-            description: formularioResponse.description,
+            title: formularioResponse.name || "Formulário",
+            description: formularioResponse.description || "",
             date: formularioResponse.date,
             questions: [] 
           });
@@ -87,10 +87,14 @@ function AnswerForm() {
               }));
             }
           } catch (questoesError) {
+            console.error("Erro ao buscar questões:", questoesError);
+            setError("Não foi possível carregar as questões deste formulário.");
           }
         }
         
-      } catch (err) {        
+      } catch (err) {
+        console.error("Erro ao buscar dados do formulário:", err);
+        setError("Ocorreu um erro ao carregar o formulário. Por favor, tente novamente mais tarde.");
       } finally {
         setLoading(false);
       }
@@ -147,7 +151,7 @@ function AnswerForm() {
     }
   };
 
-  if (loading) {
+  if (loading || !form) {
     return (
         <div className="loading-container">
           <div className="loading-spinner"></div>
@@ -175,12 +179,12 @@ function AnswerForm() {
           )}
           
           <div className="form-header">
-            <h2>{form.title}</h2>
-            <p className="form-description">{form.description}</p>
+            <h2>{form?.title || "Formulário"}</h2>
+            <p className="form-description">{form?.description || ""}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="answer-form">
-            {form.questions.map((question, index) => (
+            {form?.questions?.map((question, index) => (
               <div key={question.id} className="question-box">
                 <label className="question-label">
                   {index + 1}. {question.text}

@@ -56,20 +56,17 @@ end
 # Criar Usuários - Admins, Professores e Estudantes
 puts "Criando usuários..."
 
-# Admins
 admin_users = [
   { registration: 'ADM001', name: 'Admin Principal', email: 'admin@camaar.com', password: 'admin123', role: 'admin' },
   { registration: 'ADM002', name: 'Suporte Admin', email: 'suporte@camaar.com', password: 'suporte123', role: 'admin' }
 ]
 
-# Professores
 professor_users = [
   { registration: 'PROF001', name: 'João Silva', email: 'joao.silva@unb.br', password: 'senha123', role: 'professor', major: 'Ciência da Computação' },
   { registration: 'PROF002', name: 'Maria Santos', email: 'maria.santos@unb.br', password: 'senha123', role: 'professor', major: 'Matemática' },
   { registration: 'PROF003', name: 'Carlos Ferreira', email: 'carlos.ferreira@unb.br', password: 'senha123', role: 'professor', major: 'Estatística' }
 ]
 
-# Estudantes
 student_users = [
   { registration: '180019999', name: 'Ana Oliveira', email: 'ana.oliveira@aluno.unb.br', password: 'senha123', role: 'student', major: 'Ciência da Computação' },
   { registration: '190029999', name: 'Pedro Costa', email: 'pedro.costa@aluno.unb.br', password: 'senha123', role: 'student', major: 'Engenharia de Software' },
@@ -78,7 +75,6 @@ student_users = [
   { registration: '220059999', name: 'Isabela Lima', email: 'isabela.lima@aluno.unb.br', password: 'senha123', role: 'student', major: 'Estatística' }
 ]
 
-# Criar todos os usuários
 all_users = admin_users + professor_users + student_users
 all_users.each do |user_data|
   user = User.create!(user_data)
