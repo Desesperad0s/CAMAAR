@@ -85,7 +85,7 @@ function AdminCreateForm() {
       nome: turma.name,
       semestre: turma.semester,
       codigo: turma.code || turma.number,
-      disciplina: disciplina ? disciplina.name
+      disciplina: disciplina ? disciplina.name : ""
     };
   };
 
