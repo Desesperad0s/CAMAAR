@@ -3,11 +3,18 @@ class AlternativasController < ApplicationController
 
   # GET /alternativas or /alternativas.json
   def index
-    @alternativas = Alternativa.all
+    if params[:questao_id].present?
+      @alternativas = Alternativa.where(questao_id: params[:questao_id])
+    else
+      @alternativas = Alternativa.all
+    end
+    
+    render json: @alternativas
   end
 
   # GET /alternativas/1 or /alternativas/1.json
   def show
+    render json: @alternativa
   end
 
   # GET /alternativas/new

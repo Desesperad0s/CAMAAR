@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :turma_alunos, foreign_key: :aluno_id
+  has_many :turmas, through: :turma_alunos
   has_many :templates, foreign_key: :user_id
   
   attr_accessor :auth_token
