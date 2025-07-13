@@ -1,5 +1,6 @@
 class User < ApplicationRecord
-  has_many :turmas_alunos
+  has_many :turma_alunos, foreign_key: :aluno_id
+  has_many :templates, foreign_key: :user_id
   
   attr_accessor :auth_token
 
@@ -21,7 +22,6 @@ class User < ApplicationRecord
     role == 'admin'
   end
 
-  # Método simples para autenticar usuários
   def self.authenticate(email, password)
     user = find_by(email: email)
     return user if user && user.password == password
