@@ -121,4 +121,13 @@ export class Api {
     async getFormularios() {
         return await this.api.get(`/formularios`);
     }
+    
+    async generateExcelReport() {
+        try {
+            return await this.api.get(`/formularios/report/excel`, { responseType: 'blob' });
+        } catch (error) {
+            console.error("Erro ao gerar relatório Excel:", error);
+            throw error;
+        }
+    }
 }

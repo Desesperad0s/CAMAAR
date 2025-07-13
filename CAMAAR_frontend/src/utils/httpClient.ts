@@ -1,4 +1,3 @@
-
 export class HttpClient {
   baseUrl: string;
   headers: Record<string, string>;
@@ -38,16 +37,32 @@ export class HttpClient {
     );
   }
 
-  async get<T>(url: string, queryParams?: Record<string, any>): Promise<T> {
+  async get<T>(url: string, options?: { queryParams?: Record<string, any>; responseType?: string }): Promise<T> {
+    const { queryParams, responseType } = options || {};
     const normalizedUrl =
       this.normalizeUrl(url) + this.buildQueryString(queryParams);
-    const res = await fetch(`${this.baseUrl}${normalizedUrl}`, {
-      method: 'GET',
-      headers: this.headers,
-      credentials: 'include',
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    
+    try {
+      const res = await fetch(`${this.baseUrl}${normalizedUrl}`, {
+        method: 'GET',
+        headers: this.headers,
+        credentials: 'include',
+      });
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || `Server returned ${res.status}: ${res.statusText}`);
+      }
+      
+      if (responseType === 'blob') {
+        return res.blob() as unknown as T;
+      }
+      
+      return res.json();
+    } catch (error) {
+      console.error(`Error fetching ${url}:`, error);
+      throw error;
+    }
   }
 
 

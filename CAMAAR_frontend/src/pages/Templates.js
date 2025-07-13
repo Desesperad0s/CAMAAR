@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
@@ -10,8 +10,9 @@ function Templates() {
   const [formularios, setFormularios] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [downloadingReport, setDownloadingReport] = useState(false);
   const navigate = useNavigate();
-  const api = new Api();
+  const api = useMemo(() => new Api(), []);
 
   useEffect(() => {
     if (selected === "Avaliações") {
@@ -25,7 +26,34 @@ function Templates() {
         .catch(() => setError("Erro ao carregar formulários."))
         .finally(() => setLoading(false));
     }
-  }, [selected]);
+  }, [selected, api]);
+
+  const handleGenerateExcelReport = () => {
+    setDownloadingReport(true);
+    setError("");
+    api
+      .generateExcelReport()
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response]));
+
+        const link = document.createElement("a");
+        link.href = url;
+        const fileName = `relatorio_formularios_${new Date().toISOString().slice(0,10)}.xlsx`;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+      })
+      .catch((error) => {
+        console.error("Erro ao gerar relatório Excel:", error);
+        setError("Erro ao gerar relatório Excel. Por favor, tente novamente mais tarde.");
+      })
+      .finally(() => {
+        setDownloadingReport(false);
+      });
+  };
 
   return (
     <div className="page">
@@ -44,7 +72,13 @@ function Templates() {
               Editar Formularios
             </button>
             <button className="template-btn main">Enviar Formulários</button>
-            <button className="template-btn main">Resultados</button>
+            <button
+              className="template-btn main"
+              onClick={handleGenerateExcelReport}
+              disabled={downloadingReport}
+            >
+              {downloadingReport ? "Gerando..." : "Resultados"}
+            </button>
           </div>
         ) : (
           <div className="avaliacoes-list">
