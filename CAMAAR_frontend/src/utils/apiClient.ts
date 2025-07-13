@@ -13,4 +13,8 @@ export class Api {
     async login(email, password) {
         return await this.api.post(`/login`, { email, password });    
     }
+
+    async getFormularios() {
+        return await this.api.get(`/formularios`);
+    }
 }
