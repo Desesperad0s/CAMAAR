@@ -1,5 +1,1 @@
-#!/usr/bin/env ruby
-require "rubygems"
-require "bundler/setup"
-
-load Gem.bin_path("thruster", "thrust")
+#!/usr/bin/env ruby\nrequire "rubygems"\nrequire "bundler/setup"\n\nload Gem.bin_path("thruster", "thrust")\n

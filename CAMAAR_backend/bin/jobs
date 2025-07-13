@@ -1,6 +1,1 @@
-#!/usr/bin/env ruby
-
-require_relative "../config/environment"
-require "solid_queue/cli"
-
-SolidQueue::Cli.start(ARGV)
+#!/usr/bin/env ruby\n\nrequire_relative "../config/environment"\nrequire "solid_queue/cli"\n\nSolidQueue::Cli.start(ARGV)\n

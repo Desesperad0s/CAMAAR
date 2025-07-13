@@ -1,8 +1,1 @@
-#!/usr/bin/env ruby
-require "rubygems"
-require "bundler/setup"
-
-# explicit rubocop config increases performance slightly while avoiding config confusion.
-ARGV.unshift("--config", File.expand_path("../.rubocop.yml", __dir__))
-
-load Gem.bin_path("rubocop", "rubocop")
+#!/usr/bin/env ruby\nrequire "rubygems"\nrequire "bundler/setup"\n\n# explicit rubocop config increases performance slightly while avoiding config confusion.\nARGV.unshift("--config", File.expand_path("../.rubocop.yml", __dir__))\n\nload Gem.bin_path("rubocop", "rubocop")\n

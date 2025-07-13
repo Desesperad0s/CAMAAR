@@ -1,2 +1,1 @@
-#!/usr/bin/env ruby
-exec "./bin/rails", "server", *ARGV
+#!/usr/bin/env ruby\nexec "./bin/rails", "server", *ARGV\n

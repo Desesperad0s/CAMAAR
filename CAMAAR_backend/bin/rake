@@ -1,4 +1,1 @@
-#!/usr/bin/env ruby
-require_relative "../config/boot"
-require "rake"
-Rake.application.run
+#!/usr/bin/env ruby\nrequire_relative "../config/boot"\nrequire "rake"\nRake.application.run\n
