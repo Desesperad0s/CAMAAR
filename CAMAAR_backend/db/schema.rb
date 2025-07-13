@@ -39,7 +39,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
   create_table "disciplinas", force: :cascade do |t|
     t.string "name"
     t.string "code"
-    t.integer "departamento_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "departamento_id"
