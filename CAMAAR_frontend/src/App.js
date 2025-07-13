@@ -19,6 +19,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           
           <Route path="/gerenciamento" element={
             <AdminRoute>

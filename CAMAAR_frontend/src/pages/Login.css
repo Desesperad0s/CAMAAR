@@ -86,3 +86,17 @@
   text-align: center;
   line-height: 1.2;
 }
+.reset-password-btn {
+  margin-top: 12px;
+  background: transparent;
+  color: #6d2567;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 6px 0;
+}
+
+.reset-password-btn:hover {
+  color: #4a1a46;
+}
