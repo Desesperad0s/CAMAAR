@@ -1,6 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe FormulariosController, type: :controller do
+  # Ignorar autenticação para testes de controller
+  before(:each) do
+    allow_any_instance_of(described_class).to receive(:authenticate_request).and_return(true)
+    allow_any_instance_of(described_class).to receive(:current_user).and_return(create(:user, :admin))
+  end
+
   before do
     request.env['HTTP_ACCEPT'] = 'application/json'
   end

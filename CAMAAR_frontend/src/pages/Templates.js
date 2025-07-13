@@ -1,50 +1,94 @@
-import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
-import "../App.css";
-import { Api } from "../utils/apiClient.ts";
+import React, { useState, useEffect } from 'react';
+import Sidebar from '../components/Sidebar';
+import Navbar from '../components/Navbar';
+import CriarTemplateModal from '../components/CriarTemplateModal';
+import { Api } from '../utils/apiClient.ts';
+import './Templates.css';
 
 function Templates() {
   const [templates, setTemplates] = useState([]);
-  const [selected, setSelected] = useState("Avaliações");
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  
+  const api = new Api();
+  
+  // Carregar templates ao montar o componente
   useEffect(() => {
-    if (selected === "Avaliações") {
-      const api = new Api();
-      async function fetchFormularios() {
-        try {
-          const data = await api.getFormularios();
-          setTemplates(data);
-        } catch (err) {
-          setTemplates([]);
-        }
+    loadTemplates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  const loadTemplates = async () => {
+    setLoading(true);
+    try {
+      const response = await api.getTemplates();
+      if (response) {
+        setTemplates(response);
+      } else {
+        setError('Não foi possível carregar os templates');
       }
-      fetchFormularios();
+    } catch (err) {
+      console.error('Erro ao carregar templates:', err);
+      setError('Erro ao carregar templates. Tente novamente mais tarde.');
+    } finally {
+      setLoading(false);
     }
-  }, [selected]);
-
+  };
+  
+  const handleDeleteTemplate = async (id) => {
+    if (window.confirm('Tem certeza que deseja excluir este template?')) {
+      try {
+        await api.deleteTemplate(id);
+        loadTemplates(); // Recarregar a lista após excluir
+      } catch (err) {
+        console.error('Erro ao excluir template:', err);
+        alert('Não foi possível excluir o template');
+      }
+    }
+  };
+  
   return (
     <div className="page">
-      <Sidebar selected={selected} setSelected={setSelected} />
+      <Sidebar />
       <div className="content">
-        <Navbar title={selected} />
-        {selected === "Avaliações" ? (
-          <div className="grid">
-            {templates.map((template) => (
-              <div className="card" key={template.id}>
-                <strong>{template.name || template.nome}</strong>
-                <span>{template.semester || template.semestre}</span>
-                <span>{template.professor}</span>
+        <Navbar title="Gerenciamento - Templates" />
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <div className="grid">
+          {loading ? (
+            <div className="loading">Carregando templates...</div>
+          ) : templates.length > 0 ? (
+            <>
+              {templates.map((template) => (
+                <div className="card" key={template.id}>
+                  <strong>{template.content}</strong>
+                  <span>Criado em: {new Date(template.created_at).toLocaleDateString()}</span>
+                  <div className="icons">
+                    <span className="icon edit">✏️</span>
+                    <span className="icon delete" onClick={() => handleDeleteTemplate(template.id)}>🗑️</span>
+                  </div>
+                </div>
+              ))}
+              <div className="card add" onClick={() => setShowModal(true)}>＋</div>
+            </>
+          ) : (
+            <>
+              <div className="no-templates">
+                Nenhum template encontrado. Crie um novo template clicando no botão +.
               </div>
-            ))}
-            <div className="card add">＋</div>
-          </div>
-        ) : (
-          <div style={{ padding: 32 }}>
-            gerenciamento quero me matar por favor alguém me mata socorro vou me matar
-          </div>
-        )}
+              <div className="card add" onClick={() => setShowModal(true)}>＋</div>
+            </>
+          )}
+        </div>
       </div>
+      
+      <CriarTemplateModal 
+        open={showModal} 
+        onClose={() => setShowModal(false)} 
+        onSuccess={loadTemplates}
+      />
     </div>
   );
 }

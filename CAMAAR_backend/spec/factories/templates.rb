@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :template do
     content { 'Template de avaliação de disciplina' }
+    association :user, factory: [:user, :admin]
     
 
     factory :template_with_questions do
