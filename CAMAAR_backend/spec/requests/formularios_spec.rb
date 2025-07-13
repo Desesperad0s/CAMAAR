@@ -16,7 +16,7 @@ RSpec.describe "Formularios", type: :request do
   }
 
   let(:valid_headers) {
-    { "Accept" => "application/json" }
+    { "Accept" => "application/json" }.merge(auth_headers)
   }
 
   describe "GET /formularios" do
