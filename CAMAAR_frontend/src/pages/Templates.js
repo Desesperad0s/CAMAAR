@@ -1,80 +1,107 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import CriarTemplateModal from "../components/CriarTemplateModal";
 import { Api } from "../utils/apiClient.ts";
 import "./Templates.css";
 
 function Templates() {
-  const [selected, setSelected] = useState("Avaliações");
-  const [formularios, setFormularios] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+
   const api = new Api();
 
+  // Carregar templates ao montar o componente
   useEffect(() => {
-    if (selected === "Avaliações") {
-      setLoading(true);
-      setError("");
-      api
-        .getFormularios()
-        .then((data) => {
-          setFormularios(Array.isArray(data) ? data : []);
-        })
-        .catch(() => setError("Erro ao carregar formulários."))
-        .finally(() => setLoading(false));
+    loadTemplates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const loadTemplates = async () => {
+    setLoading(true);
+    try {
+      const response = await api.getTemplates();
+      if (response) {
+        setTemplates(response);
+      } else {
+        setError("Não foi possível carregar os templates");
+      }
+    } catch (err) {
+      console.error("Erro ao carregar templates:", err);
+      setError("Erro ao carregar templates. Tente novamente mais tarde.");
+    } finally {
+      setLoading(false);
     }
-  }, [selected]);
+  };
+
+  const handleDeleteTemplate = async (id) => {
+    if (window.confirm("Tem certeza que deseja excluir este template?")) {
+      try {
+        await api.deleteTemplate(id);
+        loadTemplates(); // Recarregar a lista após excluir
+      } catch (err) {
+        console.error("Erro ao excluir template:", err);
+        alert("Não foi possível excluir o template");
+      }
+    }
+  };
 
   return (
     <div className="page">
-      <Sidebar selected={selected} setSelected={setSelected} />
+      <Sidebar />
       <div className="content">
-        <Navbar
-          title={selected === "Gerenciamento" ? "Gerenciamento" : "Avaliações"}
-        />
-        {selected === "Gerenciamento" ? (
-          <div className="template-center-panel">
-            <button className="template-btn main">Importar dados</button>
-            <button
-              className="template-btn main"
-              onClick={() => navigate("/gerenciamento")}
-            >
-              Editar Formularios
-            </button>
-            <button className="template-btn main">Enviar Formulários</button>
-            <button className="template-btn main">Resultados</button>
-          </div>
-        ) : (
-          <div className="avaliacoes-list">
-            {loading ? (
-              <div className="loading">Carregando formulários...</div>
-            ) : error ? (
-              <div className="error-message">{error}</div>
-            ) : formularios.length === 0 ? (
-              <div className="no-templates">Nenhum formulário encontrado.</div>
-            ) : (
-              <div className="grid">
-                {formularios.map((form) => (
-                  <div className="card" key={form.id}>
-                    <strong>
-                      {form.nome || form.titulo || `Formulário #${form.id}`}
-                    </strong>
-                    {form.descricao && <span>{form.descricao}</span>}
-                    {form.created_at && (
-                      <span>
-                        Criado em:{" "}
-                        {new Date(form.created_at).toLocaleDateString()}
-                      </span>
-                    )}
+        <Navbar title="Gerenciamento - Templates" />
+
+        {error && <div className="error-message">{error}</div>}
+
+        <div className="grid">
+          {loading ? (
+            <div className="loading">Carregando templates...</div>
+          ) : templates.length > 0 ? (
+            <>
+              {templates.map((template) => (
+                <div className="card" key={template.id}>
+                  <strong>{template.content}</strong>
+                  <span>
+                    Criado em:{" "}
+                    {new Date(template.created_at).toLocaleDateString()}
+                  </span>
+                  <div className="icons">
+                    <span className="icon edit">✏️</span>
+                    <span
+                      className="icon delete"
+                      onClick={() => handleDeleteTemplate(template.id)}
+                    >
+                      🗑️
+                    </span>
                   </div>
-                ))}
+                </div>
+              ))}
+              <div className="card add" onClick={() => setShowModal(true)}>
+                ＋
               </div>
-            )}
-          </div>
-        )}
+            </>
+          ) : (
+            <>
+              <div className="no-templates">
+                Nenhum template encontrado. Crie um novo template clicando no
+                botão +.
+              </div>
+              <div className="card add" onClick={() => setShowModal(true)}>
+                ＋
+              </div>
+            </>
+          )}
+        </div>
       </div>
+
+      <CriarTemplateModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={loadTemplates}
+      />
     </div>
   );
 }
