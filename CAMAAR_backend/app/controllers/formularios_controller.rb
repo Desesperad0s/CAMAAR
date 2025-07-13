@@ -32,25 +32,93 @@ class FormulariosController < ApplicationController
     )
   end
 
+  # GET /formularios/report/excel
+  def excel_report
+    begin
+      require 'caxlsx'
+      
+      formularios = Formulario.includes(respostas: { questao: :alternativas }).all
+      
+      begin
+        if formularios.first && formularios.first.respostas.first && formularios.first.respostas.first.questao
+          sample_questao = formularios.first.respostas.first.questao
+          Rails.logger.info "Questao attributes available: #{sample_questao.attributes.keys.join(', ')}"
+        end
+        
+        package = Axlsx::Package.new
+        workbook = package.workbook
+        
+        workbook.add_worksheet(name: "Relatório de Formulários") do |sheet|
+          all_questions = []
+          formularios.each do |formulario|
+            formulario.respostas.each do |resposta|
+              if resposta.questao
+                question_title = resposta.questao.enunciado || "Questão #{resposta.questao.id}"
+                all_questions << question_title unless all_questions.include?(question_title)
+              end
+            end
+          end
+          
+          headers = ["ID", "Formulário", "Data de Criação"] + all_questions
+          
+          header_row = sheet.add_row(headers)
+          sheet.add_style "A1:#{Axlsx.cell_r(headers.length - 1, 0)}", b: true
+          
+          formularios.each do |formulario|
+            row_data = [
+              formulario.id,
+              formulario.name || "Formulário #{formulario.id}",
+              formulario.created_at&.strftime("%d/%m/%Y %H:%M")
+            ]
+            
+            all_questions.each { |_| row_data << "" }
+            
+            formulario.respostas.each do |resposta|
+              if resposta.questao
+                question_title = resposta.questao.enunciado || "Questão #{resposta.questao.id}"
+                col_index = headers.index(question_title)
+                if col_index && resposta.content.present?
+                  row_data[col_index] = resposta.content
+                end
+              end
+            end
+            
+            sheet.add_row(row_data)
+          end
+          
+          sheet.auto_filter = "A1:#{Axlsx.cell_r(headers.length - 1, 0)}"
+        end
+        
+        send_data package.to_stream.read, 
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+          filename: "relatorio_formularios_#{Time.now.strftime("%Y%m%d%H%M%S")}.xlsx",
+          disposition: "attachment"
+      rescue NameError => e
+        Rails.logger.error "Module name error: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+        render json: { error: "Não foi possível gerar o relatório Excel. Erro de configuração." }, status: :internal_server_error
+      end
+    rescue => e
+      Rails.logger.error "Failed to generate Excel report: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      render json: { error: "Não foi possível gerar o relatório Excel. Erro interno." }, status: :internal_server_error
+    end
+  end
+
   # POST /formularios
   def create
     ActiveRecord::Base.transaction do
-      # Simplificando o processo de criação para usar os nested attributes
       formulario_attrs = formulario_params.to_h
       
-      # Processar respostas se estiverem presentes diretamente nos parâmetros
       process_resposta_attributes_for_create(formulario_attrs)
       
       @formulario = Formulario.new(formulario_attrs)
       
-      # Log para debugging
       Rails.logger.debug "Creating formulario with attributes: #{formulario_attrs.inspect}"
       
       if @formulario.save
-        # Processar respostas após salvar se necessário (para params que não são attributes aninhados)
         process_additional_respostas
         
-        # Recarregar o formulário para incluir as respostas criadas
         @formulario.reload
         
         render json: @formulario.as_json(
