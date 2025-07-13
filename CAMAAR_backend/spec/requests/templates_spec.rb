@@ -81,7 +81,7 @@ RSpec.describe "Templates API", type: :request do
                },
                questoes: [
                  { enunciado: "Questão array 1" },
-                 { enunciado: "Questão array 2", formularios_id: formulario.id }
+                 { enunciado: "Questão array 2" }
                ]
              },
              headers: auth_headers(admin_user)
@@ -91,8 +91,9 @@ RSpec.describe "Templates API", type: :request do
       json_response = JSON.parse(response.body)
       expect(json_response['questoes'].length).to eq(2)
       
-      questao_com_formulario = Questao.find_by(enunciado: "Questão array 2")
-      expect(questao_com_formulario.formularios_id).to eq(formulario.id)
+      # Verificar que as questões foram criadas com sucesso
+      questao = Questao.find_by(enunciado: "Questão array 2")
+      expect(questao).to be_present
     end
     
     it "cria um template com questões e alternativas aninhadas" do
@@ -171,7 +172,7 @@ RSpec.describe "Templates API", type: :request do
       }.to change(Questao, :count).by(1)
       
       expect(response).to have_http_status(200)
-      expect(template.reload.questoes.count).to eq(4) # 3 originais + 1 nova
+      expect(template.reload.questoes.count).to eq(4)
     end
   end
   

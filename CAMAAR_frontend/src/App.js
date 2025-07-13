@@ -6,6 +6,9 @@ import EnviarFormulario from './pages/EnviarFormulario';
 import Templates from './pages/Templates';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import AnswerForm from './pages/AnswerForm';
+import AdminCreateForm from './pages/AdminCreateForm';
+import AvailableForms from './pages/AvailableForms';
 import './App.css';
 
 function App() {
@@ -37,11 +40,25 @@ function App() {
               <Templates />
             </ProtectedRoute>
           } />
+          <Route path="/answer-form" element={
+            <ProtectedRoute>
+              <AnswerForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/create-form" element={
+            <ProtectedRoute>
+              <AdminCreateForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/available-forms" element={
+            <ProtectedRoute>
+              <AvailableForms />
+            </ProtectedRoute>
+          } />
           
-          {/* Rota padrão - redireciona para login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+      </Routes>
       </Router>
     </AuthProvider>
   );

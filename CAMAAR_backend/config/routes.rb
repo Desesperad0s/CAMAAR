@@ -14,24 +14,34 @@ Rails.application.routes.draw do
   resources :alternativas
   resources :departamentos
   resources :disciplinas
+  resources :questaos
   
   resources :formularios do
     collection do
       post :create_with_questions
+    end
+    member do
+      get :questoes
     end
   end
   
   resources :resposta do
     collection do
       post :batch_create
+      get 'formulario/:formulario_id', to: 'resposta#by_formulario'
     end
   end
   
-  resources :turmas
+  resources :turmas do
+    member do
+      get :formularios
+    end
+  end
+  
+  get 'user/turmas', to: 'users#turmas'
   resources :users
   resources :admins
   resources :templates
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

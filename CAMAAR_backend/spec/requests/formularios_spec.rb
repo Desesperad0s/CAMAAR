@@ -135,28 +135,29 @@ RSpec.describe "Formularios", type: :request do
 
   describe "POST /formularios/create_with_questions" do
     let(:template) { create(:template) }
+    let!(:questao1) { create(:questao, templates_id: template.id) }
+    let!(:questao2) { create(:questao, templates_id: template.id) }
+    
+    before do
+      create(:alternativa, content: "Alternativa 1", questao: questao1)
+      create(:alternativa, content: "Alternativa 2", questao: questao1)
+      create(:alternativa, content: "Alternativa 3", questao: questao2)
+      create(:alternativa, content: "Alternativa 4", questao: questao2)
+    end
     
     let(:valid_form_with_questions) {
       {
         name: "Formulário com Questões",
         date: Date.today.to_s,
         template_id: template.id,
-        questoes: [
+        respostas: [
           {
-            enunciado: "Primeira questão",
-            template_id: template.id,
-            alternativas: [
-              { content: "Alternativa 1" },
-              { content: "Alternativa 2" }
-            ]
+            questao_id: questao1.id,
+            content: "Resposta para primeira questão"
           },
           {
-            enunciado: "Segunda questão",
-            template_id: template.id,
-            alternativas: [
-              { content: "Alternativa 3" },
-              { content: "Alternativa 4" }
-            ]
+            questao_id: questao2.id,
+            content: "Resposta para segunda questão"
           }
         ]
       }
@@ -166,31 +167,45 @@ RSpec.describe "Formularios", type: :request do
       {
         name: nil,
         date: Date.today.to_s,
-        questoes: [
+        respostas: [
           {
-            enunciado: "Primeira questão",
-            template_id: template.id
+            questao_id: create(:questao, templates_id: template.id).id,
+            content: "Resposta para questão"
           }
         ]
       }
     }
 
     context "com parâmetros válidos" do
-      it "cria um formulário com questões e alternativas" do
+      it "cria um formulário com questões, alternativas e respostas" do
         expect {
           post create_with_questions_formularios_path, 
                params: valid_form_with_questions, 
                headers: valid_headers
         }.to change(Formulario, :count).by(1)
-          .and change(Questao, :count).by(2)
-          .and change(Alternativa, :count).by(4)
+          .and change(Questao, :count).by(0) # Não devem ser criadas novas questões
+          .and change(Alternativa, :count).by(0) # Não devem ser criadas novas alternativas  
+          .and change(Resposta, :count).by(2) # Apenas as respostas são criadas
         
         expect(response).to have_http_status(:created)
         
         json_response = JSON.parse(response.body)
         expect(json_response["name"]).to eq(valid_form_with_questions[:name])
-        expect(json_response["questoes"].size).to eq(2)
-        expect(json_response["questoes"][0]["alternativas"].size).to eq(2)
+        expect(json_response["template_id"]).to eq(template.id)
+        expect(json_response["respostas"].size).to eq(2)
+        expect(json_response["respostas"][0]["questao"]["alternativas"].size).to eq(2)
+        
+        # Verificar se as associações estão corretas
+        formulario = Formulario.last
+        expect(formulario.template_id).to eq(template.id)
+        expect(formulario.respostas.count).to eq(2)
+        expect(formulario.questoes.count).to eq(2) # via through association
+        
+        # Verificar que cada resposta está vinculada a uma questão
+        formulario.respostas.each do |resposta|
+          expect(resposta.questao_id).to be_present
+          expect(resposta.questao).to be_present
+        end
       end
     end
 

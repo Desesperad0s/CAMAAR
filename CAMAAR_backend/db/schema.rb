@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_13_002500) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -42,6 +42,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_002500) do
     t.integer "departamento_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "departamento_id"
+    t.index ["departamento_id"], name: "index_disciplinas_on_departamento_id"
   end
 
   create_table "formularios", force: :cascade do |t|
@@ -58,10 +60,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_002500) do
   create_table "questoes", force: :cascade do |t|
     t.string "enunciado"
     t.integer "templates_id", null: false
-    t.integer "formularios_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["formularios_id"], name: "index_questoes_on_formularios_id"
     t.index ["templates_id"], name: "index_questoes_on_templates_id"
   end
 
@@ -71,8 +71,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_002500) do
     t.datetime "updated_at", null: false
     t.integer "questao_id", null: false
     t.integer "formulario_id", null: false
+    t.integer "selected_alternativa_id"
     t.index ["formulario_id"], name: "index_resposta_on_formulario_id"
     t.index ["questao_id"], name: "index_resposta_on_questao_id"
+    t.index ["selected_alternativa_id"], name: "index_resposta_on_selected_alternativa_id"
   end
 
   create_table "templates", force: :cascade do |t|
@@ -98,9 +100,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_002500) do
     t.string "semester"
     t.string "time"
     t.string "name"
-    t.integer "disciplina_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "disciplina_id"
+    t.index ["disciplina_id"], name: "index_turmas_on_disciplina_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -117,11 +120,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_002500) do
   end
 
   add_foreign_key "alternativas", "questoes"
+  add_foreign_key "disciplinas", "departamentos"
   add_foreign_key "formularios", "templates"
   add_foreign_key "formularios", "turmas"
-  add_foreign_key "questoes", "formularios", column: "formularios_id"
   add_foreign_key "questoes", "templates", column: "templates_id"
+  add_foreign_key "resposta", "alternativas", column: "selected_alternativa_id"
   add_foreign_key "resposta", "formularios"
   add_foreign_key "resposta", "questoes"
   add_foreign_key "templates", "users"
+  add_foreign_key "turmas", "disciplinas"
 end

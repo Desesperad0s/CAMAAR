@@ -63,13 +63,20 @@ class UsersController < ApplicationController
     head :no_content
   end
 
+  # GET /user/turmas
+  # Retorna todas as turmas do usuário logado
+  def turmas
+    @user = User.find(@current_user.id)
+    @turmas = @user.turma_alunos.map(&:turma)
+    
+    render json: @turmas
+  end
+
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_user
       @user = User.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def user_params
       params.require(:user).permit(:registration, :name, :email, :password, :forms_answered, :major, :role)
     end

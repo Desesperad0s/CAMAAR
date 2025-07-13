@@ -117,4 +117,8 @@ export class Api {
             throw error;
         }
     }
+
+    async getFormularios() {
+        return await this.api.get(`/formularios`);
+    }
 }

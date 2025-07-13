@@ -7,7 +7,6 @@ RSpec.describe TemplatesController, type: :controller do
     allow_any_instance_of(described_class).to receive(:current_user).and_return(create(:user, :admin))
   end
 
-  # Fixture simples para os testes
   before(:each) do
     @admin_user = create(:user, :admin)
     @template = Template.create(content: "Template de teste", user_id: @admin_user.id)
