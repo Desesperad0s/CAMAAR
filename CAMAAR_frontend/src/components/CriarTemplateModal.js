@@ -125,9 +125,11 @@ function CriarTemplateModal({ open, onClose, onSuccess }) {
     <div className="modal-bg">
       <div className="modal-box">
         <button className="modal-close" onClick={onClose}>&times;</button>
+        
+        <label>Nome do template:</label>
+        <input className="modal-input" value={nome} onChange={e => setNome(e.target.value)} placeholder="Placeholder" />
+        
         <div className="modal-content">
-          <label>Nome do template:</label>
-          <input className="modal-input" value={nome} onChange={e => setNome(e.target.value)} placeholder="Placeholder" />
           {questoes.map((q, idx) => (
             <div key={idx} className="modal-questao">
               <div className="modal-questao-title">Questão {idx + 1}</div>
@@ -173,20 +175,22 @@ function CriarTemplateModal({ open, onClose, onSuccess }) {
             </div>
           ))}
           <button type="button" className="modal-add-questao" onClick={handleAddQuestao}>+</button>
-          {error && (
-            <div className="modal-error">
-              {error}
-            </div>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
-            <button 
-              className="modal-criar" 
-              onClick={handleSubmit} 
-              disabled={loading}
-            >
-              {loading ? 'Criando...' : 'Criar'}
-            </button>
+        </div>
+        
+        {error && (
+          <div className="modal-error">
+            {error}
           </div>
+        )}
+        
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+          <button 
+            className="modal-criar" 
+            onClick={handleSubmit} 
+            disabled={loading}
+          >
+            {loading ? 'Criando...' : 'Criar'}
+          </button>
         </div>
       </div>
     </div>
