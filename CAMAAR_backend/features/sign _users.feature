@@ -1,3 +1,4 @@
+# language: pt
 Funcionalidade: Administrador cadastrar participantes de turmas do SIGAA
 
     Como Administrador

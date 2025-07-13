@@ -1,0 +1,7 @@
+default: --format pretty --publish-quiet
+
+html_report: --format html --out reports/features.html
+
+test: --format pretty --publish-quiet
+
+pt: --language pt

@@ -1,3 +1,5 @@
+# language: pt
+
 Funcionalidade: Usuário (participante de uma turma) responder questionário da turma
 
   Como Participante de uma turma

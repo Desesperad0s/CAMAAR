@@ -1,3 +1,4 @@
+# language: pt
 Funcionalidade: Usuário redefinir senha a partir do e-mail
 
   Como Usuário
