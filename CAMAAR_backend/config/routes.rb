@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   get 'auth/me', to: 'authentication#me'
   post 'register', to: 'users#register'
   
+  post 'import-data', to: 'data_import#import'
+  
   post 'passwords/forgot', to: 'passwords#forgot'
   post 'passwords/reset', to: 'passwords#reset'
 
@@ -16,7 +18,7 @@ Rails.application.routes.draw do
   resources :departamentos
   resources :disciplinas
   resources :questaos
-  
+
   resources :formularios do
     collection do
       post :create_with_questions
