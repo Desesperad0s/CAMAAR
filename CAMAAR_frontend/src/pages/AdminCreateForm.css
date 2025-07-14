@@ -70,22 +70,6 @@
     border-radius: 8px;
 }
 
-.success-message .create-new-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 16px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.success-message .create-new-button:hover {
-  background-color: #218838;
-}
-
 .error-message p,
 .success-message p {
     margin: 0;
@@ -276,22 +260,6 @@
     margin-bottom: 1rem;
 }
 
-.loading-message {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  text-align: center;
-  min-height: 200px;
-}
-
-.loading-message p {
-  font-size: 1.2rem;
-  color: #6c757d;
-  margin: 0;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
 @keyframes spin {
     0% {
         transform: rotate(0deg);
@@ -300,10 +268,4 @@
     100% {
         transform: rotate(360deg);
     }
-}
-
-@keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
 }

@@ -1,3 +1,5 @@
+# language: pt
+
 Funcionalidade: Admin importar dados do SIGAA
 
     Como Administrador
@@ -7,5 +9,5 @@ Funcionalidade: Admin importar dados do SIGAA
     Cenário: Administrador importa os dados
         Dado que estou na pagina de gerenciamento
         Quando eu aperto o botão "Importar dados"
-        Então, os novos dados com matérias, discentes e docentes devem ser salvos
+        Então os novos dados com matérias, discentes e docentes devem ser salvos
         E os demais botões presentes nessa tela devem ser liberados

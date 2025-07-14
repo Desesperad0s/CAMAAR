@@ -1,3 +1,4 @@
+# language: pt
 Funcionalidade: Admin gerenciar turmas do departamento que pertence
 
     Como Administrador

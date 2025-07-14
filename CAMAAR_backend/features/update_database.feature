@@ -1,3 +1,4 @@
+# language: pt
 Funcionalidade: Admin atualizar base de dados já existente com os dados atuais do SIGAA
 
     Eu como Administrador
