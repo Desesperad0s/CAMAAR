@@ -157,5 +157,5 @@ Deve ter o seguinte foramto {prefixo} + '/' + {nome da branch em kebab case}. Os
 
 ### Branch e documentação/kanban da Sprint 2
 <p> Nome da branch da sprint 2: Sprint 2 </p>
-<p><a href="https://github.com/Desesperad0s/CAMAAR/wiki/Documenta%C3%A7%C3%A3o-da-implementa%C3%A7%C3%A3o-do-projeto-%E2%80%90-Segunda-sprint" target="_blank">Documentação da Sprint 2: </a> (https://github.com/Desesperad0s/CAMAAR/wiki/Documenta%C3%A7%C3%A3o-da-implementa%C3%A7%C3%A3o-do-projeto-%E2%80%90-Segunda-sprint)</p>
-<p><a href="https://github.com/orgs/Desesperad0s/projects/1" target="_blank">Quadro Kanban com o progresso das issues: </a>(https://github.com/orgs/Desesperad0s/projects/1)</p>
+<p><a href="https://github.com/Desesperad0s/CAMAAR/wiki/Documenta%C3%A7%C3%A3o-da-implementa%C3%A7%C3%A3o-do-projeto-%E2%80%90-Segunda-sprint" target="_blank">Documentação da Sprint 2 </a> (https://github.com/Desesperad0s/CAMAAR/wiki/Documenta%C3%A7%C3%A3o-da-implementa%C3%A7%C3%A3o-do-projeto-%E2%80%90-Segunda-sprint)</p>
+<p><a href="https://github.com/orgs/Desesperad0s/projects/1" target="_blank">Quadro Kanban com o progresso das issues </a>(https://github.com/orgs/Desesperad0s/projects/1)</p>
