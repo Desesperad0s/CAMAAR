@@ -4,32 +4,31 @@ import "../App.css";
 import "./Login.css";
 import "./LoginError.css";
 import { useAuth } from "../context/AuthContext";
-
+ 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+ 
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
-  
-  // Verificar se já está logado
+ 
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/gerenciamento");
     }
   }, [isAuthenticated, navigate]);
-
+ 
   const handleLogin = async () => {
     if (!email || !password) {
       setError("Por favor, preencha email e senha.");
       return;
     }
-    
+ 
     setLoading(true);
     setError("");
-    
+ 
     try {
       const success = await login(email, password);
       if (success) {
@@ -44,22 +43,19 @@ function Login() {
       setLoading(false);
     }
   };
-
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       handleLogin();
     }
   };
-
+ 
   return (
-    <div className="login-bg">
-      <div className="login-box">
-        <div className="login-form-side">
+    <div className="login-bg-custom">
+      <div className="login-box-custom">
+        <div className="login-form-side-custom">
           <h2>LOGIN</h2>
-
           {error && <div className="login-error">{error}</div>}
-
-          <label>Email</label>
+          <label>Senha</label>
           <input
             type="email"
             placeholder="admin@aluno.unb.br"
@@ -68,8 +64,7 @@ function Login() {
             onKeyPress={handleKeyPress}
             disabled={loading}
           />
-
-          <label>Senha</label>
+          <label>Confirme a senha</label>
           <input
             type="password"
             placeholder="Password"
@@ -78,35 +73,26 @@ function Login() {
             onKeyPress={handleKeyPress}
             disabled={loading}
           />
-
-          <button
-            onClick={handleLogin}
+          <button 
+            onClick={handleLogin} 
             disabled={loading}
+            className="login-btn-custom"
           >
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
-
-          <button
-            className="reset-password-btn"
-            onClick={() => navigate("/redefinir-senha")}
-            disabled={loading}
-          >
-            Esqueci minha senha
+            {loading ? "Entrando..." : "Acessar senha"}
           </button>
         </div>
-
-        <div className="login-welcome-side">
-          <p>
-            Bem vindo
+        <div className="login-welcome-side-custom">
+          <div className="welcome-text-custom">
+            <span>Bem vindo</span>
             <br />
-            ao
+            <span>ao</span>
             <br />
-            Camaar
-          </p>
+            <span>Camaar</span>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
+ 
 export default Login;
