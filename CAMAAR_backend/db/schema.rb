@@ -38,7 +38,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
 
   create_table "disciplinas", force: :cascade do |t|
     t.string "name"
-    t.string "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "departamento_id"
@@ -70,10 +69,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
     t.datetime "updated_at", null: false
     t.integer "questao_id", null: false
     t.integer "formulario_id", null: false
-    t.integer "selected_alternativa_id"
     t.index ["formulario_id"], name: "index_resposta_on_formulario_id"
     t.index ["questao_id"], name: "index_resposta_on_questao_id"
-    t.index ["selected_alternativa_id"], name: "index_resposta_on_selected_alternativa_id"
   end
 
   create_table "templates", force: :cascade do |t|
@@ -123,7 +120,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
   add_foreign_key "formularios", "templates"
   add_foreign_key "formularios", "turmas"
   add_foreign_key "questoes", "templates", column: "templates_id"
-  add_foreign_key "resposta", "alternativas", column: "selected_alternativa_id"
   add_foreign_key "resposta", "formularios"
   add_foreign_key "resposta", "questoes"
   add_foreign_key "templates", "users"
