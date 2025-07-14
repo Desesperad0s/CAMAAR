@@ -1,3 +1,4 @@
+# language: pt
 Funcionalidade: Admin editar e deletar templates criados
 
     Como Administrador

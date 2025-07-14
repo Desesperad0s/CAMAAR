@@ -77,3 +77,9 @@ group :development, :test do
   gem 'faker'
   gem 'database_cleaner-active_record'
 end
+
+group :test, :development do
+  gem 'cucumber-rails', require: false
+  gem 'database_cleaner'
+  gem 'rack-test'
+end

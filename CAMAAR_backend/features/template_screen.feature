@@ -1,3 +1,4 @@
+# language: pt
 Funcionalidade: Administrador gerenciar templates criados
 
     Como Administrador

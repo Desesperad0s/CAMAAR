@@ -1,3 +1,4 @@
+# language: pt
 Funcionalidade: Usuário definir senha no primeiro acesso via e-mail de cadastro
 
   Como Usuário

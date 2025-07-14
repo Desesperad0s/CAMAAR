@@ -1,19 +1,35 @@
+
 import { HttpClient } from "./httpClient.ts";
-const BACK_URL = "http://localhost:3333"; 
+const BACK_URL = "http://localhost:3333";
+
 export class Api {
     api;
     token;
 
-        constructor() {
-            this.token = localStorage.getItem('token');
-            const headers = { credentials: 'include' };
-            
-            if (this.token) {
-                headers['Authorization'] = `Bearer ${this.token}`;
-            }
-            
-            this.api = new HttpClient(BACK_URL, headers);
+    constructor() {
+        this.token = localStorage.getItem('token');
+        const headers = { credentials: 'include' };
+        if (this.token) {
+            headers['Authorization'] = `Bearer ${this.token}`;
         }
+        this.api = new HttpClient(BACK_URL, headers);
+    }
+
+    
+    async createFormularioWithTemplate(templateId, turmaId, name) {
+        try {
+            const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+            return await this.api.post('/formularios', {
+                name: name || `Formulário gerado em ${today}`,
+                date: today,
+                template_id: templateId,
+                turma_id: turmaId
+            });
+        } catch (error) {
+            console.error('Erro ao criar formulário com template:', error);
+            throw error;
+        }
+    }
 
     async login(email, password) {
         try {
@@ -168,6 +184,23 @@ export class Api {
         }
     }
     
+    async getTurmas() {
+        try {
+            return await this.api.get(`/turmas`);
+        } catch (error) {
+            console.error(`Erro ao buscar turmas`, error);
+            return null;
+        }
+    }
+    
+    async getDisciplinas() {
+        try {
+            return await this.api.get(`/disciplinas`);
+        } catch (error) {
+            console.error(`Erro ao buscar disciplina`, error);
+            return null;
+        }
+    }
     async getDisciplina(disciplinaId) {
         try {
             return await this.api.get(`/disciplinas/${disciplinaId}`);
