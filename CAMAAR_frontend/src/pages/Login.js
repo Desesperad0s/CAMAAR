@@ -44,6 +44,7 @@ function Login() {
       setLoading(false);
     }
   };
+
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       handleLogin();
@@ -55,9 +56,9 @@ function Login() {
       <div className="login-box">
         <div className="login-form-side">
           <h2>LOGIN</h2>
-          
+
           {error && <div className="login-error">{error}</div>}
-          
+
           <label>Email</label>
           <input
             type="email"
@@ -67,7 +68,7 @@ function Login() {
             onKeyPress={handleKeyPress}
             disabled={loading}
           />
-          
+
           <label>Senha</label>
           <input
             type="password"
@@ -77,14 +78,23 @@ function Login() {
             onKeyPress={handleKeyPress}
             disabled={loading}
           />
-          
-          <button 
-            onClick={handleLogin} 
+
+          <button
+            onClick={handleLogin}
             disabled={loading}
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>
+
+          <button
+            className="reset-password-btn"
+            onClick={() => navigate("/redefinir-senha")}
+            disabled={loading}
+          >
+            Esqueci minha senha
+          </button>
         </div>
+
         <div className="login-welcome-side">
           <p>
             Bem vindo
