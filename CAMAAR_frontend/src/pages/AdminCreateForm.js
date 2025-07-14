@@ -34,7 +34,6 @@ function AdminCreateForm() {
         setDisciplinas(disciplinasResponse || []);
       } catch (err) {
         console.error("Error fetching data:", err);
-        // Verificar se é um erro de autenticação
         if (err.message && (err.message.includes('401') || err.message.includes('Unauthorized'))) {
           setError("Erro de autenticação. Por favor, faça login novamente.");
           setTimeout(() => {

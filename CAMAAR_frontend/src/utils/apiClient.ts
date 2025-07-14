@@ -168,6 +168,23 @@ export class Api {
         }
     }
     
+    async getTurmas() {
+        try {
+            return await this.api.get(`/turmas`);
+        } catch (error) {
+            console.error(`Erro ao buscar turmas`, error);
+            return null;
+        }
+    }
+    
+    async getDisciplinas() {
+        try {
+            return await this.api.get(`/disciplinas`);
+        } catch (error) {
+            console.error(`Erro ao buscar disciplina`, error);
+            return null;
+        }
+    }
     async getDisciplina(disciplinaId) {
         try {
             return await this.api.get(`/disciplinas/${disciplinaId}`);

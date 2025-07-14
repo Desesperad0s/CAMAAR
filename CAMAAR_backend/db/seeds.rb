@@ -51,8 +51,8 @@ disciplinas_info.each do |disc_info|
   disciplinas_criadas[disc_info[:name]] = disciplina
   puts "Criada disciplina: #{disciplina.name} no departamento: #{disc_info[:departamento_code]}"
 end
-# puts "#{disciplinas.size} disciplinas criadas!"
 
+# puts "#{disciplinas.size} disciplinas criadas!"
 # Criar Usuários - Admins, Professores e Estudantes
 puts "Criando usuários..."
 
