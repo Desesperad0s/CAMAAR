@@ -54,13 +54,19 @@ O frontend React estará disponível na porta definida em `FRONTEND_PORT`.
 docker exec -it camaar_rails bash
 bundle exec rspec
 ```
-- Exutar migrations e popular o banco de dados(com o docker compose em execução)
+- Executar migrations e popular o banco de dados(com o docker compose em execução)
 ```
 docker exec -it camaar_rails bash
 rails db:migrate
 rails db:seed
 ```
 ---
+
+- Executar os passos dos cenários BDD
+```
+docker exec -it camaar_rails bash
+bundle exec cucumber features/nome-da-feature.feature
+```
 
 ## ⚙️ Configuração Manual (Sem Docker)
 
