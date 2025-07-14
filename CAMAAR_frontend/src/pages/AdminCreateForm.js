@@ -63,10 +63,15 @@ function AdminCreateForm() {
       setSubmitting(true);
       setError(null);
 
-      const promises = selectedTurmas.map(turmaId => 
-        api.createFormularioWithTemplate(selectedTemplate, turmaId)
-      );
-      
+      const selectedTemplateObj = templates.find(t => t.id == selectedTemplate);
+      const promises = selectedTurmas.map(turmaId => {
+        const turmaObj = turmas.find(t => t.id === turmaId);
+        const turmaNome = turmaObj ? turmaObj.name || turmaObj.code || turmaObj.number : turmaId;
+        const templateNome = selectedTemplateObj ? (selectedTemplateObj.content || `Template ${selectedTemplateObj.id}`) : selectedTemplate;
+        const formName = `Formulário ${turmaNome} - ${templateNome}`;
+        return api.createFormularioWithTemplate(selectedTemplate, turmaId, formName);
+      });
+
       const responses = await Promise.all(promises);
 
       if (responses.length > 0) {
