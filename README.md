@@ -62,6 +62,12 @@ rails db:seed
 ```
 ---
 
+- Executar os passos dos cenários BDD
+```
+docker exec -it camaar_rails bash
+bundle exec cucumber features/nome-da-feature.feature
+```
+
 ## ⚙️ Configuração Manual (Sem Docker)
 
 ### Backend (Rails)
