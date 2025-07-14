@@ -6,14 +6,18 @@ Rails.application.routes.draw do
   get 'auth/me', to: 'authentication#me'
   post 'register', to: 'users#register'
   
+  post 'import-data', to: 'data_import#import'
+  
   post 'passwords/forgot', to: 'passwords#forgot'
   post 'passwords/reset', to: 'passwords#reset'
+
+  get 'turmas/code/:code', to: 'turmas#find_by_code'
   
   resources :alternativas
   resources :departamentos
   resources :disciplinas
   resources :questaos
-  
+
   resources :formularios do
     collection do
       post :create_with_questions

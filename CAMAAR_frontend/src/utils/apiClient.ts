@@ -4,16 +4,16 @@ export class Api {
     api;
     token;
 
-    constructor() {
-        this.token = localStorage.getItem('token');
-        const headers = { credentials: 'include' };
-        
-        if (this.token) {
-            headers['Authorization'] = `Bearer ${this.token}`;
+        constructor() {
+            this.token = localStorage.getItem('token');
+            const headers = { credentials: 'include' };
+            
+            if (this.token) {
+                headers['Authorization'] = `Bearer ${this.token}`;
+            }
+            
+            this.api = new HttpClient(BACK_URL, headers);
         }
-        
-        this.api = new HttpClient(BACK_URL, headers);
-    }
 
     async login(email, password) {
         try {
@@ -209,6 +209,15 @@ export class Api {
             return await this.api.post('/resposta/batch_create', { respostas: answers });
         } catch (error) {
             console.error("Erro ao enviar respostas:", error);
+            throw error;
+        }
+    }
+    
+    async importData() {
+        try {
+            return await this.api.post('/import-data');
+        } catch (error) {
+            console.error("Erro ao importar dados:", error);
             throw error;
         }
     }

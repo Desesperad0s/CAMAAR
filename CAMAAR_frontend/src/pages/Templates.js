@@ -11,6 +11,8 @@ function Templates() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [downloadingReport, setDownloadingReport] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importStatus, setImportStatus] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedForm, setSelectedForm] = useState(null);
   const navigate = useNavigate();
@@ -29,6 +31,33 @@ function Templates() {
         .finally(() => setLoading(false));
     }
   }, [selected, api]);
+
+  const handleImportData = () => {
+    setImporting(true);
+    setImportStatus(null);
+    setError("");
+    
+    api.importData()
+      .then((response) => {
+        setImportStatus({
+          success: true,
+          message: "Dados importados com sucesso!",
+          details: response
+        });
+      })
+      .catch((error) => {
+        console.error("Erro ao importar dados:", error);
+        setImportStatus({
+          success: false,
+          message: "Erro ao importar dados. Por favor, tente novamente.",
+          details: error
+        });
+        setError("Erro ao importar dados. Por favor, tente novamente mais tarde.");
+      })
+      .finally(() => {
+        setImporting(false);
+      });
+  };
 
   const handleGenerateExcelReport = () => {
     setDownloadingReport(true);
@@ -115,7 +144,13 @@ function Templates() {
         />
         {selected === "Gerenciamento" ? (
           <div className="template-center-panel">
-            <button className="template-btn main">Importar dados</button>
+            <button 
+              className="template-btn main"
+              onClick={handleImportData}
+              disabled={importing}
+            >
+              {importing ? "Importando..." : "Importar dados"}
+            </button>
             <button
               className="template-btn main"
               onClick={() => navigate("/gerenciamento")}
@@ -130,6 +165,11 @@ function Templates() {
             >
               {downloadingReport ? "Gerando..." : "Resultados"}
             </button>
+            {importStatus && (
+              <div className={`import-status ${importStatus.success ? 'success' : 'error'}`}>
+                {importStatus.message}
+              </div>
+            )}
           </div>
         ) : (
           <div className="avaliacoes-list">
