@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   get 'turmas/code/:code', to: 'turmas#find_by_code'
   
+  devise_for :users
   resources :alternativas
   resources :departamentos
   resources :disciplinas
