@@ -49,7 +49,17 @@ docker-compose up --build
 O backend Rails estará disponível na porta definida em `BACKEND_PORT`.
 O frontend React estará disponível na porta definida em `FRONTEND_PORT`.
 
-
+- Rodar testes unitários (com o docker compose em execução)
+```
+docker exec -it camaar_rails bash
+bundle exec rspec
+```
+- Exutar migrations e popular o banco de dados(com o docker compose em execução)
+```
+docker exec -it camaar_rails bash
+rails db:migrate
+rails db:seed
+```
 ---
 
 ## ⚙️ Configuração Manual (Sem Docker)

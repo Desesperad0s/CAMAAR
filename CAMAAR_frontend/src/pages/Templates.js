@@ -36,13 +36,14 @@ function Templates() {
     setImporting(true);
     setImportStatus(null);
     setError("");
-    
-    api.importData()
+
+    api
+      .importData()
       .then((response) => {
         setImportStatus({
           success: true,
           message: "Dados importados com sucesso!",
-          details: response
+          details: response,
         });
       })
       .catch((error) => {
@@ -50,9 +51,11 @@ function Templates() {
         setImportStatus({
           success: false,
           message: "Erro ao importar dados. Por favor, tente novamente.",
-          details: error
+          details: error,
         });
-        setError("Erro ao importar dados. Por favor, tente novamente mais tarde.");
+        setError(
+          "Erro ao importar dados. Por favor, tente novamente mais tarde."
+        );
       })
       .finally(() => {
         setImporting(false);
@@ -69,7 +72,9 @@ function Templates() {
 
         const link = document.createElement("a");
         link.href = url;
-        const fileName = `relatorio_formularios_${new Date().toISOString().slice(0,10)}.xlsx`;
+        const fileName = `relatorio_formularios_${new Date()
+          .toISOString()
+          .slice(0, 10)}.xlsx`;
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
@@ -79,7 +84,9 @@ function Templates() {
       })
       .catch((error) => {
         console.error("Erro ao gerar relatório Excel:", error);
-        setError("Erro ao gerar relatório Excel. Por favor, tente novamente mais tarde.");
+        setError(
+          "Erro ao gerar relatório Excel. Por favor, tente novamente mais tarde."
+        );
       })
       .finally(() => {
         setDownloadingReport(false);
@@ -103,8 +110,14 @@ function Templates() {
       <div className="modal-overlay" onClick={closeModal}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
-            <h2>{selectedForm.nome || selectedForm.name || `Formulário #${selectedForm.id}`}</h2>
-            <button className="close-button" onClick={closeModal}>×</button>
+            <h2>
+              {selectedForm.nome ||
+                selectedForm.name ||
+                `Formulário #${selectedForm.id}`}
+            </h2>
+            <button className="close-button" onClick={closeModal}>
+              ×
+            </button>
           </div>
           <div className="modal-body">
             {selectedForm.respostas && selectedForm.respostas.length > 0 ? (
@@ -114,21 +127,30 @@ function Templates() {
                   {selectedForm.respostas.map((resposta) => (
                     <li key={resposta.id} className="questao-resposta-item">
                       <div className="questao">
-                        <strong>Questão:</strong> {resposta.questao ? resposta.questao.enunciado || `Questão #${resposta.questao.id}` : 'Questão não encontrada'}
+                        <strong>Questão:</strong>{" "}
+                        {resposta.questao
+                          ? resposta.questao.enunciado ||
+                            `Questão #${resposta.questao.id}`
+                          : "Questão não encontrada"}
                       </div>
                       <div className="resposta">
-                        <strong>Resposta:</strong> {resposta.content || 'Sem resposta'}
+                        <strong>Resposta:</strong>{" "}
+                        {resposta.content || "Sem resposta"}
                       </div>
                     </li>
                   ))}
                 </ul>
               </div>
             ) : (
-              <p className="no-respostas">Este formulário não possui respostas.</p>
+              <p className="no-respostas">
+                Este formulário não possui respostas.
+              </p>
             )}
           </div>
           <div className="modal-footer">
-            <button onClick={closeModal} className="modal-button">Fechar</button>
+            <button onClick={closeModal} className="modal-button">
+              Fechar
+            </button>
           </div>
         </div>
       </div>
@@ -144,7 +166,7 @@ function Templates() {
         />
         {selected === "Gerenciamento" ? (
           <div className="template-center-panel">
-            <button 
+            <button
               className="template-btn main"
               onClick={handleImportData}
               disabled={importing}
@@ -153,11 +175,16 @@ function Templates() {
             </button>
             <button
               className="template-btn main"
-              onClick={() => navigate("/gerenciamento")}
+              onClick={() => navigate("/templates")}
             >
-              Editar Formularios
+              Ver Templates
             </button>
-            <button className="template-btn main">Enviar Formulários</button>
+            <button
+              className="template-btn main"
+              onClick={() => navigate("/admin/create-form")}
+            >
+              Enviar Formulários
+            </button>
             <button
               className="template-btn main"
               onClick={handleGenerateExcelReport}
@@ -166,7 +193,11 @@ function Templates() {
               {downloadingReport ? "Gerando..." : "Resultados"}
             </button>
             {importStatus && (
-              <div className={`import-status ${importStatus.success ? 'success' : 'error'}`}>
+              <div
+                className={`import-status ${
+                  importStatus.success ? "success" : "error"
+                }`}
+              >
                 {importStatus.message}
               </div>
             )}
@@ -182,7 +213,11 @@ function Templates() {
             ) : (
               <div className="grid">
                 {formularios.map((form) => (
-                  <div className="card" key={form.id} onClick={() => handleCardClick(form)}>
+                  <div
+                    className="card"
+                    key={form.id}
+                    onClick={() => handleCardClick(form)}
+                  >
                     <strong>
                       {form.nome || form.titulo || `Formulário #${form.id}`}
                     </strong>

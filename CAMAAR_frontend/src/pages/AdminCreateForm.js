@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Api } from "../utils/apiClient.ts";
+import { useNavigate } from "react-router-dom";
 import "./AdminCreateForm.css";
+
 
 function AdminCreateForm() {
   const [templates, setTemplates] = useState([]);
@@ -12,9 +14,10 @@ function AdminCreateForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+  const api = useMemo(() => new Api(), []);
 
-  const api = new Api();
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,6 +36,14 @@ function AdminCreateForm() {
       } catch (err) {
         setError("Erro ao carregar dados. Tente novamente.");
         console.error("Error fetching data:", err);
+        if (err.message && (err.message.includes('401') || err.message.includes('Unauthorized'))) {
+          setError("Erro de autenticação. Por favor, faça login novamente.");
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
+        } else {
+          setError("Erro ao carregar dados. Tente novamente.");
+        }
       } finally {
         setLoading(false);
       }
@@ -52,10 +63,15 @@ function AdminCreateForm() {
       setSubmitting(true);
       setError(null);
 
-      const promises = selectedTurmas.map(turmaId => 
-        api.createFormularioWithTemplate(selectedTemplate, turmaId)
-      );
-      
+      const selectedTemplateObj = templates.find(t => t.id == selectedTemplate);
+      const promises = selectedTurmas.map(turmaId => {
+        const turmaObj = turmas.find(t => t.id === turmaId);
+        const turmaNome = turmaObj ? turmaObj.name || turmaObj.code || turmaObj.number : turmaId;
+        const templateNome = selectedTemplateObj ? (selectedTemplateObj.content || `Template ${selectedTemplateObj.id}`) : selectedTemplate;
+        const formName = `Formulário ${turmaNome} - ${templateNome}`;
+        return api.createFormularioWithTemplate(selectedTemplate, turmaId, formName);
+      });
+
       const responses = await Promise.all(promises);
 
       if (responses.length > 0) {

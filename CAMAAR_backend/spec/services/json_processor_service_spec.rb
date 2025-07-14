@@ -16,7 +16,7 @@ RSpec.describe JsonProcessorService, type: :service do
       
       it 'retorna um hash de sucesso' do
         pending("Teste temporariamente desabilitado ")
-        
+
         result = JsonProcessorService.import_all_data
         
         expect(result).to be_a(Hash)
