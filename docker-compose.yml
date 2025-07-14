@@ -27,6 +27,7 @@ services:
       - ${FRONTEND_PORT}:3000
     volumes:
       - ./CAMAAR_frontend:/app
+      - /app/node_modules
     networks:
       - camaar
 
