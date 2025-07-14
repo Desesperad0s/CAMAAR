@@ -141,13 +141,20 @@ class JsonProcessorService
               password: "padrao123"
             )
 
-            # Associar à turma ID 1
             if aluno.persisted?
               TurmaAluno.create!(
                 turma_id: turma.id,
                 aluno_id: aluno.id
               )
               Rails.logger.info("Aluno criado e associado à turma ID 1")
+              UserMailer.send_set_password_email(aluno).deliver_now
+              Rails.logger.info("Email de configuração de senha enviado para #{aluno.email}")
+              
+              # Enviar email com link para tela específica
+              link = "https://camaar.com/tela-especifica"
+              UserMailer.custom_email(aluno, "Bem vindo ao CAMAAR, para fazer as avaliações cadastre uma senha", "Olá #{aluno.name}, acesse: #{link}").deliver_now
+              Rails.logger.info("Email enviado para #{aluno.email} com link para tela específica")
+              
               processed_users += 1
             else
               errors << "Erro ao criar o usuário: #{aluno_data['email']} - #{aluno.errors.full_messages.join(', ')}"

@@ -3,9 +3,7 @@ class User < ApplicationRecord
   has_many :turmas, through: :turma_alunos
   has_many :templates, foreign_key: :user_id
 
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
-         :confirmable
+  devise :confirmable
          
   attr_accessor :auth_token
 
