@@ -5,7 +5,6 @@ class User < ApplicationRecord
   
   attr_accessor :auth_token
   
-  # Atributos virtuais para controle de primeiro acesso
   attr_accessor :reset_password_token, :first_access_token
   
   validates :registration, presence: true

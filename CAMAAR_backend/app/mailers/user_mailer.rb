@@ -1,5 +1,4 @@
 class UserMailer < ApplicationMailer
-  # Use o email que você usou para criar a conta SendGrid (já está verificado)
   default from: 'lucaslgol05@gmail.com'  
 
   def first_access_email(user, reset_token)
@@ -7,7 +6,7 @@ class UserMailer < ApplicationMailer
     @reset_token = reset_token
     @reset_url = "#{frontend_url}/nova-senha?token=#{@reset_token}&email=#{@user.email}"
     
-    # ENVIO REAL: usar o email real do usuário
+    # TODO: to: @user.email
     mail(
       to: "231003406@aluno.unb.br",
       subject: 'Bem-vindo ao CAMAAR - Defina sua senha de acesso'

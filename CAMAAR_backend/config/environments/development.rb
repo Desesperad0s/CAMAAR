@@ -35,8 +35,6 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
   
   # Configurações de email para desenvolvimento
-  # Use :file para salvar emails em arquivos durante desenvolvimento
-  # Use :smtp para enviar emails reais (configure as credenciais)
   config.action_mailer.delivery_method = ENV['EMAIL_DELIVERY_METHOD']&.to_sym || :file
   config.action_mailer.perform_deliveries = true
   config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
