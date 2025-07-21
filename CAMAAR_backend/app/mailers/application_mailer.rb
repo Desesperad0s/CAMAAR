@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "from@example.com"
+  default from: "lucaslgol05@gmail.com"  # Email da conta SendGrid
   layout "mailer"
 end
