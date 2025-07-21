@@ -27,6 +27,10 @@ class UserMailer < ApplicationMailer
   private
   
   def frontend_url
-    Rails.application.config.frontend_url || 'http://localhost:3000'
+    if Rails.application.config.respond_to?(:frontend_url) && Rails.application.config.frontend_url.present?
+      Rails.application.config.frontend_url
+    else
+      'http://localhost:3000'
+    end
   end
 end
