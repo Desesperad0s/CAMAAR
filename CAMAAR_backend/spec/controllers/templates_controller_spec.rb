@@ -150,20 +150,30 @@ RSpec.describe TemplatesController, type: :controller do
       }.to change(Template, :count).by(-1)
     end
 
-    it "retorna um status :no_content" do
+    it "retorna um status :ok com mensagem de sucesso" do
       delete :destroy, params: { id: @template.id }
-      expect(response).to have_http_status(:no_content)
+      expect(response).to have_http_status(:ok)
+      
+      json_response = JSON.parse(response.body)
+      expect(json_response['message']).to eq("Template deletado com sucesso")
+      expect(json_response['template']).to be_present
     end
 
-    it "destrói também as questões associadas" do
+    it "preserva as questões associadas (não destrói)" do
       template_with_question = Template.create(content: "Template com questão")
       
       begin
         questao = template_with_question.questoes.create(enunciado: "Questão teste")
+        questao_id = questao.id
         
         expect {
           delete :destroy, params: { id: template_with_question.id }
-        }.to change(Questao, :count).by(-1)
+        }.to change(Template, :count).by(-1)
+        .and change(Questao, :count).by(0) 
+        
+        # Verificar se a questão ainda existe mas sem template
+        reloaded_questao = Questao.find(questao_id)
+        expect(reloaded_questao.templates_id).to be_nil
       rescue => e
         pending "Não foi possível criar a questão: #{e.message}"
       end
