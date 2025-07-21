@@ -99,8 +99,19 @@ class TemplatesController < ApplicationController
 
   # DELETE /templates/1
   def destroy
+    template_data = {
+      id: @template.id,
+      content: @template.content,
+      questoes_count: @template.questoes.count,
+      formularios_count: @template.formularios.count
+    }
+    
     @template.destroy!
-    head :no_content
+    
+    render json: { 
+      message: "Template deletado com sucesso",
+      template: template_data
+    }, status: :ok
   end
 
   private
