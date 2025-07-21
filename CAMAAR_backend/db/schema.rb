@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_21_115358) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -57,7 +57,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
 
   create_table "questoes", force: :cascade do |t|
     t.string "enunciado"
-    t.integer "templates_id", null: false
+    t.integer "templates_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["templates_id"], name: "index_questoes_on_templates_id"
