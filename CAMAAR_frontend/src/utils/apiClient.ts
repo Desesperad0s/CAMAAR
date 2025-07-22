@@ -134,6 +134,15 @@ export class Api {
         }
     }
 
+    async updateTemplate(id, templateData) {
+        try {
+            return await this.api.put(`/templates/${id}`, templateData);
+        } catch (error) {
+            console.error(`Erro ao atualizar template ${id}:`, error);
+            throw error;
+        }
+    }
+
     async getFormularios() {
         return await this.api.get(`/formularios`);
     }
