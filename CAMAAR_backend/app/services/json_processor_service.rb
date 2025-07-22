@@ -180,22 +180,6 @@ class JsonProcessorService
             existing_user = User.find_by(email: aluno_data['email']) || 
                             User.find_by(registration: aluno_data['matricula'])
                             
-            if existing_user
-              Rails.logger.info("Aluno já existe: #{existing_user.name} - #{existing_user.email}")
-              # Associar à turma ID 1
-              unless TurmaAluno.exists?(turma_id: turma.id, aluno_id: existing_user.id)
-                TurmaAluno.create!(turma_id: turma.id, aluno_id: existing_user.id)
-                Rails.logger.info("Aluno associado à turma ID 1")
-              else
-                Rails.logger.info("Aluno já associado à turma ID 1")
-              end
-              processed_users += 1
-              next
-            end
-            
-            # Criar apenas usuário, não criar disciplinas/turmas (conforme solicitado)
-            Rails.logger.info("Criando novo aluno: #{aluno_data['nome']} - #{aluno_data['email']}")
-            
             # Determinar o papel do usuário
             role = 'student'
             if aluno_data['ocupacao'].present?
@@ -204,22 +188,48 @@ class JsonProcessorService
                      (ocupacao == 'professor' || ocupacao == 'docente') ? 'professor' : 'student'
             end
             
-            aluno = User.create!(
-              name: aluno_data['nome'] || "Usuário #{aluno_data['matricula']}",
-              major: aluno_data['curso'] || 'Não informado',
-              registration: aluno_data['matricula'],
-              email: aluno_data['email'],
-              role: role,
-              password: "padrao123"
-            )
-
-            # Associar à turma ID 1
-            if aluno.persisted?
-              TurmaAluno.create!(
-                turma_id: turma.id,
-                aluno_id: aluno.id
+            if existing_user
+              Rails.logger.info("Aluno já existe, atualizando: #{existing_user.name} - #{existing_user.email}")
+              
+              # Atualizar dados do usuário existente
+              existing_user.update!(
+                name: aluno_data['nome'] || existing_user.name,
+                major: aluno_data['curso'] || existing_user.major,
+                registration: aluno_data['matricula'] || existing_user.registration,
+                email: aluno_data['email'] || existing_user.email,
+                role: role
+                # Não atualizamos a senha para usuários existentes
               )
-              Rails.logger.info("Aluno criado e associado à turma ID 1")
+              
+              Rails.logger.info("Dados do aluno atualizados: #{existing_user.name}")
+              aluno = existing_user
+            else
+              # Criar novo usuário
+              Rails.logger.info("Criando novo aluno: #{aluno_data['nome']} - #{aluno_data['email']}")
+              
+              aluno = User.create!(
+                name: aluno_data['nome'] || "Usuário #{aluno_data['matricula']}",
+                major: aluno_data['curso'] || 'Não informado',
+                registration: aluno_data['matricula'],
+                email: aluno_data['email'],
+                role: role,
+                password: "padrao123"
+              )
+              
+              Rails.logger.info("Novo aluno criado: #{aluno.name}")
+            end
+
+            # Associar à turma ID 1 (sempre fazer a associação)
+            if aluno.persisted?
+              unless TurmaAluno.exists?(turma_id: turma.id, aluno_id: aluno.id)
+                TurmaAluno.create!(
+                  turma_id: turma.id,
+                  aluno_id: aluno.id
+                )
+                Rails.logger.info("Aluno associado à turma ID 1")
+              else
+                Rails.logger.info("Aluno já associado à turma ID 1")
+              end
               processed_users += 1
             else
               errors << "Erro ao criar o usuário: #{aluno_data['email']} - #{aluno.errors.full_messages.join(', ')}"

@@ -55,7 +55,7 @@ function Login() {
         <div className="login-form-side-custom">
           <h2>LOGIN</h2>
           {error && <div className="login-error">{error}</div>}
-          <label>Senha</label>
+          <label>Email</label>
           <input
             type="email"
             placeholder="admin@aluno.unb.br"
@@ -64,7 +64,7 @@ function Login() {
             onKeyPress={handleKeyPress}
             disabled={loading}
           />
-          <label>Confirme a senha</label>
+          <label>Senha</label>
           <input
             type="password"
             placeholder="Password"
