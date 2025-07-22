@@ -154,7 +154,6 @@ function AdminCreateForm() {
               </select>
             </div>
 
-            {/* Campo para selecionar público alvo */}
             <div className="template-section">
               <label htmlFor="publicoAlvo">Público alvo</label>
               <select
