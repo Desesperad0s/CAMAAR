@@ -20,10 +20,9 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/nova-senha" element={<NovaSenha />} />
-          
+          <Route path="/login" element={<Login />} />
           <Route path="/gerenciamento" element={
             <AdminRoute>
               <Templates />
@@ -66,6 +65,7 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="*" element={<Navigate to="/login" replace />} />
+          
       </Routes>
       </Router>
     </AuthProvider>

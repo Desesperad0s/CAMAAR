@@ -1,73 +1,153 @@
-.login-container {
+.nova-senha-bg-custom {
+  min-height: 100vh;
+  background: #e5e5e5;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #5e2760, #8a3d8f);
-  font-family: 'Roboto', sans-serif;
+  justify-content: center;
 }
 
-.login-box {
+.nova-senha-box-custom {
+  display: flex;
+  width: 650px;
+  min-height: 380px;
   background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 360px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.nova-senha-form-side-custom {
+  flex: 1;
+  background: #fff;
+  padding: 40px 32px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.nova-senha-form-side-custom h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
   text-align: center;
 }
 
-.login-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #5e2760;
-}
-
-.login-subtitle {
-  font-size: 0.95rem;
+.nova-senha-subtitle {
+  font-size: 0.9rem;
   color: #666;
-  margin-bottom: 1.5rem;
+  text-align: center;
+  margin-bottom: 24px;
+  line-height: 1.4;
 }
 
-.login-form {
-  display: flex;
-  flex-direction: column;
+.nova-senha-form-side-custom label {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  margin-top: 12px;
+  color: #222;
 }
 
-.login-input {
-  padding: 0.8rem;
-  margin-bottom: 1rem;
+.nova-senha-form-side-custom input {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 8px;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 4px;
+  font-size: 1rem;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+
+.nova-senha-btn-custom {
+  width: 100%;
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nova-senha-btn-custom:disabled {
+  background: #a3e3b7;
+  cursor: not-allowed;
+}
+
+.nova-senha-btn-custom:hover:not(:disabled) {
+  background: #1a9444;
+}
+
+.nova-senha-error {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  text-align: center;
   font-size: 0.95rem;
 }
 
-.login-button {
-  padding: 0.8rem;
-  background-color: #5e2760;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s;
+.nova-senha-success {
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 0.95rem;
 }
 
-.login-button:hover {
-  background-color: #4a1e4c;
+.nova-senha-footer {
+  margin-top: 20px;
+  text-align: center;
 }
 
-.login-footer {
-  margin-top: 1.5rem;
-}
-
-.login-link {
-  color: #5e2760;
+.nova-senha-link {
+  color: #6d2266;
   text-decoration: none;
-  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.2s;
 }
 
-.login-link:hover {
+.nova-senha-link:hover {
+  color: #4a1745;
   text-decoration: underline;
+}
+
+.nova-senha-welcome-side-custom {
+  flex: 1;
+  background: #6d2266;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nova-senha-welcome-text-custom {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+@media (max-width: 700px) {
+  .nova-senha-box-custom {
+    flex-direction: column;
+    width: 98vw;
+    min-width: 0;
+  }
+  .nova-senha-form-side-custom, .nova-senha-welcome-side-custom {
+    min-width: 0;
+    width: 100%;
+    padding: 24px 10px;
+  }
+  .nova-senha-welcome-text-custom {
+    font-size: 1.3rem;
+  }
 }

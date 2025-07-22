@@ -69,6 +69,15 @@ class DataImportController < ApplicationController
       all_success = discentes_result[:success]
       all_errors = discentes_result[:errors] || []
       
+      # Enviar emails para novos usuários que precisam definir senha
+      email_results = []
+      if discentes_result[:new_users] && discentes_result[:new_users].any?
+        Rails.logger.info("Enviando emails de primeiro acesso para #{discentes_result[:new_users].size} novos usuários")
+        email_results = EmailService.send_first_access_emails(discentes_result[:new_users])
+      else
+        Rails.logger.info("Nenhum novo usuário encontrado para envio de emails")
+      end
+      
       if all_success
         render json: {
           success: true,
@@ -76,8 +85,11 @@ class DataImportController < ApplicationController
           stats: {
             users_processed: discentes_result[:total_processed],
             classes_processed: classes_result[:total_processed],
-            turmas_processed: Turma.count
-          }
+            turmas_processed: Turma.count,
+            emails_sent: email_results.count { |r| r[:status] == 'sent' },
+            email_errors: email_results.count { |r| r[:status] == 'error' }
+          },
+          email_details: email_results
         }, status: :ok
       else
         render json: {
@@ -86,12 +98,14 @@ class DataImportController < ApplicationController
           stats: {
             users_processed: discentes_result[:total_processed],
             classes_processed: classes_result[:total_processed],
-            errors: all_errors
-          }
+            errors: all_errors,
+            emails_sent: email_results.count { |r| r[:status] == 'sent' },
+            email_errors: email_results.count { |r| r[:status] == 'error' }
+          },
+          email_details: email_results
         }, status: :ok
       end
     rescue => e
-      # Registrar o erro completo no log para facilitar o diagnóstico
       Rails.logger.error("Erro na importação de dados: #{e.message}")
       Rails.logger.error("Backtrace: #{e.backtrace.join("\n")}")
       
@@ -130,7 +144,6 @@ class DataImportController < ApplicationController
   # * Em caso de erro, registra no log mas não interrompe execução
   def ensure_database_structure
     begin
-      # Verificar se existe uma turma com ID 1
       turma = Turma.find_by(id: 1)
       
       unless turma

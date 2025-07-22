@@ -17,5 +17,13 @@ FactoryBot.define do
     trait :student do
       role { "student" }
     end
+
+    trait :needs_password_reset do
+      password { "padrao123" }
+    end
+
+    trait :with_custom_password do
+      password { "custom123" }
+    end
   end
 end
