@@ -265,8 +265,19 @@
           <div class="method-source-code" id="destroy-source">
             <pre><span class="ruby-comment"># File app/controllers/templates_controller.rb, line 173</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">destroy</span>
+  <span class="ruby-identifier">template_data</span> = {
+    <span class="ruby-value">id:</span> <span class="ruby-ivar">@template</span>.<span class="ruby-identifier">id</span>,
+    <span class="ruby-value">content:</span> <span class="ruby-ivar">@template</span>.<span class="ruby-identifier">content</span>,
+    <span class="ruby-value">questoes_count:</span> <span class="ruby-ivar">@template</span>.<span class="ruby-identifier">questoes</span>.<span class="ruby-identifier">count</span>,
+    <span class="ruby-value">formularios_count:</span> <span class="ruby-ivar">@template</span>.<span class="ruby-identifier">formularios</span>.<span class="ruby-identifier">count</span>
+  }
+  
   <span class="ruby-ivar">@template</span>.<span class="ruby-identifier">destroy!</span>
-  <span class="ruby-identifier">head</span> <span class="ruby-value">:no_content</span>
+  
+  <span class="ruby-identifier">render</span> <span class="ruby-value">json:</span> { 
+    <span class="ruby-value">message:</span> <span class="ruby-string">&quot;Template deletado com sucesso&quot;</span>,
+    <span class="ruby-value">template:</span> <span class="ruby-identifier">template_data</span>
+  }, <span class="ruby-value">status:</span> <span class="ruby-value">:ok</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           <p>Remove um template do sistema</p>
