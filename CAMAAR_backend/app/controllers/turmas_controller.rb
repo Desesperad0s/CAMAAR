@@ -14,8 +14,11 @@ class TurmasController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum - operação somente de leitura
   def index
-    
-    @turmas = Turma.all
+    if @current_user&.admin?
+      @turmas = Turma.joins(:disciplina).where(disciplinas: { departamento_id: @current_user.departamento_id })
+    else
+      @turmas = Turma.none
+    end
     render json: @turmas
   end
 
