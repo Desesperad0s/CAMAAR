@@ -51,6 +51,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_115358) do
     t.datetime "updated_at", null: false
     t.integer "template_id"
     t.integer "turma_id"
+    t.string "publico_alvo", default: "discente", null: false
     t.index ["template_id"], name: "index_formularios_on_template_id"
     t.index ["turma_id"], name: "index_formularios_on_turma_id"
   end

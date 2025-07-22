@@ -149,18 +149,12 @@ class FormulariosController < ApplicationController
   def create
     ActiveRecord::Base.transaction do
       formulario_attrs = formulario_params.to_h
-      
       process_resposta_attributes_for_create(formulario_attrs)
-      
       @formulario = Formulario.new(formulario_attrs)
-      
       Rails.logger.debug "Creating formulario with attributes: #{formulario_attrs.inspect}"
-      
       if @formulario.save
         process_additional_respostas
-        
         @formulario.reload
-        
         render json: @formulario.as_json(
           include: { 
             respostas: { 
@@ -523,6 +517,7 @@ class FormulariosController < ApplicationController
         :date, 
         :template_id, 
         :turma_id,
+        :publico_alvo,
         :remove_missing_respostas,
         respostas_attributes: [
           :id, 
