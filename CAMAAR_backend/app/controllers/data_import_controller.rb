@@ -2,6 +2,24 @@ class DataImportController < ApplicationController
   before_action :authenticate_request
   before_action :authorize_admin, only: [:import]
   
+  ##
+  # Importa dados de disciplinas, turmas e alunos a partir de arquivos JSON
+  #
+  # === Argumentos
+  # Nenhum argumento - utiliza arquivos JSON fixos na raiz do projeto:
+  # * classes.json - dados das turmas e disciplinas
+  # * class_members.json - dados dos membros das turmas
+  #
+  # === Retorno
+  # Em caso de sucesso: JSON com estatísticas da importação e status 200 (ok)
+  # Em caso de erro: JSON com detalhes do erro e status apropriado (404, 422, 500)
+  #
+  # === Efeitos Colaterais
+  # * Verifica e corrige estrutura do banco de dados
+  # * Cria/atualiza registros de Departamento, Disciplina, User, Turma e TurmaAluno
+  # * Executa em transação - se houver erro, faz rollback de todas as alterações
+  # * Gera logs detalhados do processo de importação
+  #
   # POST /import-data
   def import
     begin
@@ -94,6 +112,22 @@ class DataImportController < ApplicationController
     end
   end
   
+  ##
+  # Verifica se existe uma turma padrão (ID 1) e cria se necessário
+  #
+  # === Argumentos
+  # Nenhum argumento recebido
+  #
+  # === Retorno
+  # Nenhum retorno específico
+  #
+  # === Efeitos Colaterais
+  # * Verifica existência de turma com ID 1
+  # * Cria departamento padrão se não existir nenhum
+  # * Cria disciplina padrão se não existir nenhuma
+  # * Cria turma padrão se não existir nenhuma
+  # * Registra informações detalhadas no log do Rails
+  # * Em caso de erro, registra no log mas não interrompe execução
   def ensure_database_structure
     begin
       # Verificar se existe uma turma com ID 1

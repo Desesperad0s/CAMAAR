@@ -1,4 +1,33 @@
+##
+# Service responsável pelo processamento e importação de dados JSON
+# 
+# Este service processa arquivos JSON contendo informações de turmas e alunos,
+# criando usuários no sistema e associando-os a turmas existentes.
+# Atualmente otimizado para usar uma turma padrão (ID 1) para simplificar o processo.
+#
 class JsonProcessorService
+  ##
+  # Importa todos os dados dos arquivos JSON (classes.json e class_members.json)
+  #
+  # === Argumentos
+  # Nenhum argumento recebido
+  #
+  # === Retorno
+  # Hash contendo:
+  # * +:success+ - Boolean indicando sucesso geral da operação
+  # * +:class_members+ - Hash com resultados do processamento de membros
+  # * +:classes+ - Hash com resultados do processamento de turmas
+  # * +:error+ - Mensagem de erro geral (se houver)
+  #
+  # === Efeitos Colaterais
+  # * Lê arquivos JSON do diretório raiz do projeto
+  # * Cria usuários no banco de dados
+  # * Associa usuários à turma padrão (ID 1)
+  # * Registra logs detalhados do processo
+  #
+  # === Exemplo
+  #   result = JsonProcessorService.import_all_data
+  #   # => { success: true, class_members: {...}, classes: {...} }
   def self.import_all_data
     begin
       # Carregar os arquivos JSON
@@ -50,6 +79,24 @@ class JsonProcessorService
     end
   end
 
+  ##
+  # Processa dados de turmas/classes do arquivo JSON
+  # 
+  # NOTA: Este método está atualmente desativado conforme solicitação do projeto.
+  # O sistema usa uma turma padrão (ID 1) ao invés de criar novas turmas.
+  #
+  # === Argumentos
+  # * +data+ - String contendo dados JSON das turmas
+  #
+  # === Retorno
+  # Hash contendo:
+  # * +:success+ - Boolean (sempre true, pois método está desativado)
+  # * +:total_processed+ - Integer (sempre 0)
+  # * +:errors+ - Array vazio
+  #
+  # === Efeitos Colaterais
+  # * Registra mensagem informativa no log
+  # * Não cria turmas ou disciplinas
   def self.process_classes(data)
     Rails.logger.info("Método process_classes chamado mas está desativado conforme solicitado")
     Rails.logger.info("Não estamos criando disciplinas/turmas, apenas usuários serão associados à turma ID 1")
@@ -59,6 +106,31 @@ class JsonProcessorService
     Rails.logger.error("JSON inválido de classes: #{e.message}")
     raise "JSON inválido de classes: #{e.message}"
   end
+
+  ##
+  # Processa dados de discentes/alunos do arquivo JSON
+  #
+  # === Argumentos
+  # * +data+ - String contendo dados JSON dos alunos organizados por turma
+  #
+  # === Retorno
+  # Hash contendo:
+  # * +:success+ - Boolean indicando se o processamento foi bem-sucedido
+  # * +:total_processed+ - Integer com número de usuários processados
+  # * +:errors+ - Array com mensagens de erro encontradas
+  #
+  # === Efeitos Colaterais
+  # * Verifica existência da turma padrão (ID 1)
+  # * Cria novos usuários no banco de dados com role 'student'
+  # * Associa usuários existentes e novos à turma padrão
+  # * Define senha padrão ("padrao123") para novos usuários
+  # * Registra logs detalhados de cada operação
+  # * Trata erros individualmente por aluno sem interromper o processo
+  #
+  # === Validações
+  # * Email e matrícula são obrigatórios
+  # * Verifica duplicatas por email ou matrícula
+  # * Determina role baseado no campo 'ocupacao'
   def self.process_discentes(data)
     parsed_data = JSON.parse(data)
     errors = []
