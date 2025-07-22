@@ -1,0 +1,28 @@
+🎓 Bem-vindo ao CAMAAR - Universidade de Brasília
+
+Olá, <%= @user.name %>!
+
+Você foi cadastrado no sistema CAMAAR (Centro de Avaliação e Monitoramento Acadêmico) da Universidade de Brasília.
+
+Para acessar o sistema, você precisa definir sua senha pessoal através do seguinte link:
+
+🔗 <%= @reset_url %>
+
+📋 INFORMAÇÕES DA SUA CONTA:
+- Email: <%= @user.email %>
+- Matrícula: <%= @user.registration %>
+- Perfil: <%= @user.role.humanize %>
+<% if @user.major.present? %>- Curso: <%= @user.major %><% end %>
+
+⚠️  IMPORTANTE: Este link é válido por 24 horas. Após este período, será necessário solicitar um novo link de redefinição.
+
+🔐 Após definir sua senha, você poderá:
+• Acessar formulários de avaliação
+• Visualizar suas turmas  
+• Acompanhar seu progresso acadêmico
+• Participar de avaliações institucionais
+
+📧 Este é um email automático, não responda.
+🏛️  © <%= Date.current.year %> CAMAAR - Universidade de Brasília
+
+Em caso de dúvidas, entre em contato com o suporte técnico.

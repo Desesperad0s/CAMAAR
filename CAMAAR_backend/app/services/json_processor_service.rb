@@ -135,6 +135,7 @@ class JsonProcessorService
     parsed_data = JSON.parse(data)
     errors = []
     processed_users = 0
+    new_users = []  # Array para rastrear novos usuários
 
     # Simplificar a abordagem - usar turma com ID 1
     begin
@@ -143,7 +144,7 @@ class JsonProcessorService
     rescue => e
       Rails.logger.error("Não foi possível encontrar a turma com ID 1: #{e.message}")
       # Não vamos criar turmas para simplificar, conforme solicitado
-      return {success: false, total_processed: 0, errors: ["Turma com ID 1 não encontrada. Certifique-se de que existe ao menos uma turma no sistema."]}
+      return {success: false, total_processed: 0, new_users: [], errors: ["Turma com ID 1 não encontrada. Certifique-se de que existe ao menos uma turma no sistema."]}
     end
 
     parsed_data.each do |turma_data|
@@ -231,6 +232,7 @@ class JsonProcessorService
                 Rails.logger.info("Aluno já associado à turma ID 1")
               end
               processed_users += 1
+              new_users << aluno  # Adicionar ao array de novos usuários
             else
               errors << "Erro ao criar o usuário: #{aluno_data['email']} - #{aluno.errors.full_messages.join(', ')}"
               Rails.logger.error("Erro ao criar o usuário: #{aluno_data['email']} - #{aluno.errors.full_messages.join(', ')}")
@@ -248,11 +250,11 @@ class JsonProcessorService
       end
     end
 
-    Rails.logger.info("Processamento de alunos concluído: #{processed_users} alunos processados, #{errors.length} erros")
-    return {success: errors.empty?, total_processed: processed_users, errors: errors}
+    Rails.logger.info("Processamento de alunos concluído: #{processed_users} alunos processados, #{new_users.length} novos usuários, #{errors.length} erros")
+    return {success: errors.empty?, total_processed: processed_users, new_users: new_users, errors: errors}
   rescue JSON::ParserError => e
     Rails.logger.error("JSON inválido de discentes: #{e.message}")
     Rails.logger.error(e.backtrace.join("\n"))
-    raise "JSON inválido de discentes: #{e.message}"
+    return {success: false, total_processed: 0, new_users: [], errors: ["JSON inválido de discentes: #{e.message}"]}
   end
 end

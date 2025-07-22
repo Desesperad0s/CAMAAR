@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   
   post 'passwords/forgot', to: 'passwords#forgot'
   post 'passwords/reset', to: 'passwords#reset'
+  post 'passwords/set-first', to: 'passwords#set_first_password'
+  get 'passwords/test-email', to: 'passwords#test_email' # Apenas para desenvolvimento
 
   get 'turmas/code/:code', to: 'turmas#find_by_code'
   
