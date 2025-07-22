@@ -185,14 +185,13 @@ RSpec.describe "Templates API", type: :request do
       expect {
         delete "/templates/#{template.id}", headers: auth_headers
       }.to change(Template, :count).by(-1)
-      .and change(Questao, :count).by(0) # Questões são preservadas
+      .and change(Questao, :count).by(0) 
       
       expect(response).to have_http_status(200)
       
       json_response = JSON.parse(response.body)
       expect(json_response['message']).to eq("Template deletado com sucesso")
       
-      # Verificar se as questões ainda existem mas sem template
       questoes_ids.each do |questao_id|
         questao = Questao.find(questao_id)
         expect(questao.templates_id).to be_nil

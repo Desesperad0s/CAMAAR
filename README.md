@@ -60,6 +60,13 @@ docker exec -it camaar_rails bash
 rails db:migrate
 rails db:seed
 ```
+
+- Gerar documentação no padrão Rdocs
+```
+docker exec -it camaar_rails bash
+rdoc app/controllers app/services app/models -o doc/html --title "CAMAAR Backend Documentation"
+
+```
 ---
 
 - Executar os passos dos cenários BDD

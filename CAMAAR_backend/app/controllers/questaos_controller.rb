@@ -1,7 +1,17 @@
 class QuestaosController < ApplicationController
   before_action :set_questao, only: %i[ show edit update destroy ]
 
-  # GET /questaos or /questaos.json
+  ##
+  # Lista todas as questões ou questões de um formulário específico
+  #
+  # === Argumentos
+  # * +formulario_id+ - (Opcional) ID do formulário para filtrar questões
+  #
+  # === Retorno
+  # Array JSON contendo as questões (todas ou filtradas por formulário/template)
+  #
+  # === Efeitos Colaterais
+  # Nenhum - operação somente de leitura
   def index
     if params[:formulario_id].present?
       formulario = Formulario.find_by(id: params[:formulario_id])
@@ -22,21 +32,63 @@ class QuestaosController < ApplicationController
     render json: @questaos
   end
 
-  # GET /questaos/1 or /questaos/1.json
+  ##
+  # Exibe os detalhes de uma questão específica
+  #
+  # === Argumentos
+  # * +id+ - ID da questão (através dos params)
+  #
+  # === Retorno
+  # JSON com os dados da questão encontrada
+  #
+  # === Efeitos Colaterais
+  # Nenhum - operação somente de leitura
   def show
     render json: @questao
   end
 
-  # GET /questaos/new
+  ##
+  # Prepara uma nova instância de questão para criação
+  #
+  # === Argumentos
+  # Nenhum argumento recebido
+  #
+  # === Retorno
+  # Nova instância de Questao
+  #
+  # === Efeitos Colaterais
+  # Define @questao como nova instância
   def new
     @questao = Questao.new
   end
 
-  # GET /questaos/1/edit
+  ##
+  # Prepara uma questão existente para edição
+  #
+  # === Argumentos
+  # * +id+ - ID da questão (através dos params e callback set_questao)
+  #
+  # === Retorno
+  # Implicitamente retorna a view de edição
+  #
+  # === Efeitos Colaterais
+  # Nenhum - apenas preparação para edição
   def edit
   end
 
-  # POST /questaos or /questaos.json
+  ##
+  # Cria uma nova questão no sistema
+  #
+  # === Argumentos
+  # * +questao+ - Hash com os dados da nova questão (enunciado, templates_id, formularios_id, alternativas_attributes)
+  #
+  # === Retorno
+  # * HTML: Redirecionamento com notice (success) ou renderização do form com erros
+  # * JSON: Dados da questão criada com status 201 ou erros com status 422
+  #
+  # === Efeitos Colaterais
+  # * Cria um novo registro na tabela de questões
+  # * Pode criar alternativas associadas através de nested attributes
   def create
     @questao = Questao.new(questao_params)
 
@@ -51,7 +103,20 @@ class QuestaosController < ApplicationController
     end
   end
 
-  # PATCH/PUT /questaos/1 or /questaos/1.json
+  ##
+  # Atualiza os dados de uma questão existente
+  #
+  # === Argumentos
+  # * +id+ - ID da questão a ser atualizada (através dos params)
+  # * +questao+ - Hash com os novos dados da questão
+  #
+  # === Retorno
+  # * HTML: Redirecionamento com notice (success) ou renderização do form com erros
+  # * JSON: Dados atualizados ou erros de validação
+  #
+  # === Efeitos Colaterais
+  # * Atualiza o registro da questão no banco de dados
+  # * Pode atualizar/criar/remover alternativas associadas através de nested attributes
   def update
     respond_to do |format|
       if @questao.update(questao_params)
@@ -64,7 +129,19 @@ class QuestaosController < ApplicationController
     end
   end
 
-  # DELETE /questaos/1 or /questaos/1.json
+  ##
+  # Remove uma questão do sistema
+  #
+  # === Argumentos
+  # * +id+ - ID da questão a ser removida (através dos params)
+  #
+  # === Retorno
+  # * HTML: Redirecionamento para índice com notice de sucesso
+  # * JSON: Status 204 (no content)
+  #
+  # === Efeitos Colaterais
+  # * Remove o registro da questão do banco de dados
+  # * Remove alternativas associadas (dependendo das configurações do modelo)
   def destroy
     @questao.destroy!
 
@@ -75,10 +152,33 @@ class QuestaosController < ApplicationController
   end
 
   private
+    ##
+    # Localiza e define a questão baseada no ID fornecido nos parâmetros
+    #
+    # === Argumentos
+    # Nenhum argumento direto - utiliza params[:id]
+    #
+    # === Retorno
+    # Define a variável de instância @questao
+    #
+    # === Efeitos Colaterais
+    # * Define @questao como a questão encontrada
+    # * Levanta exceção ActiveRecord::RecordNotFound se não encontrada
     def set_questao
       @questao = Questao.find(params[:id])
     end
 
+    ##
+    # Filtra e permite apenas parâmetros confiáveis para criação/atualização de questões
+    #
+    # === Argumentos
+    # Nenhum argumento direto - utiliza params
+    #
+    # === Retorno
+    # Hash com parâmetros filtrados e permitidos
+    #
+    # === Efeitos Colaterais
+    # Nenhum - apenas filtragem de parâmetros
     def questao_params
       params.require(:questao).permit(
         :enunciado, 

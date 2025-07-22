@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_21_115358) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_22_021723) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -112,6 +112,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_115358) do
     t.string "role"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "departamento_id"
+    t.index ["departamento_id"], name: "index_users_on_departamento_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -124,4 +126,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_115358) do
   add_foreign_key "resposta", "questoes"
   add_foreign_key "templates", "users"
   add_foreign_key "turmas", "disciplinas"
+  add_foreign_key "users", "departamentos"
 end
