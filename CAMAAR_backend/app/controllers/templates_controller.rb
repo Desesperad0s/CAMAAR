@@ -14,7 +14,7 @@ class TemplatesController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /templates
+  # Rota: GET /templates
   def index
     @templates = Template.all
     render json: @templates.as_json(include: { questoes: { include: :alternativas } })
@@ -33,7 +33,7 @@ class TemplatesController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /templates/1
+  # Rota: GET /templates/:id
   def show
     render json: @template.as_json(include: { questoes: { include: :alternativas } })
   end
@@ -56,7 +56,7 @@ class TemplatesController < ApplicationController
   # * Cria registros de Alternativa associados às questões
   # * Se não houver user_id válido, busca e atribui o primeiro admin encontrado
   #
-  # POST /templates
+  # Rota: POST /templates
   def create
     # Create a new template based on basic attributes
     # Obter o user_id do parâmetro admin_id ou user_id

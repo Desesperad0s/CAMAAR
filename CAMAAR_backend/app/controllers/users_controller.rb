@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /users
+  # Rota: GET /users
   def index
     @users = User.all
     render json: @users
@@ -34,7 +34,7 @@ class UsersController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /users/1
+  # Rota: GET /users/:id
   def show
     render json: @user
   end
@@ -54,7 +54,7 @@ class UsersController < ApplicationController
   # * Gera token JWT para o usuário
   # * Define auth_token do usuário
   #
-  # POST /users
+  # Rota: POST /users
   def create
     @user = User.new(user_params)
 

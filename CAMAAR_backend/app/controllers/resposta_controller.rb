@@ -13,7 +13,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /resposta
+  # Rota: GET /resposta
   def index
     @respostas = Resposta.all
     render json: @respostas
@@ -32,7 +32,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /resposta/1
+  # Rota: GET /resposta/:id
   def show
     render json: @resposta
   end
@@ -50,7 +50,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # * Cria novo registro de Resposta no banco de dados
   #
-  # POST /resposta
+  # Rota: POST /resposta
   def create
     @resposta = Resposta.new(resposta_params)
 
@@ -75,7 +75,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # * Atualiza o registro da Resposta no banco de dados
   #
-  # PATCH/PUT /resposta/1
+  # Rota: PATCH/PUT /resposta/:id
   def update
     if @resposta.update(resposta_params)
       render json: @resposta

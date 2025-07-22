@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
   rescue_from JWT::DecodeError, with: :unauthorized_request
   
   ##
-  # Endpoint para verificação de saúde da API
+  # Rota: GET /health_check
   #
   # === Argumentos
   # Nenhum argumento é necessário
