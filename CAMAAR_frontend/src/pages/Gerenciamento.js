@@ -1,6 +1,7 @@
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import CriarTemplateModal from "../components/CriarTemplateModal";
+import UpdateTemplateModal from "../components/UpdateTemplateModal";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Api } from "../utils/apiClient.ts";
@@ -8,6 +9,8 @@ import "./Gerenciamento.css";
 
 function Gerenciamento() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -44,11 +47,32 @@ function Gerenciamento() {
     if (window.confirm("Tem certeza que deseja excluir este template?")) {
       try {
         await api.deleteTemplate(id);
-        loadTemplates();
+        await loadTemplates();
       } catch {
         alert("Erro ao deletar template.");
       }
     }
+  };
+
+  const handleEdit = async (templateId) => {
+    try {
+      const templateData = await api.getTemplate(templateId);
+      setSelectedTemplate(templateData);
+      setUpdateModalOpen(true);
+    } catch (error) {
+      console.error('Erro ao carregar template:', error);
+      alert("Erro ao carregar dados do template.");
+    }
+  };
+
+  const handleUpdateSuccess = () => {
+    setSelectedTemplate(null);
+    loadTemplates();
+  };
+
+  const handleCloseUpdateModal = () => {
+    setUpdateModalOpen(false);
+    setSelectedTemplate(null);
   };
 
   return (
@@ -75,7 +99,12 @@ function Gerenciamento() {
                 <div className="card-semester">semestre</div>
                 <div className="card-professor">Professor</div>
                 <div className="icons">
-                  <span className="icon edit" title="Editar">
+                  <span 
+                    className="icon edit" 
+                    title="Editar"
+                    onClick={() => handleEdit(template.id)}
+                    style={{ cursor: "pointer" }}
+                  >
                     ✏️
                   </span>
                   <span
@@ -96,6 +125,12 @@ function Gerenciamento() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={loadTemplates}
+      />
+      <UpdateTemplateModal
+        open={updateModalOpen}
+        onClose={handleCloseUpdateModal}
+        onSuccess={handleUpdateSuccess}
+        templateData={selectedTemplate}
       />
     </div>
   );
