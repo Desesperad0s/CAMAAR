@@ -13,6 +13,7 @@ class Formulario < ApplicationRecord
 
   validates :name, presence: true
   validates :date, presence: true
+  validates :publico_alvo, presence: true, inclusion: { in: %w[docente discente] }
   
   attr_accessor :remove_missing_respostas
   

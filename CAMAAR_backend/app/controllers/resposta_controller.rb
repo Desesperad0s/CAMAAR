@@ -189,7 +189,7 @@ class RespostaController < ApplicationController
       questao = questao_respostas.first.questao
       {
         questao_id: questao_id,
-        questao_texto: questao&.content || "Questão desconhecida",
+        questao_texto: questao&.enunciado || "Questão desconhecida",
         tipo: questao&.kind || "text",
         respostas: questao_respostas.map do |resposta|
           {
