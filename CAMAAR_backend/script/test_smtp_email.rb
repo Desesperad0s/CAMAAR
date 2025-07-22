@@ -13,7 +13,7 @@ puts "SMTP Password: #{'*' * (ENV['SMTP_PASSWORD']&.length || 0)}"
 
 puts "\n🧪 Criando usuário de teste com senha padrão..."
 test_user = User.new(
-  email: "lucasgabrieljake@gmail.com",
+  email: "231003406@aluno.unb.br",
   name: "Usuário de Teste",
   registration: "TEST001",
   role: "student",

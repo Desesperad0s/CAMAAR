@@ -31,7 +31,7 @@ puts
 # Criar usuário de teste
 test_user = User.new(
   name: 'Usuário de Teste',
-  email: "lucasgabrieljake@gmail.com",
+  email: "231003406@aluno.unb.br",
   registration: 'TEST001',
   role: 'student',
   password: 'padrao123'

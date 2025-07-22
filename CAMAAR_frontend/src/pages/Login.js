@@ -80,6 +80,9 @@ function Login() {
           >
             {loading ? "Entrando..." : "Acessar senha"}
           </button>
+          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+            <a href="/redefinir-senha" className="login-link">Esqueci minha senha</a>
+          </div>
         </div>
         <div className="login-welcome-side-custom">
           <div className="welcome-text-custom">

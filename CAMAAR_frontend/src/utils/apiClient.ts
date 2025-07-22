@@ -1,3 +1,4 @@
+
 import { HttpClient } from "./httpClient.ts";
 const BACK_URL = "http://localhost:3333";
 
@@ -12,6 +13,30 @@ export class Api {
       headers["Authorization"] = `Bearer ${this.token}`;
     }
     this.api = new HttpClient(BACK_URL, headers);
+  }
+
+  async resetPassword({ token, email, password, password_confirmation }) {
+    try {
+      return await this.api.post("/passwords/reset", {
+        token,
+        email,
+        password,
+        password_confirmation,
+      });
+    } catch (error) {
+      console.error("Erro ao redefinir senha:", error);
+      throw error;
+    }
+  }
+
+
+  async forgotPassword(email: string) {
+    try {
+      return await this.api.post("/passwords/forgot", { email });
+    } catch (error) {
+      console.error("Erro ao solicitar redefinição de senha:", error);
+      throw error;
+    }
   }
 
   async createFormularioWithTemplate(

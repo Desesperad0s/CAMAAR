@@ -8,7 +8,7 @@ class UserMailer < ApplicationMailer
     
     # TODO: to: @user.email
     mail(
-      to: "lucasgabrieljake@gmail.com",
+      to: "231003406@aluno.unb.br",
       subject: 'Bem-vindo ao CAMAAR - Defina sua senha de acesso'
     )
   end
