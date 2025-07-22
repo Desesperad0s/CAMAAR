@@ -3,12 +3,7 @@
   cursor: pointer;
 }
 
-.user-menu:hover .dropdown-menu {
-  display: block;
-}
-
 .dropdown-menu {
-  display: none;
   position: absolute;
   right: 0;
   top: 40px;
