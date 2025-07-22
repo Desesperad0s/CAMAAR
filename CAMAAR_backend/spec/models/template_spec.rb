@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Template, type: :model do
   describe 'associações' do
     it { should belong_to(:user).with_foreign_key(:user_id).optional(true) }
-    it { should have_many(:questoes).with_foreign_key(:templates_id).dependent(:destroy) }
+    it { should have_many(:questoes).with_foreign_key(:templates_id).dependent(:nullify) }
     
     it "deveria ter muitos formulários" do
       should have_many(:formularios).with_foreign_key(:template_id)

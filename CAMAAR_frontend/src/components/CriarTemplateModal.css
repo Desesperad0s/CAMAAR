@@ -186,3 +186,98 @@
   text-align: center;
   border: 1px solid #ffcdd2;
 }
+
+/* Estilos específicos para o modal de update */
+.modal-questao-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.questao-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.questao-remove-btn, .questao-restore-btn {
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.questao-remove-btn {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.questao-remove-btn:hover {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.questao-restore-btn {
+  color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+.questao-restore-btn:hover {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.questao-removida {
+  opacity: 0.5;
+  background-color: #fafafa;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.questao-removida-label {
+  color: #d32f2f;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.modal-remove-opcao {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.modal-remove-opcao:hover {
+  background: #b71c1c;
+}
+
+.modal-cancel {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-cancel:hover {
+  background: #e0e0e0;
+}
+
+.modal-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
