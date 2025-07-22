@@ -1,6 +1,18 @@
 class FormulariosController < ApplicationController
   before_action :set_formulario, only: %i[show update destroy]
 
+  ##
+  # Lista todos os formulários do sistema
+  #
+  # === Argumentos
+  # Nenhum argumento é necessário
+  #
+  # === Retorno
+  # JSON contendo array de formulários com suas respostas, questões, alternativas e templates aninhados
+  #
+  # === Efeitos Colaterais
+  # Nenhum efeito colateral - apenas consulta o banco de dados
+  #
   # GET /formularios
   def index
     @formularios = Formulario.all
@@ -17,6 +29,19 @@ class FormulariosController < ApplicationController
     )
   end
 
+  ##
+  # Exibe um formulário específico identificado pelo ID
+  #
+  # === Argumentos
+  # * +id+ - ID do formulário a ser exibido (passado via params[:id])
+  #
+  # === Retorno
+  # JSON contendo o formulário com suas respostas, questões, alternativas e template aninhados
+  # Se o formulário não for encontrado, retorna erro 404
+  #
+  # === Efeitos Colaterais
+  # Nenhum efeito colateral - apenas consulta o banco de dados
+  #
   # GET /formularios/1
   def show
     render json: @formulario.as_json(
@@ -32,6 +57,21 @@ class FormulariosController < ApplicationController
     )
   end
 
+  ##
+  # Gera relatório em Excel com todos os formulários e suas respostas
+  #
+  # === Argumentos
+  # Nenhum argumento é necessário
+  #
+  # === Retorno
+  # Arquivo Excel (.xlsx) contendo relatório formatado dos formulários
+  # Em caso de erro: JSON com mensagem de erro e status 500
+  #
+  # === Efeitos Colaterais
+  # * Consulta o banco de dados para obter todos os formulários
+  # * Gera arquivo Excel temporário
+  # * Força download do arquivo no navegador
+  #
   # GET /formularios/report/excel
   def excel_report
     begin
@@ -209,12 +249,43 @@ class FormulariosController < ApplicationController
     end
   end
   
+  ##
+  # Remove um formulário do sistema
+  #
+  # === Argumentos
+  # * +id+ - ID do formulário a ser removido (através dos params)
+  #
+  # === Retorno
+  # Status 204 (no content) indicando remoção bem-sucedida
+  #
+  # === Efeitos Colaterais
+  # * Remove o registro do formulário do banco de dados
+  # * Remove respostas associadas (dependendo das configurações do modelo)
   # DELETE /formularios/1
   def destroy
     @formulario.destroy!
     head :no_content
   end
   
+  ##
+  # Cria um formulário com questões e respostas em uma única operação
+  #
+  # === Argumentos
+  # * +name+ - Nome do formulário
+  # * +date+ - Data do formulário
+  # * +template_id+ - (Opcional) ID do template associado
+  # * +turma_id+ - (Opcional) ID da turma associada
+  # * +respostas+ - Array de respostas a serem criadas (questao_id, content)
+  # * +formulario[respostas_attributes]+ - Alternativa usando nested attributes
+  #
+  # === Retorno
+  # * JSON com formulário criado incluindo respostas e questões (success)
+  # * JSON com erros de validação (failure)
+  #
+  # === Efeitos Colaterais
+  # * Cria novo formulário no banco de dados
+  # * Cria respostas associadas ao formulário
+  # * Valida existência das questões antes da criação
   # POST /formularios/create_with_questions
   def create_with_questions
     ActiveRecord::Base.transaction do
@@ -276,6 +347,17 @@ class FormulariosController < ApplicationController
     end
   end
 
+  ##
+  # Retorna todas as questões associadas a um formulário
+  #
+  # === Argumentos
+  # * +id+ - ID do formulário (através dos params)
+  #
+  # === Retorno
+  # Array JSON contendo questões do template ou questões das respostas do formulário
+  #
+  # === Efeitos Colaterais
+  # Nenhum - operação somente de leitura
   # GET /formularios/1/questoes
   def questoes
     @formulario = Formulario.find(params[:id])
@@ -293,6 +375,20 @@ class FormulariosController < ApplicationController
 
   private
     # Método auxiliar para processar os atributos de resposta
+    ##
+    # Processa atributos de resposta durante operações de update
+    #
+    # === Argumentos
+    # * +resposta_attr+ - Hash com dados da resposta
+    # * +respostas_to_destroy_ids+ - Array para IDs de respostas a serem removidas
+    # * +respostas_to_add+ - Array para dados de novas respostas
+    #
+    # === Retorno
+    # Nenhum retorno direto - modifica os arrays passados por referência
+    #
+    # === Efeitos Colaterais
+    # * Adiciona IDs ao array de exclusão se _destroy estiver marcado
+    # * Adiciona dados ao array de criação para novas respostas
     def process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add)
       return unless resposta_attr.is_a?(Hash)
       
@@ -306,7 +402,18 @@ class FormulariosController < ApplicationController
       end
     end
     
-    # Processa parâmetros de respostas para create
+    ##
+    # Converte parâmetros de respostas para o formato respostas_attributes durante criação
+    #
+    # === Argumentos
+    # * +formulario_attrs+ - Hash com atributos do formulário que será modificado
+    #
+    # === Retorno
+    # Nenhum retorno direto - modifica o hash passado por referência
+    #
+    # === Efeitos Colaterais
+    # * Converte array de respostas em hash respostas_attributes
+    # * Mescla com respostas_attributes existentes se houver
     def process_resposta_attributes_for_create(formulario_attrs)
       # Verifica e converte respostas em respostas_attributes se necessário
       if params[:formulario] && params[:formulario][:respostas].present? && params[:formulario][:respostas].is_a?(Array)
@@ -326,7 +433,18 @@ class FormulariosController < ApplicationController
       end
     end
     
+    ##
     # Processa respostas adicionais após salvar o formulário
+    #
+    # === Argumentos
+    # Nenhum argumento direto - utiliza @formulario e params
+    #
+    # === Retorno
+    # Nenhum retorno específico
+    #
+    # === Efeitos Colaterais
+    # * Cria respostas adicionais que não estão no formato respostas_attributes
+    # * Associa as respostas ao formulário recém-criado
     def process_additional_respostas
       # Processa respostas que não estão no formato respostas_attributes
       if params[:formulario] && params[:formulario][:respostas].present? && !formulario_params[:respostas_attributes].present?
@@ -342,6 +460,18 @@ class FormulariosController < ApplicationController
     end
     
     # Método auxiliar para atualizar uma resposta existente
+    ##
+    # Atualiza uma resposta existente com novos dados
+    #
+    # === Argumentos
+    # * +resposta_attr+ - Hash com dados da resposta a ser atualizada
+    #
+    # === Retorno
+    # Nenhum retorno específico
+    #
+    # === Efeitos Colaterais
+    # * Atualiza o conteúdo da resposta no banco de dados
+    # * Registra erros no log em caso de falha
     def update_existing_resposta(resposta_attr)
       return unless resposta_attr.is_a?(Hash)
       
@@ -358,11 +488,34 @@ class FormulariosController < ApplicationController
     end
 
     # Use callbacks to share common setup or constraints between actions.
+    ##
+    # Localiza e define o formulário baseado no ID fornecido nos parâmetros
+    #
+    # === Argumentos
+    # Nenhum argumento direto - utiliza params[:id]
+    #
+    # === Retorno
+    # Define a variável de instância @formulario
+    #
+    # === Efeitos Colaterais
+    # * Define @formulario como o formulário encontrado
+    # * Levanta exceção ActiveRecord::RecordNotFound se não encontrado
     def set_formulario
       @formulario = Formulario.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
+    ##
+    # Filtra e permite apenas parâmetros confiáveis para criação/atualização de formulários
+    #
+    # === Argumentos
+    # Nenhum argumento direto - utiliza params
+    #
+    # === Retorno
+    # Hash com parâmetros filtrados e permitidos, incluindo normalização de respostas_attributes
+    #
+    # === Efeitos Colaterais
+    # * Converte diferentes formatos de respostas para respostas_attributes padronizado
+    # * Registra parâmetros processados no log para debugging
     def formulario_params
       # Primeiro, obtemos os parâmetros básicos permitidos
       permitted = params.require(:formulario).permit(
