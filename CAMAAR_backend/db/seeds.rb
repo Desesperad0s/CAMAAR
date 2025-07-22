@@ -137,6 +137,18 @@ alunos.each do |aluno|
   end
 end
 
+
+# Associar todos os professores a todas as turmas
+professores = User.where(role: 'professor').to_a
+turmas_criadas.each do |turma|
+  professores.each do |professor|
+    unless professor.turma_alunos.exists?(turma_id: turma.id)
+      professor.turma_alunos.create!(turma_id: turma.id)
+      puts "Professor #{professor.name} vinculado à turma #{turma.name}"
+    end
+  end
+end
+
 puts "Matrículas de alunos concluídas!"
 
 # Criar Templates

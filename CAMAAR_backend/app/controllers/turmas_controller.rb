@@ -180,8 +180,13 @@ end
   # Nenhum - operação somente de leitura
   def formularios
     @turma = Turma.find(params[:id])
-    @formularios = @turma.formularios
-    
+    if current_user.professor?
+      @formularios = @turma.formularios.where(publico_alvo: 'docente')
+    elsif current_user.estudante?
+      @formularios = @turma.formularios.where(publico_alvo: 'discente')
+    else
+      @formularios = @turma.formularios
+    end
     render json: @formularios
   end
 
