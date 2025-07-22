@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Questao, type: :model do
   describe 'associações' do
-    it { should belong_to(:template).with_foreign_key(:templates_id) }
+    it { should belong_to(:template).with_foreign_key(:templates_id).optional(true) }
     
     it "deveria ter muitas alternativas" do
       should have_many(:alternativas).with_foreign_key(:questao_id)

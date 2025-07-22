@@ -486,6 +486,7 @@ DEPENDENCIES
   rack-cors
   rack-test
   rails (~> 8.0.2)
+  rdoc
   rspec-rails
   rubocop-rails-omakase
   rubyzip (~> 2.3)

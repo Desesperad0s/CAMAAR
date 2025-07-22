@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_22_021723) do
   create_table "admins", force: :cascade do |t|
     t.integer "registration"
     t.string "name"
@@ -51,13 +51,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
     t.datetime "updated_at", null: false
     t.integer "template_id"
     t.integer "turma_id"
+    t.string "publico_alvo", default: "discente", null: false
     t.index ["template_id"], name: "index_formularios_on_template_id"
     t.index ["turma_id"], name: "index_formularios_on_turma_id"
   end
 
   create_table "questoes", force: :cascade do |t|
     t.string "enunciado"
-    t.integer "templates_id", null: false
+    t.integer "templates_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["templates_id"], name: "index_questoes_on_templates_id"
@@ -112,6 +113,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
     t.string "role"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "departamento_id"
+    t.index ["departamento_id"], name: "index_users_on_departamento_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -124,4 +127,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_030000) do
   add_foreign_key "resposta", "questoes"
   add_foreign_key "templates", "users"
   add_foreign_key "turmas", "disciplinas"
+  add_foreign_key "users", "departamentos"
 end

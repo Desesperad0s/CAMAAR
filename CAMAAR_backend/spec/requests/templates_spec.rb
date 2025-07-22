@@ -179,13 +179,23 @@ RSpec.describe "Templates API", type: :request do
   describe "DELETE /templates/:id" do
     let!(:template) { create(:template_with_questions, questions_count: 2) }
     
-    it "remove o template e suas questões" do
+    it "remove o template mas preserva as questões" do
+      questoes_ids = template.questoes.pluck(:id)
+      
       expect {
         delete "/templates/#{template.id}", headers: auth_headers
       }.to change(Template, :count).by(-1)
-      .and change(Questao, :count).by(-2)
+      .and change(Questao, :count).by(0) 
       
-      expect(response).to have_http_status(204)
+      expect(response).to have_http_status(200)
+      
+      json_response = JSON.parse(response.body)
+      expect(json_response['message']).to eq("Template deletado com sucesso")
+      
+      questoes_ids.each do |questao_id|
+        questao = Questao.find(questao_id)
+        expect(questao.templates_id).to be_nil
+      end
     end
   end
 end

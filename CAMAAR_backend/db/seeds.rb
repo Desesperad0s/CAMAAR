@@ -68,11 +68,11 @@ professor_users = [
 ]
 
 student_users = [
-  { registration: '180019999', name: 'Ana Oliveira', email: 'ana.oliveira@aluno.unb.br', password: 'senha123', role: 'student', major: 'Ciência da Computação' },
-  { registration: '190029999', name: 'Pedro Costa', email: 'pedro.costa@aluno.unb.br', password: 'senha123', role: 'student', major: 'Engenharia de Software' },
-  { registration: '200039999', name: 'Júlia Pereira', email: 'julia.pereira@aluno.unb.br', password: 'senha123', role: 'student', major: 'Ciência da Computação' },
-  { registration: '210049999', name: 'Lucas Souza', email: 'lucas.souza@aluno.unb.br', password: 'senha123', role: 'student', major: 'Matemática' },
-  { registration: '220059999', name: 'Isabela Lima', email: 'isabela.lima@aluno.unb.br', password: 'senha123', role: 'student', major: 'Estatística' }
+  { registration: '180019999', name: 'Suzana', email: 'ana.oliveira@aluno.unb.br', password: 'senha123', role: 'student', major: 'Ciência da Computação' },
+  { registration: '190029999', name: 'Henrique', email: 'pedro.costa@aluno.unb.br', password: 'senha123', role: 'student', major: 'Engenharia de Software' },
+  { registration: '200039999', name: 'Pedro', email: 'julia.pereira@aluno.unb.br', password: 'senha123', role: 'student', major: 'Ciência da Computação' },
+  { registration: '210049999', name: 'Lucas Lima', email: 'lucas.souza@aluno.unb.br', password: 'senha123', role: 'student', major: 'Matemática' },
+  { registration: '220059999', name: 'Emerson', email: 'isabela.lima@aluno.unb.br', password: 'senha123', role: 'student', major: 'Estatística' }
 ]
 
 all_users = admin_users + professor_users + student_users
@@ -81,7 +81,27 @@ all_users.each do |user_data|
   puts "Usuário criado: #{user.name} (#{user.role})"
 end
 
+
 puts "#{all_users.size} usuários criados com sucesso!"
+
+cc = Departamento.find_by(name: 'Departamento de Ciência da Computação')
+if cc
+  User.update_all(departamento_id: cc.id)
+  puts "Todos os usuários associados ao departamento de Ciência da Computação."
+else
+  puts "Departamento de Ciência da Computação não encontrado para associação com usuários."
+end
+
+mat = Departamento.find_by(name: 'Departamento de Matemática')
+admin2 = User.find_by(email: 'suporte@camaar.com')
+if mat && admin2
+  admin2.update(departamento_id: mat.id)
+  puts "Segundo admin associado ao departamento de Matemática."
+elsif !mat
+  puts "Departamento de Matemática não encontrado."
+elsif !admin2
+  puts "Segundo admin não encontrado."
+end
 
 # Criar Turmas
 puts "Criando turmas..."
@@ -134,6 +154,18 @@ alunos.each do |aluno|
     # Alternativamente, podemos usar:
     # TurmaAluno.create!(turma_id: turma.id, aluno_id: aluno.id)
     puts "Aluno #{aluno.name} matriculado na turma #{turma.name}"
+  end
+end
+
+
+# Associar todos os professores a todas as turmas
+professores = User.where(role: 'professor').to_a
+turmas_criadas.each do |turma|
+  professores.each do |professor|
+    unless professor.turma_alunos.exists?(turma_id: turma.id)
+      professor.turma_alunos.create!(turma_id: turma.id)
+      puts "Professor #{professor.name} vinculado à turma #{turma.name}"
+    end
   end
 end
 
