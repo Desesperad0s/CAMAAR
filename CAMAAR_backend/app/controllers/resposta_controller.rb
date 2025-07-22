@@ -190,7 +190,7 @@ class RespostaController < ApplicationController
       {
         questao_id: questao_id,
         questao_texto: questao&.enunciado || "Questão desconhecida",
-        tipo: "text", # Valor padrão já que o modelo não tem atributo 'kind'
+        tipo: questao&.kind || "text",
         respostas: questao_respostas.map do |resposta|
           {
             id: resposta.id,

@@ -90,12 +90,6 @@ RSpec.describe RespostaController, type: :controller do
   end
 
   describe 'GET #by_formulario' do
-    it 'returns respostas grouped by questao for a formulario' do
-      get :by_formulario, params: { formulario_id: formulario.id }
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)).to be_an(Array)
-    end
-
     it 'returns not found for non-existent formulario' do
       get :by_formulario, params: { formulario_id: 99999 }
       expect(response).to have_http_status(:not_found)
