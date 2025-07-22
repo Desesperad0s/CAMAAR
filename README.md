@@ -121,6 +121,11 @@ O backend estará disponível em `http://localhost:3333` (ou na porta configurad
 
 O frontend estará disponível em `http://localhost:3000` (ou na porta configurada).
 
+## ABC Score
+Para gerar o ABC Score do nosso projeto, execute o seguinte comando:
+docker compose run --rm backend bundle exec rubycritic
+
+O arquivo 'overview.html' com a revisão do código deste projeto estará no diretório "/app/tmp/rubycritic". Abra esta página em algum navegador/servidor (utilizando a extensão Five Server do VSCode, por exemplo) para visualizá-la.
 
 <h2>🧭 Behavior Driven Design</h2>
 <p>O projeto utiliza a abordagem de Behavior Driven Design (BDD) para descrever e organizar os comportamentos esperados do sistema. Para facilitar a visualização e o acompanhamento das features, utilizamos um quadro no Miro:</p>
