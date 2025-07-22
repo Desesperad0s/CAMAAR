@@ -9,12 +9,11 @@ RSpec.describe UserMailer, type: :mailer do
 
     it 'sets the correct headers' do
       expect(mail.subject).to eq('Bem-vindo ao CAMAAR - Defina sua senha de acesso')
-      expect(mail.to).to eq(['231003406@aluno.unb.br']) 
+      expect(mail.to).to eq(['lucasgabrieljake@gmail.com']) 
       expect(mail.from).to eq(['lucaslgol05@gmail.com'])
     end
 
     it 'assigns user and token variables' do
-      # Test both HTML and text parts
       expect(mail.html_part.body.to_s).to include(user.name)
       expect(mail.html_part.body.to_s).to include(reset_token)
       expect(mail.text_part.body.to_s).to include(user.name)
