@@ -3,13 +3,13 @@ import { Api } from "../utils/apiClient.ts";
 import { useNavigate } from "react-router-dom";
 import "./AdminCreateForm.css";
 
-
 function AdminCreateForm() {
   const [templates, setTemplates] = useState([]);
   const [turmas, setTurmas] = useState([]);
   const [disciplinas, setDisciplinas] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [selectedTurmas, setSelectedTurmas] = useState([]);
+  const [publicoAlvo, setPublicoAlvo] = useState("discente");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -17,18 +17,18 @@ function AdminCreateForm() {
   const navigate = useNavigate();
   const api = useMemo(() => new Api(), []);
 
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const [templatesResponse, turmasResponse, disciplinasResponse] = await Promise.all([
-          api.getTemplates(),
-          api.getTurmas(),
-          api.getDisciplinas()
-        ]);
+        const [templatesResponse, turmasResponse, disciplinasResponse] =
+          await Promise.all([
+            api.getTemplates(),
+            api.getTurmas(),
+            api.getDisciplinas(),
+          ]);
 
         setTemplates(templatesResponse || []);
         setTurmas(turmasResponse || []);
@@ -36,7 +36,10 @@ function AdminCreateForm() {
       } catch (err) {
         setError("Erro ao carregar dados. Tente novamente.");
         console.error("Error fetching data:", err);
-        if (err.message && (err.message.includes('401') || err.message.includes('Unauthorized'))) {
+        if (
+          err.message &&
+          (err.message.includes("401") || err.message.includes("Unauthorized"))
+        ) {
           setError("Erro de autenticação. Por favor, faça login novamente.");
           setTimeout(() => {
             navigate("/login");
@@ -54,31 +57,38 @@ function AdminCreateForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!selectedTemplate || selectedTurmas.length === 0) {
       return;
     }
-
     try {
       setSubmitting(true);
       setError(null);
-
-      const selectedTemplateObj = templates.find(t => t.id == selectedTemplate);
-      const promises = selectedTurmas.map(turmaId => {
-        const turmaObj = turmas.find(t => t.id === turmaId);
-        const turmaNome = turmaObj ? turmaObj.name || turmaObj.code || turmaObj.number : turmaId;
-        const templateNome = selectedTemplateObj ? (selectedTemplateObj.content || `Template ${selectedTemplateObj.id}`) : selectedTemplate;
+      const selectedTemplateObj = templates.find(
+        (t) => t.id == selectedTemplate
+      );
+      const promises = selectedTurmas.map((turmaId) => {
+        const turmaObj = turmas.find((t) => t.id === turmaId);
+        const turmaNome = turmaObj
+          ? turmaObj.name || turmaObj.code || turmaObj.number
+          : turmaId;
+        const templateNome = selectedTemplateObj
+          ? selectedTemplateObj.content || `Template ${selectedTemplateObj.id}`
+          : selectedTemplate;
         const formName = `Formulário ${turmaNome} - ${templateNome}`;
-        return api.createFormularioWithTemplate(selectedTemplate, turmaId, formName);
+        return api.createFormularioWithTemplate(
+          selectedTemplate,
+          turmaId,
+          formName,
+          publicoAlvo
+        );
       });
-
       const responses = await Promise.all(promises);
-
       if (responses.length > 0) {
         setSuccess(true);
         setSelectedTemplate("");
         setSelectedTurmas([]);
-    }
+        setPublicoAlvo("discente");
+      }
     } catch (err) {
     } finally {
       setSubmitting(false);
@@ -86,9 +96,9 @@ function AdminCreateForm() {
   };
 
   const handleTurmaToggle = (turmaId) => {
-    setSelectedTurmas(prev => {
+    setSelectedTurmas((prev) => {
       if (prev.includes(turmaId)) {
-        return prev.filter(id => id !== turmaId);
+        return prev.filter((id) => id !== turmaId);
       } else {
         return [...prev, turmaId];
       }
@@ -96,20 +106,17 @@ function AdminCreateForm() {
   };
 
   const getTurmaDisplayName = (turma) => {
-    const disciplina = disciplinas.find(d => d.id === turma.disciplina_id);
+    const disciplina = disciplinas.find((d) => d.id === turma.disciplina_id);
     return {
       nome: turma.name,
       semestre: turma.semester,
       codigo: turma.code || turma.number,
-      disciplina: disciplina ? disciplina.name : ""
+      disciplina: disciplina ? disciplina.name : "",
     };
   };
 
   if (loading) {
-    return (
-      <div className="admin-create-form-container">
-      </div>
-    );
+    return <div className="admin-create-form-container"></div>;
   }
 
   return (
@@ -127,7 +134,6 @@ function AdminCreateForm() {
               <p>Formulários criados com sucesso!</p>
             </div>
           )}
-
 
           <form onSubmit={handleSubmit} className="create-form">
             <div className="template-section">
@@ -148,6 +154,20 @@ function AdminCreateForm() {
               </select>
             </div>
 
+            <div className="template-section">
+              <label htmlFor="publicoAlvo">Público alvo</label>
+              <select
+                id="publicoAlvo"
+                value={publicoAlvo}
+                onChange={(e) => setPublicoAlvo(e.target.value)}
+                required
+                className="template-select"
+              >
+                <option value="discente">Aluno</option>
+                <option value="docente">Professor</option>
+              </select>
+            </div>
+
             <div className="turmas-section">
               <h3>Turmas</h3>
               <div className="turmas-table">
@@ -157,14 +177,16 @@ function AdminCreateForm() {
                   <div className="header-semestre">Semestre</div>
                   <div className="header-codigo">Código</div>
                 </div>
-                
+
                 <div className="turmas-list">
                   {turmas.map((turma) => {
                     const turmaInfo = getTurmaDisplayName(turma);
                     return (
-                      <div 
-                        key={turma.id} 
-                        className={`turma-row ${selectedTurmas.includes(turma.id) ? 'selected' : ''}`}
+                      <div
+                        key={turma.id}
+                        className={`turma-row ${
+                          selectedTurmas.includes(turma.id) ? "selected" : ""
+                        }`}
                         onClick={() => handleTurmaToggle(turma.id)}
                       >
                         <div className="turma-checkbox">
@@ -175,7 +197,9 @@ function AdminCreateForm() {
                           />
                         </div>
                         <div className="turma-nome">{turmaInfo.disciplina}</div>
-                        <div className="turma-semestre">{turmaInfo.semestre}</div>
+                        <div className="turma-semestre">
+                          {turmaInfo.semestre}
+                        </div>
                         <div className="turma-codigo">{turmaInfo.codigo}</div>
                       </div>
                     );
@@ -185,12 +209,18 @@ function AdminCreateForm() {
             </div>
 
             <div className="form-actions">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="submit-button"
-                disabled={submitting || !selectedTemplate || selectedTurmas.length === 0}
+                disabled={
+                  submitting || !selectedTemplate || selectedTurmas.length === 0
+                }
               >
-                {submitting ? "Criando..." : `Criar ${selectedTurmas.length} Formulário${selectedTurmas.length !== 1 ? 's' : ''}`}
+                {submitting
+                  ? "Criando..."
+                  : `Criar ${selectedTurmas.length} Formulário${
+                      selectedTurmas.length !== 1 ? "s" : ""
+                    }`}
               </button>
             </div>
           </form>
