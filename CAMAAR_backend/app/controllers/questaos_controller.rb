@@ -5,7 +5,7 @@ class QuestaosController < ApplicationController
   # Lista todas as questões ou questões de um formulário específico
   #
   # === Argumentos
-  # * +formulario_id+ - (Opcional) ID do formulário para filtrar questões
+  # Rota: GET /questaos or /formularios/:formulario_id/questaos
   #
   # === Retorno
   # Array JSON contendo as questões (todas ou filtradas por formulário/template)
@@ -36,7 +36,7 @@ class QuestaosController < ApplicationController
   # Exibe os detalhes de uma questão específica
   #
   # === Argumentos
-  # * +id+ - ID da questão (através dos params)
+  # Rota: GET /questaos/:id
   #
   # === Retorno
   # JSON com os dados da questão encontrada
@@ -66,7 +66,7 @@ class QuestaosController < ApplicationController
   # Prepara uma questão existente para edição
   #
   # === Argumentos
-  # * +id+ - ID da questão (através dos params e callback set_questao)
+  # Rota: GET /questaos/:id/edit
   #
   # === Retorno
   # Implicitamente retorna a view de edição
@@ -80,7 +80,7 @@ class QuestaosController < ApplicationController
   # Cria uma nova questão no sistema
   #
   # === Argumentos
-  # * +questao+ - Hash com os dados da nova questão (enunciado, templates_id, formularios_id, alternativas_attributes)
+  # Rota: POST /questaos
   #
   # === Retorno
   # * HTML: Redirecionamento com notice (success) ou renderização do form com erros
@@ -88,7 +88,7 @@ class QuestaosController < ApplicationController
   #
   # === Efeitos Colaterais
   # * Cria um novo registro na tabela de questões
-  # * Pode criar alternativas associadas através de nested attributes
+  # * Pode criar alternativas associadas
   def create
     @questao = Questao.new(questao_params)
 
@@ -107,7 +107,7 @@ class QuestaosController < ApplicationController
   # Atualiza os dados de uma questão existente
   #
   # === Argumentos
-  # * +id+ - ID da questão a ser atualizada (através dos params)
+  # Rota: PATCH/PUT /questaos/:id
   # * +questao+ - Hash com os novos dados da questão
   #
   # === Retorno
@@ -116,7 +116,7 @@ class QuestaosController < ApplicationController
   #
   # === Efeitos Colaterais
   # * Atualiza o registro da questão no banco de dados
-  # * Pode atualizar/criar/remover alternativas associadas através de nested attributes
+  # * Pode atualizar/criar/remover alternativas associadas
   def update
     respond_to do |format|
       if @questao.update(questao_params)

@@ -17,7 +17,7 @@ class AuthenticationController < ApplicationController
   # * Define o auth_token do usuário
   # * Consulta o banco de dados para validar credenciais
   #
-  # POST /auth/login
+  # Rota: POST /auth/login
   def login
     @user = User.authenticate(params[:email], params[:password])
     
@@ -47,7 +47,7 @@ class AuthenticationController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas retorna dados do usuário já autenticado
   #
-  # GET /auth/me
+  # Rota: GET /auth/me
   def me
     render json: { user: user_data(current_user) }, status: :ok
   end
@@ -65,7 +65,7 @@ class AuthenticationController < ApplicationController
   # * Pode invalidar tokens no lado servidor (implementação futura)
   # * Por enquanto apenas retorna mensagem de sucesso
   #
-  # DELETE /auth/logout
+  # Rota: DELETE /auth/logout
   def logout
     
     render json: { message: 'Logout realizado com sucesso' }, status: :ok

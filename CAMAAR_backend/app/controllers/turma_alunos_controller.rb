@@ -20,7 +20,7 @@ class TurmaAlunosController < ApplicationController
   # Exibe os detalhes de uma associação turma-aluno específica
   #
   # === Argumentos
-  # * +id+ - ID da associação turma-aluno (através dos params)
+  # Rota: GET /turma_alunos/:id
   #
   # === Retorno
   # Implicitamente retorna a view com dados da associação
@@ -49,7 +49,7 @@ class TurmaAlunosController < ApplicationController
   # Prepara uma associação turma-aluno existente para edição
   #
   # === Argumentos
-  # * +id+ - ID da associação (através dos params e callback set_turma_aluno)
+  # Rota: GET /turma_alunos/:id/edit
   #
   # === Retorno
   # Implicitamente retorna a view de edição
@@ -63,7 +63,7 @@ class TurmaAlunosController < ApplicationController
   # Cria uma nova associação turma-aluno no sistema
   #
   # === Argumentos
-  # * +turma_aluno+ - Hash com os dados da nova associação
+  # Rota: POST /turma_alunos
   #
   # === Retorno
   # * HTML: Redirecionamento com notice (success) ou renderização do form com erros
@@ -89,7 +89,7 @@ class TurmaAlunosController < ApplicationController
   # Atualiza os dados de uma associação turma-aluno existente
   #
   # === Argumentos
-  # * +id+ - ID da associação a ser atualizada (através dos params)
+  # Rota: PATCH/PUT /turma_alunos/:id
   # * +turma_aluno+ - Hash com os novos dados da associação
   #
   # === Retorno
@@ -114,7 +114,7 @@ class TurmaAlunosController < ApplicationController
   # Remove uma associação turma-aluno do sistema
   #
   # === Argumentos
-  # * +id+ - ID da associação a ser removida (através dos params)
+  # Rota: DELETE /turma_alunos/:id
   #
   # === Retorno
   # * HTML: Redirecionamento para índice com notice de sucesso

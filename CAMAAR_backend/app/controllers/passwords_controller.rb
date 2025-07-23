@@ -2,7 +2,7 @@ class PasswordsController < ApplicationController
   skip_before_action :authenticate_request
   
   ##
-  # Inicia o processo de recuperação de senha
+  # Rota: POST /passwords/forgot
   #
   # === Argumentos
   # * +email+ - Email do usuário que esqueceu a senha (implícito nos params)
@@ -47,7 +47,7 @@ class PasswordsController < ApplicationController
   end
   
   ##
-  # Processa a redefinição de senha com token válido
+  # Rota: POST /passwords/reset
   #
   # === Argumentos
   # * +token+ - Token de redefinição de senha (implícito nos params)

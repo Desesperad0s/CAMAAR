@@ -91,21 +91,54 @@ class User < ApplicationRecord
   end
   
   # Gerar token para primeiro acesso/redefinição de senha
+  ##
+  # Gera e salva um token para redefinição de senha
+  #
+  # === Argumentos
+  # Nenhum argumento
+  #
+  # === Retorno
+  # String - token gerado para redefinição de senha
+  #
+  # === Efeitos Colaterais
+  # * Atualiza o campo virtual reset_password_token
+  # * Salva o usuário no banco de dados
   def generate_reset_password_token!
     self.reset_password_token = SecureRandom.urlsafe_base64
     # Vamos usar um campo virtual para simplificar (sem mudança no banco)
     save!
     reset_password_token
   end
-  
-  # Gerar token para primeiro acesso
+
+  ##
+  # Gera um token para primeiro acesso do usuário
+  #
+  # === Argumentos
+  # Nenhum argumento
+  #
+  # === Retorno
+  # String - token gerado para primeiro acesso
+  #
+  # === Efeitos Colaterais
+  # * Atualiza o campo virtual first_access_token
+  # * Não salva no banco (apenas retorna o token)
   def generate_first_access_token!
     self.first_access_token = SecureRandom.urlsafe_base64
     # Como não vamos alterar o banco, apenas retornamos o token
     first_access_token
   end
-  
-  # Verificar se precisar definir senha (novo usuário)
+
+  ##
+  # Verifica se o usuário precisa redefinir a senha (novo usuário)
+  #
+  # === Argumentos
+  # Nenhum argumento
+  #
+  # === Retorno
+  # Boolean - true se a senha for a padrão, false caso contrário
+  #
+  # === Efeitos Colaterais
+  # Nenhum - apenas consulta o valor da senha
   def needs_password_reset?
     # Lógica simples: se a senha é padrão, precisa redefinir
     password == 'padrao123'

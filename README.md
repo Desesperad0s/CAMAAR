@@ -64,7 +64,7 @@ rails db:seed
 - Gerar documentação no padrão Rdocs
 ```
 docker exec -it camaar_rails bash
-rdoc app/controllers app/services app/models -o doc/html --title "CAMAAR Backend Documentation"
+rdoc -all app/controllers app/services app/models -o doc/html --title "CAMAAR Backend Documentation"
 
 ```
 ---

@@ -20,7 +20,7 @@ class DepartamentosController < ApplicationController
   # Exibe os detalhes de um departamento específico
   #
   # === Argumentos
-  # * +id+ - ID do departamento (através dos params)
+  # Rota: GET /departamentos/:id
   #
   # === Retorno
   # JSON com os dados do departamento encontrado
@@ -54,7 +54,7 @@ class DepartamentosController < ApplicationController
   # Prepara um departamento existente para edição
   #
   # === Argumentos
-  # * +id+ - ID do departamento (através dos params e callback set_departamento)
+  # Rota: GET /departamentos/:id/edit
   #
   # === Retorno
   # JSON com os dados do departamento para edição
@@ -70,7 +70,7 @@ class DepartamentosController < ApplicationController
   # Cria um novo departamento no sistema
   #
   # === Argumentos
-  # * +departamento+ - Hash com os dados do novo departamento (code, name, abreviation)
+  # Rota: POST /departamentos
   #
   # === Retorno
   # * JSON com os dados do departamento criado e status 201 (success)
@@ -95,7 +95,7 @@ class DepartamentosController < ApplicationController
   # Atualiza os dados de um departamento existente
   #
   # === Argumentos
-  # * +id+ - ID do departamento a ser atualizado (através dos params)
+  # Rota: PATCH/PUT /departamentos/:id
   # * +departamento+ - Hash com os novos dados do departamento
   #
   # === Retorno
@@ -123,7 +123,7 @@ class DepartamentosController < ApplicationController
   # Remove um departamento do sistema
   #
   # === Argumentos
-  # * +id+ - ID do departamento a ser removido (através dos params)
+  # Rota: DELETE /departamentos/:id
   #
   # === Retorno
   # Status 204 (no content) indicando remoção bem-sucedida

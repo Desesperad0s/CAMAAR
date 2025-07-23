@@ -13,7 +13,7 @@ class FormulariosController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /formularios
+  # Rota: GET /formularios
   def index
     @formularios = Formulario.all
     render json: @formularios.as_json(
@@ -42,7 +42,7 @@ class FormulariosController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /formularios/1
+  # Rota: GET /formularios/1
   def show
     render json: @formulario.as_json(
       include: { 
@@ -72,7 +72,7 @@ class FormulariosController < ApplicationController
   # * Gera arquivo Excel temporário
   # * Força download do arquivo no navegador
   #
-  # GET /formularios/report/excel
+  # Rota: GET /formularios/report/excel
   def excel_report
     begin
       require 'caxlsx'
@@ -145,7 +145,22 @@ class FormulariosController < ApplicationController
     end
   end
 
-  # POST /formularios
+
+  ##
+  # Cria um novo formulário no sistema
+  #
+  # === Argumentos
+  # * +formulario+ - Hash com os dados do novo formulário (name, date, template_id, turma_id, respostas/respostas_attributes)
+  #
+  # === Retorno
+  # * JSON com os dados do formulário criado e status 201 (success)
+  # * JSON com erros de validação e status 422 (failure)
+  #
+  # === Efeitos Colaterais
+  # * Cria um novo registro na tabela de formulários
+  # * Cria respostas associadas ao formulário
+  #
+  # Rota: POST /formularios
   def create
     ActiveRecord::Base.transaction do
       formulario_attrs = formulario_params.to_h
@@ -173,7 +188,23 @@ class FormulariosController < ApplicationController
     end
   end
 
-  # PATCH/PUT /formularios/1
+
+  ##
+  # Atualiza um formulário existente no sistema
+  #
+  # === Argumentos
+  # * +id+ - ID do formulário a ser atualizado (passado via params[:id])
+  # * +formulario+ - Hash com os novos dados do formulário (name, date, template_id, turma_id, respostas/respostas_attributes)
+  #
+  # === Retorno
+  # * JSON com os dados do formulário atualizado (success)
+  # * JSON com erros de validação e status 422 (failure)
+  #
+  # === Efeitos Colaterais
+  # * Atualiza o registro do formulário no banco de dados
+  # * Cria, atualiza ou remove respostas associadas ao formulário
+  #
+  # Rota: PATCH/PUT /formularios/1
   def update
     ActiveRecord::Base.transaction do
       respostas_to_destroy_ids = []
@@ -255,7 +286,7 @@ class FormulariosController < ApplicationController
   # === Efeitos Colaterais
   # * Remove o registro do formulário do banco de dados
   # * Remove respostas associadas (dependendo das configurações do modelo)
-  # DELETE /formularios/1
+  # Rota: DELETE /formularios/1
   def destroy
     @formulario.destroy!
     head :no_content
@@ -280,7 +311,7 @@ class FormulariosController < ApplicationController
   # * Cria novo formulário no banco de dados
   # * Cria respostas associadas ao formulário
   # * Valida existência das questões antes da criação
-  # POST /formularios/create_with_questions
+  # Rota: POST /formularios/create_with_questions
   def create_with_questions
     ActiveRecord::Base.transaction do
       if params[:respostas].present?
@@ -352,7 +383,7 @@ class FormulariosController < ApplicationController
   #
   # === Efeitos Colaterais
   # Nenhum - operação somente de leitura
-  # GET /formularios/1/questoes
+  # Rota: GET /formularios/1/questoes
   def questoes
     @formulario = Formulario.find(params[:id])
     

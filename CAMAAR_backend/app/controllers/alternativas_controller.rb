@@ -5,7 +5,7 @@ class AlternativasController < ApplicationController
   # Lista todas as alternativas ou alternativas de uma questão específica
   #
   # === Argumentos
-  # * +questao_id+ - (Opcional) ID da questão para filtrar alternativas
+  # Rota: GET /alternativas or /questaos/:questao_id/alternativas
   #
   # === Retorno
   # Array JSON contendo as alternativas (todas ou filtradas por questão)
@@ -26,7 +26,7 @@ class AlternativasController < ApplicationController
   # Exibe os detalhes de uma alternativa específica
   #
   # === Argumentos
-  # * +id+ - ID da alternativa (através dos params)
+  # Rota: GET /alternativas/:id
   #
   # === Retorno
   # JSON com os dados da alternativa encontrada
@@ -56,7 +56,7 @@ class AlternativasController < ApplicationController
   # Prepara uma alternativa existente para edição
   #
   # === Argumentos
-  # * +id+ - ID da alternativa (através dos params e callback set_alternativa)
+  # Rota: GET /alternativas/:id/edit
   #
   # === Retorno
   # Implicitamente retorna a view de edição
@@ -70,7 +70,7 @@ class AlternativasController < ApplicationController
   # Cria uma nova alternativa no sistema
   #
   # === Argumentos
-  # * +alternativa+ - Hash com os dados da nova alternativa (content, questao_id)
+  # Rota: POST /alternativas
   #
   # === Retorno
   # * HTML: Redirecionamento com notice (success) ou renderização do form com erros
@@ -96,7 +96,7 @@ class AlternativasController < ApplicationController
   # Atualiza os dados de uma alternativa existente
   #
   # === Argumentos
-  # * +id+ - ID da alternativa a ser atualizada (através dos params)
+  # Rota: PATCH/PUT /alternativas/:id
   # * +alternativa+ - Hash com os novos dados da alternativa
   #
   # === Retorno
@@ -121,7 +121,7 @@ class AlternativasController < ApplicationController
   # Remove uma alternativa do sistema
   #
   # === Argumentos
-  # * +id+ - ID da alternativa a ser removida (através dos params)
+  # Rota: DELETE /alternativas/:id
   #
   # === Retorno
   # * HTML: Redirecionamento para índice com notice de sucesso

@@ -21,7 +21,7 @@ class AdminsController < ApplicationController
   # Exibe os detalhes de um administrador específico
   #
   # === Argumentos
-  # * +id+ - ID do administrador (através dos params)
+  # Rota: GET /admins/:id
   #
   # === Retorno
   # JSON com os dados do administrador encontrado
@@ -36,7 +36,7 @@ class AdminsController < ApplicationController
   # Cria um novo administrador no sistema
   #
   # === Argumentos
-  # * +admin+ - Hash com os dados do novo administrador (registration, name, email, password)
+  # Rota: POST /admins
   #
   # === Retorno
   # * JSON com os dados do administrador criado e status 201 (success)
@@ -58,7 +58,7 @@ class AdminsController < ApplicationController
   # Atualiza os dados de um administrador existente
   #
   # === Argumentos
-  # * +id+ - ID do administrador a ser atualizado (através dos params)
+  # Rota: PATCH/PUT /admins/:id
   # * +admin+ - Hash com os novos dados do administrador
   #
   # === Retorno

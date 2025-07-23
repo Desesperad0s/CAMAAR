@@ -22,7 +22,7 @@ class DisciplinasController < ApplicationController
   # Exibe os detalhes de uma disciplina específica
   #
   # === Argumentos
-  # * +id+ - ID da disciplina (através dos params)
+  # Rota: GET /disciplinas/:id
   #
   # === Retorno
   # JSON com os dados da disciplina encontrada
@@ -75,7 +75,7 @@ class DisciplinasController < ApplicationController
   # Cria uma nova disciplina no sistema
   #
   # === Argumentos
-  # * +disciplina+ - Hash com os dados da nova disciplina (name, code, departamento_id)
+  # Rota: POST /disciplinas
   #
   # === Retorno
   # * JSON com os dados da disciplina criada e status 201 (success)
@@ -98,7 +98,7 @@ class DisciplinasController < ApplicationController
   # Atualiza os dados de uma disciplina existente
   #
   # === Argumentos
-  # * +id+ - ID da disciplina a ser atualizada (através dos params)
+  # Rota: PATCH/PUT /disciplinas/:id
   # * +disciplina+ - Hash com os novos dados da disciplina
   #
   # === Retorno

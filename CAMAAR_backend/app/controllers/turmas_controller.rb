@@ -26,7 +26,7 @@ class TurmasController < ApplicationController
   # Exibe os detalhes de uma turma específica
   #
   # === Argumentos
-  # * +id+ - ID da turma (através dos params)
+  # Rota: GET /turmas/:id
   #
   # === Retorno
   # JSON com os dados da turma encontrada
@@ -45,7 +45,7 @@ class TurmasController < ApplicationController
   # Busca uma turma pelo código
   #
   # === Argumentos
-  # * +code+ - Código da turma a ser encontrada
+  # Rota: GET /turmas/find_by_code
   #
   # === Retorno
   # * JSON com os dados da turma encontrada e status 200 (success)
@@ -102,7 +102,7 @@ end
   # Cria uma nova turma no sistema
   #
   # === Argumentos
-  # * +turma+ - Hash com os dados da nova turma (code, number, semester, time, disciplina_id)
+  # Rota: POST /turmas
   #
   # === Retorno
   # * JSON com os dados da turma criada e status 201 (success)
@@ -125,7 +125,7 @@ end
   # Atualiza os dados de uma turma existente
   #
   # === Argumentos
-  # * +id+ - ID da turma a ser atualizada (através dos params)
+  # Rota: PATCH/PUT /turmas/:id
   # * +turma+ - Hash com os novos dados da turma
   #
   # === Retorno

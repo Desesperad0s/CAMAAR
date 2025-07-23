@@ -20,7 +20,7 @@ class DataImportController < ApplicationController
   # * Executa em transação - se houver erro, faz rollback de todas as alterações
   # * Gera logs detalhados do processo de importação
   #
-  # POST /import-data
+  # Rota: POST /import-data
   def import
     begin
       # Verificar e corrigir estrutura do banco de dados

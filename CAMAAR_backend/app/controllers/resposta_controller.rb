@@ -13,7 +13,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /resposta
+  # Rota: GET /resposta
   def index
     @respostas = Resposta.all
     render json: @respostas
@@ -32,7 +32,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /resposta/1
+  # Rota: GET /resposta/:id
   def show
     render json: @resposta
   end
@@ -50,7 +50,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # * Cria novo registro de Resposta no banco de dados
   #
-  # POST /resposta
+  # Rota: POST /resposta
   def create
     @resposta = Resposta.new(resposta_params)
 
@@ -75,7 +75,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # * Atualiza o registro da Resposta no banco de dados
   #
-  # PATCH/PUT /resposta/1
+  # Rota: PATCH/PUT /resposta/:id
   def update
     if @resposta.update(resposta_params)
       render json: @resposta
@@ -97,7 +97,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # * Remove permanentemente a resposta do banco de dados
   #
-  # DELETE /resposta/1
+  # Rota: DELETE /resposta/1
   def destroy
     @resposta.destroy!
     head :no_content
@@ -117,7 +117,7 @@ class RespostaController < ApplicationController
   # * Cria múltiplos registros de Resposta no banco de dados em uma transação
   # * Se alguma resposta falhar, todas são revertidas (rollback)
   #
-  # POST /resposta/batch_create
+  # Rota: POST /resposta/batch_create
   def batch_create
     ActiveRecord::Base.transaction do
       @respostas = []
@@ -160,7 +160,7 @@ class RespostaController < ApplicationController
   # * Verifica autorização do usuário para acessar o formulário
   # * Consulta banco de dados para buscar respostas e questões relacionadas
   #
-  # GET /resposta/formulario/:formulario_id
+  # Rota: GET /resposta/formulario/:formulario_id
   def by_formulario
     formulario_id = params[:formulario_id]
     
