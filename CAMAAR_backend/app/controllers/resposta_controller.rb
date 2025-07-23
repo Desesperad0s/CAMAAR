@@ -97,7 +97,7 @@ class RespostaController < ApplicationController
   # === Efeitos Colaterais
   # * Remove permanentemente a resposta do banco de dados
   #
-  # DELETE /resposta/1
+  # Rota: DELETE /resposta/1
   def destroy
     @resposta.destroy!
     head :no_content
@@ -117,7 +117,7 @@ class RespostaController < ApplicationController
   # * Cria múltiplos registros de Resposta no banco de dados em uma transação
   # * Se alguma resposta falhar, todas são revertidas (rollback)
   #
-  # POST /resposta/batch_create
+  # Rota: POST /resposta/batch_create
   def batch_create
     ActiveRecord::Base.transaction do
       @respostas = []
@@ -160,7 +160,7 @@ class RespostaController < ApplicationController
   # * Verifica autorização do usuário para acessar o formulário
   # * Consulta banco de dados para buscar respostas e questões relacionadas
   #
-  # GET /resposta/formulario/:formulario_id
+  # Rota: GET /resposta/formulario/:formulario_id
   def by_formulario
     formulario_id = params[:formulario_id]
     

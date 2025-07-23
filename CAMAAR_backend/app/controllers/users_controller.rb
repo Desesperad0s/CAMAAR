@@ -85,7 +85,7 @@ class UsersController < ApplicationController
   # * Gera token JWT para o usuário
   # * Define auth_token do usuário
   #
-  # POST /register
+  # Rota: POST /register
   def register
     @user = User.new(user_params)
     @user.role = 'student' # Por padrão, novos registros são estudantes
@@ -116,7 +116,7 @@ class UsersController < ApplicationController
   # === Efeitos Colaterais
   # * Atualiza o registro do User no banco de dados
   #
-  # PATCH/PUT /users/1
+  # Rota: PATCH/PUT /users/1
   def update
     if @user.update(user_params)
       render json: @user
@@ -139,7 +139,7 @@ class UsersController < ApplicationController
   # * Remove permanentemente o usuário do banco de dados
   # * Remove todas as associações relacionadas (turma_alunos, respostas, etc.)
   #
-  # DELETE /users/1
+  # Rota: DELETE /users/1
   def destroy
     @user.destroy!
     head :no_content
@@ -157,7 +157,7 @@ class UsersController < ApplicationController
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas consulta o banco de dados
   #
-  # GET /user/turmas
+  # Rota: GET /user/turmas
   def turmas
     @user = User.find(@current_user.id)
     @turmas = @user.turma_alunos.map(&:turma)

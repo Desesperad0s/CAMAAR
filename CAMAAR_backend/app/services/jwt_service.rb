@@ -1,9 +1,3 @@
-##
-# Service responsável pela geração e decodificação de tokens JWT (JSON Web Tokens)
-# 
-# Este service centraliza a lógica de autenticação baseada em JWT,
-# fornecendo métodos para encode e decode de tokens de forma segura.
-#
 class JwtService
   SECRET_KEY = Rails.application.credentials.secret_key_base || 'development_secret_key'
   

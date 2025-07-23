@@ -1,5 +1,17 @@
 class EmailService
   class << self
+    ##
+    # Envia emails de primeiro acesso para uma lista de usuários
+    #
+    # === Argumentos
+    # * +users+ - Array de usuários para os quais o email será enviado
+    #
+    # === Retorno
+    # Array de hashes com informações sobre o envio para cada usuário
+    #
+    # === Efeitos Colaterais
+    # * Envia emails reais ou simula envio, dependendo da configuração
+    # * Gera tokens de acesso para usuários que precisam redefinir senha
     def send_first_access_emails(users)
       results = []
       
@@ -58,6 +70,18 @@ class EmailService
       results
     end
     
+    ##
+    # Envia email de redefinição de senha para um usuário
+    #
+    # === Argumentos
+    # * +user+ - Usuário para o qual o email será enviado
+    #
+    # === Retorno
+    # Hash com status do envio, mensagem e token gerado
+    #
+    # === Efeitos Colaterais
+    # * Envia email real ou simula envio, dependendo da configuração
+    # * Gera token de redefinição de senha
     def send_password_reset_email(user)
       begin
         unless email_delivery_available?
@@ -86,6 +110,17 @@ class EmailService
     
     private
     
+    ##
+    # Verifica se o envio de email está disponível/configurado
+    #
+    # === Argumentos
+    # Nenhum
+    #
+    # === Retorno
+    # Boolean - true se o envio está disponível, false caso contrário
+    #
+    # === Efeitos Colaterais
+    # Nenhum
     def email_delivery_available?
       config = Rails.application.config.action_mailer
       
@@ -103,6 +138,17 @@ class EmailService
       false
     end
     
+    ##
+    # Simula o envio de emails de primeiro acesso para uma lista de usuários
+    #
+    # === Argumentos
+    # * +users+ - Array de usuários
+    #
+    # === Retorno
+    # Array de hashes simulando o envio para cada usuário
+    #
+    # === Efeitos Colaterais
+    # * Gera tokens simulados e logs de simulação
     def simulate_email_sending(users)
       Rails.logger.info("=== SIMULAÇÃO DE ENVIO DE EMAILS ===")
       
@@ -127,6 +173,17 @@ class EmailService
       end.compact
     end
     
+    ##
+    # Simula o envio de email de redefinição de senha para um usuário
+    #
+    # === Argumentos
+    # * +user+ - Usuário
+    #
+    # === Retorno
+    # Hash simulando o envio do email
+    #
+    # === Efeitos Colaterais
+    # * Gera token simulado e logs de simulação
     def simulate_password_reset_email(user)
       reset_token = user.generate_reset_password_token!
       

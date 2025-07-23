@@ -88,7 +88,7 @@ class QuestaosController < ApplicationController
   #
   # === Efeitos Colaterais
   # * Cria um novo registro na tabela de questões
-  # * Pode criar alternativas associadas através de nested attributes
+  # * Pode criar alternativas associadas
   def create
     @questao = Questao.new(questao_params)
 
@@ -116,7 +116,7 @@ class QuestaosController < ApplicationController
   #
   # === Efeitos Colaterais
   # * Atualiza o registro da questão no banco de dados
-  # * Pode atualizar/criar/remover alternativas associadas através de nested attributes
+  # * Pode atualizar/criar/remover alternativas associadas
   def update
     respond_to do |format|
       if @questao.update(questao_params)

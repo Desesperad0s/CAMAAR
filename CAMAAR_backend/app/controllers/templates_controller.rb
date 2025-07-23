@@ -146,7 +146,7 @@ class TemplatesController < ApplicationController
   # * Atualiza o registro do Template no banco de dados
   # * Pode atualizar, criar ou deletar questões e alternativas associadas (via nested attributes)
   #
-  # PATCH/PUT /templates/1
+  # Rota: PATCH/PUT /templates/1
   def update
     if @template.update(template_params)
       render json: @template.as_json(include: { questoes: { include: :alternativas } })
