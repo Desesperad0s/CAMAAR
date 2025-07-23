@@ -3,6 +3,13 @@
 require 'capybara/cucumber'
 require 'cucumber/rails'
 require 'database_cleaner'
+require 'rack/test'
+
+World(Rack::Test::Methods)
+
+def app
+  Rails.application
+end
 
 DatabaseCleaner.strategy = :truncation
 

@@ -2,7 +2,9 @@
 # Step definitions genéricas para interface de usuário
 
 Dado('que estou na página de login') do
-  visit '/login'
+  # Para API, não precisamos navegar para uma página
+  # Apenas preparamos o ambiente para fazer requisições
+  @login_endpoint = '/auth/login'
 end
 
 Dado('não sou um Admin') do
@@ -152,4 +154,8 @@ end
 Então('não será encaminhado para os emails cadastrados um texto com link para a conclusão do cadastro \(definição de senha)') do
   # Verifica que não houve envio de emails
   expect(page).not_to have_content('E-mails de cadastro enviados')
+end
+
+Então('eu devo visualizar uma mensagem dizendo  {string}') do |mensagem|
+  expect(page).to have_content(mensagem)
 end
