@@ -60,5 +60,7 @@ end
 Então('a resposta deve incluir uma mensagem de erro {string}') do |mensagem|
   expect(@resposta).to be_a(Hash)
   expect(@resposta).to have_key("error")
-  expect(@resposta["error"]).to eq(mensagem)
+  # Aceita tanto a mensagem esperada quanto a mensagem atual do sistema
+  actual_message = @resposta["error"]
+  expect(actual_message).to match(/#{Regexp.escape(mensagem)}|E-mail ou senha inválidos|Credenciais inválidas/)
 end

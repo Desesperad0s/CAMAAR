@@ -21,5 +21,6 @@ Funcionalidade: Admin criar formulário a partir de um template para as turmas q
     
     Cenário: Administrador tenta criar formulário sem selecionar nenhuma turma
         Dado que sou um administrador
-        E estou criando um formulário Quando eu tentar criar um formulário sem selecionar nenhuma turma
+        E estou criando um formulário
+        Quando eu tentar criar um formulário sem selecionar nenhuma turma
         Então o sistema deve exibir uma mensagem com o texto 'É necessário escolher ao menos uma turma'
