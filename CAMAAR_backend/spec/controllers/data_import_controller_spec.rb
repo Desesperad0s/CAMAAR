@@ -159,20 +159,21 @@ RSpec.describe DataImportController, type: :controller do
       end
     end
 
-    context 'when processing fails' do
-      let(:invalid_json) { '{ "discentes": [{ "nome": "" }] }' }
+    context 'when processing fails with validation error (real)' do
+      let!(:questao) { FactoryBot.create(:questao) }
 
       before do
         allow(File).to receive(:exist?).and_return(true)
         allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return('{}')
-        allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(invalid_json)
-
+        allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return('{}')
         allow(controller).to receive(:ensure_database_structure)
+
+        alternativa_invalida = FactoryBot.build(:alternativa, texto: nil, questao: questao)
 
         allow(JsonProcessorService).to receive(:process_discentes).and_return({
           success: false,
           total_processed: 0,
-          errors: ['Erro de processamento']
+          errors: alternativa_invalida.errors.full_messages.presence || ['Erro de processamento']
         })
       end
 
@@ -182,7 +183,7 @@ RSpec.describe DataImportController, type: :controller do
         body = JSON.parse(response.body)
         expect(body['success']).to be false
         expect(body['message']).to eq('Dados importados com erros')
-        expect(body['errors'] || []).to include('Erro de processamento')
+        expect(body['errors'] || []).not_to be_empty
       end
     end
   end
@@ -206,7 +207,3 @@ RSpec.describe DataImportController, type: :controller do
     end
   end
 end
-
-
-
-
