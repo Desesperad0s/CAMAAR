@@ -84,31 +84,6 @@ RSpec.describe DataImportController, type: :controller do
       end
     end
 
-    context 'when processing fails' do
-      before do
-        allow(File).to receive(:exist?).and_return(true)
-        allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return(classes_json)
-        allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(members_json)
-
-        allow(JsonProcessorService).to receive(:process_discentes).and_return({
-          success: false,
-          total_processed: 0,
-          errors: ['Erro de processamento']
-        })
-
-        allow(controller).to receive(:ensure_database_structure)
-      end
-
-      it 'returns error with details' do
-        post :import
-        body = JSON.parse(response.body)
-        expect(response).to have_http_status(:ok)
-        expect(body['success']).to be false
-        expect(body['message']).to eq('Dados importados com erros')
-        expect(body['errors'] || []).to include('Erro de processamento')
-      end
-    end
-
     context 'when an exception occurs' do
       before do
         allow(File).to receive(:exist?).and_raise(StandardError.new('Erro inesperado'))
@@ -183,6 +158,33 @@ RSpec.describe DataImportController, type: :controller do
         post :import
       end
     end
+
+    context 'when processing fails' do
+      let(:invalid_json) { '{ "discentes": [{ "nome": "" }] }' }
+
+      before do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return('{}')
+        allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(invalid_json)
+
+        allow(controller).to receive(:ensure_database_structure)
+
+        allow(JsonProcessorService).to receive(:process_discentes).and_return({
+          success: false,
+          total_processed: 0,
+          errors: ['Erro de processamento']
+        })
+      end
+
+      it 'returns error with details' do
+        post :import
+        expect(response).to have_http_status(:ok)
+        body = JSON.parse(response.body)
+        expect(body['success']).to be false
+        expect(body['message']).to eq('Dados importados com erros')
+        expect(body['errors'] || []).to include('Erro de processamento')
+      end
+    end
   end
 
   describe 'authorization' do
@@ -204,6 +206,7 @@ RSpec.describe DataImportController, type: :controller do
     end
   end
 end
+
 
 
 
