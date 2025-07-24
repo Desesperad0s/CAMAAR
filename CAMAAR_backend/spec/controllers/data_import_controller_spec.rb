@@ -10,18 +10,6 @@ RSpec.describe DataImportController, type: :controller do
     allow(controller).to receive(:authenticate_request).and_return(true)
     controller.instance_variable_set(:@current_user, user)
   end
-require 'rails_helper'
-
-RSpec.describe DataImportController, type: :controller do
-  let(:user) { FactoryBot.create(:user, :admin) }
-  let(:token) { JwtService.encode(user_id: user.id) }
-
-  before do
-    request.headers['Authorization'] = "Bearer #{token}"
-    allow(controller).to receive(:current_user).and_return(user)
-    allow(controller).to receive(:authenticate_request).and_return(true)
-    controller.instance_variable_set(:@current_user, user)
-  end
 
   describe 'POST #import' do
     let(:classes_json) { { turmas: [{ code: 'TEST001', nome: 'Turma Teste' }] }.to_json }
@@ -116,7 +104,6 @@ RSpec.describe DataImportController, type: :controller do
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['success']).to be false
         expect(JSON.parse(response.body)['message']).to eq('Dados importados com erros')
-
       end
     end
 
@@ -179,7 +166,7 @@ RSpec.describe DataImportController, type: :controller do
       it 'processes successfully but imports no data' do
         post :import
         expect(response).to have_http_status(:ok)
-        # Corrigido para false porque seu controller aparentemente retorna success: false para arquivos vazios
+        # Ajuste aqui para o esperado pelo seu controller
         expect(JSON.parse(response.body)['success']).to be false
         expect(JSON.parse(response.body)['message']).to eq('Data imported successfully')
       end
@@ -210,4 +197,3 @@ RSpec.describe DataImportController, type: :controller do
     end
   end
 end
-
