@@ -1,3 +1,48 @@
+- Documentação clara para futuros colaboradores.
+
+---
+
+## DataImportController (app/controllers/data_import_controller.rb)
+
+### Resumo das Alterações
+
+- **Extração de Helpers:**
+  - Validação, leitura e parsing dos arquivos JSON foram extraídos para métodos auxiliares privados (`json_files_exist?`, `read_json_files`, `valid_json?`, etc).
+  - O envio de emails e montagem das respostas JSON também foram extraídos para helpers (`send_first_access_emails_if_needed`, `success_response`, `error_response`, `internal_error_response`).
+- **Redução de Complexidade:**
+  - O método principal `import` agora está mais limpo, delegando tarefas específicas para métodos menores e documentados.
+- **Documentação:**
+  - Comentários explicando cada novo helper foram adicionados.
+
+### Exemplo de Estrutura Refatorada
+
+```ruby
+def import
+  begin
+    ensure_database_structure
+    # ...validação, leitura e parsing dos arquivos JSON...
+    # ...processamento dos dados e envio de emails...
+    # ...montagem da resposta JSON...
+  rescue => e
+    # ...tratamento de erro...
+  end
+end
+
+def json_files_exist?(classes_path, members_path)
+  File.exist?(classes_path) && File.exist?(members_path)
+end
+
+def send_first_access_emails_if_needed(new_users)
+  return [] unless new_users && new_users.any?
+  Rails.logger.info("Enviando emails de primeiro acesso para #{new_users.size} novos usuários")
+  EmailService.send_first_access_emails(new_users)
+end
+```
+
+### Impacto
+- Código mais limpo, modular e fácil de manter.
+- Facilita testes unitários e futuras extensões.
+- Documentação clara para cada etapa do processo.
 
 # Relatório de Refatoração: EmailService & FormulariosController
 
@@ -137,6 +182,12 @@ end
 - Complexidade dos testes reduzida e melhor manutenibilidade.
 - Mais fácil adicionar novos cenários de teste com mínima duplicação.
 - Documentação clara para futuros colaboradores.
+
+---
+
+## Padronização de Documentação
+
+Todos os métodos refatorados nos arquivos mencionados foram documentados utilizando o padrão RDoc, incluindo argumentos, retorno e efeitos colaterais. Isso garante clareza, facilita manutenção e contribui para a padronização do projeto.
 
 ## EmailService (app/services/email_service.rb)
 
