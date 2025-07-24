@@ -28,5 +28,7 @@ jobs:
         run: |
           rails db:create
           rails db:migrate
-      - name: Run tests
+      - name: Run Rspec tests
         run: bundle exec rspec
+      - name: Run end-to-end Cucumber tests
+        run: bundle exec cucumber --tags @api --format pretty
