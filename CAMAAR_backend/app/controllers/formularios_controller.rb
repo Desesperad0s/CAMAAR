@@ -1,8 +1,21 @@
-#Esta classe controla as ações CRUDs para formulários, além de controlar a exportação para um arquivo de Excel
+##
+# FormulariosController
+# Controller responsável por gerenciar formulários
 class FormulariosController < ApplicationController
   before_action :set_formulario, only: %i[show update destroy]
 
-  # Helper for as_json options used in index, show, create, update, create_with_questions
+  ##
+  # Método auxiliar para opções de serialização JSON de formulários
+  #
+  # === Argumentos
+  # Nenhum argumento recebido
+  #
+  # === Retorno
+  # Hash de opções para o método as_json
+  #
+  # === Efeitos Colaterais
+  # Nenhum
+  #
   def formulario_json_options
     {
       include: {
@@ -26,12 +39,24 @@ class FormulariosController < ApplicationController
   #
   # === Retorno
   # Array de strings com os cabeçalhos
+  #
+  # === Efeitos Colaterais
+  # Nenhum
   def all_questions_headers(formularios)
     ["ID", "Formulário", "Data de Criação"] + unique_question_headers(formularios)
   end
 
   ##
   # Extrai e retorna cabeçalhos únicos das questões
+  #
+  # === Argumentos
+  # * +formularios+ - Array de formulários
+  #
+  # === Retorno
+  # Array de strings com os títulos das questões
+  #
+  # === Efeitos Colaterais
+  # Nenhum
   def unique_question_headers(formularios)
     formularios.flat_map do |formulario|
       formulario.respostas.map do |resposta|
@@ -50,6 +75,9 @@ class FormulariosController < ApplicationController
   #
   # === Retorno
   # Array com dados da linha
+  #
+  # === Efeitos Colaterais
+  # Nenhum
   def build_excel_row(formulario, headers)
     base_row = [
       formulario.id,
@@ -67,6 +95,15 @@ class FormulariosController < ApplicationController
 
   ##
   # Cria hash de respostas para facilitar montagem da linha Excel
+  #
+  # === Argumentos
+  # * +formulario+ - Formulário
+  #
+  # === Retorno
+  # Hash com títulos das questões e conteúdos das respostas
+  #
+  # === Efeitos Colaterais
+  # Nenhum
   def respostas_hash_for_excel(formulario)
     formulario.respostas.each_with_object({}) do |resposta, hash|
       if resposta.questao
@@ -86,6 +123,9 @@ class FormulariosController < ApplicationController
   #
   # === Retorno
   # Renderiza JSON do formulário
+  #
+  # === Efeitos Colaterais
+  # Nenhum
   def render_formulario_json(formulario, status = :ok)
     render  json: @formulario.as_json(
           include: { 
@@ -110,7 +150,7 @@ class FormulariosController < ApplicationController
   # JSON contendo array de formulários com suas respostas, questões, alternativas e templates aninhados
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum
   #
   # Rota: GET /formularios
   def index
@@ -129,7 +169,7 @@ class FormulariosController < ApplicationController
   # Se o formulário não for encontrado, retorna erro 404
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum
   #
   # Rota: GET /formularios/1
   def show
@@ -261,6 +301,15 @@ end
 
   ##
   # Inicializa arrays para respostas a serem removidas/adicionadas no update
+  #
+  # === Argumentos
+  # Nenhum argumento direto - utiliza params[:formulario]
+  #
+  # === Retorno
+  # Arrays de IDs para remoção e dados para adição
+  #
+  # === Efeitos Colaterais
+  # Nenhum
   def respostas_update_arrays
     respostas_to_destroy_ids = []
     respostas_to_add = []
@@ -277,6 +326,16 @@ end
 
   ##
   # Remove e adiciona respostas após update
+  #
+  # === Argumentos
+  # * +respostas_to_destroy_ids+ - Array de IDs de respostas a serem removidas
+  # * +respostas_to_add+ - Array de dados de respostas a serem adicionadas
+  #
+  # === Retorno
+  # Nenhum retorno direto
+  #
+  # === Efeitos Colaterais
+  # Modifica registros de respostas no banco de dados
   def destroy_and_add_respostas(respostas_to_destroy_ids, respostas_to_add)
     if respostas_to_destroy_ids.any?
       @formulario.respostas.where(id: respostas_to_destroy_ids).destroy_all
@@ -286,6 +345,15 @@ end
 
   ##
   # Atualiza respostas existentes a partir dos parâmetros
+  #
+  # === Argumentos
+  # Nenhum argumento direto - utiliza params[:formulario]
+  #
+  # === Retorno
+  # Nenhum retorno direto
+  #
+  # === Efeitos Colaterais
+  # Modifica registros de respostas no banco de dados
   def update_respostas_from_params
     if params[:formulario] && params[:formulario][:respostas_attributes].present?
       attributes = params[:formulario][:respostas_attributes]
@@ -403,7 +471,6 @@ end
   end
 
   private
-    # Método auxiliar para processar os atributos de resposta
     ##
     # Processa atributos de resposta durante operações de update
     #
@@ -418,6 +485,7 @@ end
     # === Efeitos Colaterais
     # * Adiciona IDs ao array de exclusão se _destroy estiver marcado
     # * Adiciona dados ao array de criação para novas respostas
+    
     def process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add)
       return unless resposta_attr.is_a?(Hash)
       
@@ -487,7 +555,6 @@ end
       end
     end
     
-    # Método auxiliar para atualizar uma resposta existente
     ##
     # Atualiza uma resposta existente com novos dados
     #
@@ -515,7 +582,6 @@ end
       end
     end
 
-    # Use callbacks to share common setup or constraints between actions.
     ##
     # Localiza e define o formulário baseado no ID fornecido nos parâmetros
     #
@@ -532,6 +598,7 @@ end
       @formulario = Formulario.find(params[:id])
     end
 
+
     ##
     # Filtra e permite apenas parâmetros confiáveis para criação/atualização de formulários
     #
@@ -544,8 +611,7 @@ end
     # === Efeitos Colaterais
     # * Converte diferentes formatos de respostas para respostas_attributes padronizado
     # * Registra parâmetros processados no log para debugging
-
-  def formulario_params
+    def formulario_params
     permitted = params.require(:formulario).permit(
       :name, :date, :template_id, :turma_id,
       :publico_alvo, :remove_missing_respostas,
@@ -560,6 +626,15 @@ end
 
   ##
   # Normaliza respostas_attributes para o formato hash
+  #
+  # === Argumentos
+  # * +permitted+ - Parâmetros permitidos do formulário
+  #
+  # === Retorno
+  # Hash de respostas_attributes normalizado
+  #
+  # === Efeitos Colaterais
+  # Nenhum
   def normalize_respostas_attributes(permitted)
     attrs = params[:formulario][:respostas_attributes]
     if attrs.present?

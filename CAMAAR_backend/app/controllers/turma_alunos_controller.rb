@@ -1,7 +1,13 @@
+##
+# TurmaAlunosController
+#
+# Controller responsável por gerenciar associação de alunos a turmas
+
 class TurmaAlunosController < ApplicationController
   before_action :set_turma_aluno, only: %i[ show edit update destroy ]
 
   ##
+  # Rota: GET /turma_alunos
   # Lista todas as associações entre turmas e alunos
   #
   # === Argumentos
@@ -17,10 +23,11 @@ class TurmaAlunosController < ApplicationController
   end
 
   ##
+  # Rota: GET /turma_alunos/:id
   # Exibe os detalhes de uma associação turma-aluno específica
   #
   # === Argumentos
-  # Rota: GET /turma_alunos/:id
+  # * +id+ - ID da associação turma-aluno
   #
   # === Retorno
   # Implicitamente retorna a view com dados da associação
@@ -31,6 +38,7 @@ class TurmaAlunosController < ApplicationController
   end
 
   ##
+  # Rota: GET /turma_alunos/new
   # Prepara uma nova instância de associação turma-aluno para criação
   #
   # === Argumentos
@@ -46,24 +54,26 @@ class TurmaAlunosController < ApplicationController
   end
 
   ##
+  # Rota: GET /turma_alunos/:id/edit
   # Prepara uma associação turma-aluno existente para edição
   #
   # === Argumentos
-  # Rota: GET /turma_alunos/:id/edit
+  # * +id+ - ID da associação turma-aluno
   #
   # === Retorno
-  # Implicitamente retorna a view de edição
+  # Nenhum
   #
   # === Efeitos Colaterais
-  # Nenhum - apenas preparação para edição
+  # Nenhum
   def edit
   end
 
   ##
+  # Rota: POST /turma_alunos
   # Cria uma nova associação turma-aluno no sistema
   #
   # === Argumentos
-  # Rota: POST /turma_alunos
+  # * +turma_aluno+ - Hash com os dados da nova associação
   #
   # === Retorno
   # * HTML: Redirecionamento com notice (success) ou renderização do form com erros
@@ -86,10 +96,11 @@ class TurmaAlunosController < ApplicationController
   end
 
   ##
+  # Rota: PATCH/PUT /turma_alunos/:id
   # Atualiza os dados de uma associação turma-aluno existente
   #
   # === Argumentos
-  # Rota: PATCH/PUT /turma_alunos/:id
+  # * +id+ - ID da associação turma-aluno
   # * +turma_aluno+ - Hash com os novos dados da associação
   #
   # === Retorno
@@ -111,10 +122,11 @@ class TurmaAlunosController < ApplicationController
   end
 
   ##
+  # Rota: DELETE /turma_alunos/:id
   # Remove uma associação turma-aluno do sistema
   #
   # === Argumentos
-  # Rota: DELETE /turma_alunos/:id
+  # * +id+ - ID da associação turma-aluno
   #
   # === Retorno
   # * HTML: Redirecionamento para índice com notice de sucesso
@@ -155,10 +167,10 @@ class TurmaAlunosController < ApplicationController
     # Nenhum argumento direto - utiliza params
     #
     # === Retorno
-    # Hash com parâmetros filtrados e permitidos (atualmente vazio)
+    # Hash com parâmetros filtrados e permitidos 
     #
     # === Efeitos Colaterais
-    # Nenhum - apenas filtragem de parâmetros
+    # Nenhum 
     def turma_aluno_params
       params.fetch(:turma_aluno, {})
     end

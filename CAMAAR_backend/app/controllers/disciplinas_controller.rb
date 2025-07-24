@@ -1,7 +1,12 @@
+##
+# DisciplinasController
+#
+# Controller responsável por gerenciar operações em disciplinas
 class DisciplinasController < ApplicationController
   before_action :set_disciplina, only: %i[ show edit update destroy ]
 
   ##
+  # Rota: GET /disciplinas
   # Lista todas as disciplinas do sistema
   #
   # === Argumentos
@@ -11,7 +16,7 @@ class DisciplinasController < ApplicationController
   # Array JSON contendo todos os registros de disciplinas
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum 
   def index
     @disciplinas = Disciplina.all
 
@@ -19,16 +24,17 @@ class DisciplinasController < ApplicationController
   end
 
   ##
+  # Rota: GET /disciplinas/:id
   # Exibe os detalhes de uma disciplina específica
   #
   # === Argumentos
-  # Rota: GET /disciplinas/:id
+  # * +id+ - ID da disciplina (através dos params)
   #
   # === Retorno
   # JSON com os dados da disciplina encontrada
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum 
   def show
 
     set_disciplina
@@ -37,6 +43,7 @@ class DisciplinasController < ApplicationController
   end
 
   ##
+  # Rota: GET /disciplinas/new
   # Prepara uma nova instância de disciplina para criação
   #
   # === Argumentos
@@ -53,29 +60,28 @@ class DisciplinasController < ApplicationController
   end
 
   ##
+  # Rota: GET /disciplinas/:id/edit
   # Prepara uma disciplina existente para edição
-  # 
-  # === Nota
-  # Há um erro no código original - chama set_turma mas deveria ser set_disciplina
   #
   # === Argumentos
   # * +id+ - ID da disciplina (através dos params)
   #
   # === Retorno
-  # JSON com os dados para edição (atualmente retorna @turma por erro)
+  # JSON com os dados da disciplina para edição
   #
   # === Efeitos Colaterais
-  # Nenhum - apenas preparação para edição
+  # Nenhum, apenas prepara para edição
   def edit
     set_turma
     render json: @turma
   end
 
   ##
+  # Rota: POST /disciplinas
   # Cria uma nova disciplina no sistema
   #
   # === Argumentos
-  # Rota: POST /disciplinas
+  # * +disciplina+ - Hash com os dados da nova disciplina
   #
   # === Retorno
   # * JSON com os dados da disciplina criada e status 201 (success)
@@ -95,10 +101,11 @@ class DisciplinasController < ApplicationController
   end
 
   ##
+  # Rota: PATCH/PUT /disciplinas/:id
   # Atualiza os dados de uma disciplina existente
   #
   # === Argumentos
-  # Rota: PATCH/PUT /disciplinas/:id
+  # * +id+ - ID da disciplina (através dos params)
   # * +disciplina+ - Hash com os novos dados da disciplina
   #
   # === Retorno
@@ -120,6 +127,7 @@ class DisciplinasController < ApplicationController
   end
 
   ##
+  # Rota: DELETE /disciplinas/:id
   # Remove uma disciplina do sistema
   #
   # === Argumentos
@@ -141,7 +149,7 @@ class DisciplinasController < ApplicationController
     # Localiza e define a disciplina baseada no ID fornecido nos parâmetros
     #
     # === Argumentos
-    # Nenhum argumento direto - utiliza params[:id]
+    # Nenhum argumento direto, utiliza params[:id]
     #
     # === Retorno
     # Define a variável de instância @disciplina
@@ -157,13 +165,13 @@ class DisciplinasController < ApplicationController
     # Filtra e permite apenas parâmetros confiáveis para criação/atualização de disciplinas
     #
     # === Argumentos
-    # Nenhum argumento direto - utiliza params
+    # Nenhum argumento direto, utiliza params
     #
     # === Retorno
     # Hash com parâmetros filtrados e permitidos
     #
     # === Efeitos Colaterais
-    # Nenhum - apenas filtragem de parâmetros
+    # Nenhum
     def disciplina_params
       params.require(:disciplina).permit(:name, :code, :departamento_id)
     end

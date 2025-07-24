@@ -1,3 +1,7 @@
+##
+# Resposta
+#
+# Model responsável por representar respostas de usuários a questões de formulários
 class Resposta < ApplicationRecord
   self.table_name = "resposta"
   

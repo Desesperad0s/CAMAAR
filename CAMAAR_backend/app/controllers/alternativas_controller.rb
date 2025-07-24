@@ -1,11 +1,16 @@
+##
+# AlternativasController
+#
+# Controller responsável por gerenciar alternativas de questões
 class AlternativasController < ApplicationController
   before_action :set_alternativa, only: %i[ show edit update destroy ]
 
   ##
+  # Rota: GET /alternativas ou /questaos/:questao_id/alternativas
   # Lista todas as alternativas ou alternativas de uma questão específica
   #
   # === Argumentos
-  # Rota: GET /alternativas or /questaos/:questao_id/alternativas
+  # * +questao_id+ (opcional) - ID da questão para filtrar alternativas
   #
   # === Retorno
   # Array JSON contendo as alternativas (todas ou filtradas por questão)
@@ -23,10 +28,11 @@ class AlternativasController < ApplicationController
   end
 
   ##
+  # Rota: GET /alternativas/:id
   # Exibe os detalhes de uma alternativa específica
   #
   # === Argumentos
-  # Rota: GET /alternativas/:id
+  # * +id+ - ID da alternativa
   #
   # === Retorno
   # JSON com os dados da alternativa encontrada
@@ -38,6 +44,7 @@ class AlternativasController < ApplicationController
   end
 
   ##
+  # Rota: GET /alternativas/new
   # Prepara uma nova instância de alternativa para criação
   #
   # === Argumentos
@@ -53,10 +60,11 @@ class AlternativasController < ApplicationController
   end
 
   ##
+  # Rota: GET /alternativas/:id/edit
   # Prepara uma alternativa existente para edição
   #
   # === Argumentos
-  # Rota: GET /alternativas/:id/edit
+  # * +id+ - ID da alternativa
   #
   # === Retorno
   # Implicitamente retorna a view de edição
@@ -67,10 +75,11 @@ class AlternativasController < ApplicationController
   end
 
   ##
+  # Rota: POST /alternativas
   # Cria uma nova alternativa no sistema
   #
   # === Argumentos
-  # Rota: POST /alternativas
+  # * +alternativa+ - Hash com os dados da nova alternativa
   #
   # === Retorno
   # * HTML: Redirecionamento com notice (success) ou renderização do form com erros
@@ -93,10 +102,11 @@ class AlternativasController < ApplicationController
   end
 
   ##
+  # Rota: PATCH/PUT /alternativas/:id
   # Atualiza os dados de uma alternativa existente
   #
   # === Argumentos
-  # Rota: PATCH/PUT /alternativas/:id
+  # * +id+ - ID da alternativa
   # * +alternativa+ - Hash com os novos dados da alternativa
   #
   # === Retorno
@@ -118,10 +128,11 @@ class AlternativasController < ApplicationController
   end
 
   ##
+  # Rota: DELETE /alternativas/:id
   # Remove uma alternativa do sistema
   #
   # === Argumentos
-  # Rota: DELETE /alternativas/:id
+  # * +id+ - ID da alternativa
   #
   # === Retorno
   # * HTML: Redirecionamento para índice com notice de sucesso

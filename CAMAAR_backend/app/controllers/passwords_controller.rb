@@ -1,5 +1,10 @@
 
 
+##
+# PasswordsController
+#
+# Controller responsável por gerenciar operações sobre as senhas dos usuários
+
 class PasswordsController < ApplicationController
   skip_before_action :authenticate_request
 
@@ -26,25 +31,6 @@ class PasswordsController < ApplicationController
     end
     render_success('Se o email estiver cadastrado, você receberá instruções para redefinir sua senha')
   end
-  
-  ##
-  # Rota: POST /passwords/reset
-  #
-  # === Argumentos
-  # * +token+ - Token de redefinição de senha (implícito nos params)
-  # * +password+ - Nova senha do usuário (implícito nos params)
-  # * +password_confirmation+ - Confirmação da nova senha (implícito nos params)
-  #
-  # === Retorno
-  # Atualmente não implementado - método vazio
-  #
-  # === Efeitos Colaterais
-  # Nenhum - método ainda não implementado
-  # Quando implementado, deve:
-  # * Validar token de redefinição
-  # * Atualizar senha do usuário
-  # * Invalidar token usado
-
 
   ##
   # Rota: POST /passwords/reset
@@ -78,11 +64,9 @@ class PasswordsController < ApplicationController
     render_error('Token inválido ou expirado', :unprocessable_entity)
   end
   
-  # POST /passwords/set-first - Para usuários que estão definindo senha pela primeira vez
-
 
   ##
-  # POST /passwords/set-first
+  # Rota: POST /passwords/set-first
   # Define a senha pela primeira vez para usuários recém-cadastrados
   #
   # === Argumentos
@@ -116,12 +100,10 @@ class PasswordsController < ApplicationController
     render_error('Token inválido, expirado ou usuário já possui senha definida', :unprocessable_entity)
   end
   
-  # GET /passwords/test-email - Para testar configuração de email (apenas em desenvolvimento)
-
 
   ##
-  # GET /passwords/test-email
-  # Testa configuração de email (apenas em desenvolvimento)
+  # Rota: GET /passwords/test-email
+  # Testa configuração de email 
   #
   # === Argumentos
   # * +email+ - Email para teste (params, opcional)

@@ -1,3 +1,7 @@
+##
+# DataImportController
+#
+# Controller responsável por importar dados de disciplinas, turmas e alunos a partir de arquivos JSON
 class DataImportController < ApplicationController
   before_action :authenticate_request
   before_action :authorize_admin, only: [:import]

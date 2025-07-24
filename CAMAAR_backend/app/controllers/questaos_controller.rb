@@ -1,17 +1,22 @@
+##
+# QuestaosController
+#
+# Controller responsável por gerenciar questões de formulários e templates
 class QuestaosController < ApplicationController
   before_action :set_questao, only: %i[ show edit update destroy ]
 
   ##
+  # Rota: GET /questaos ou /formularios/:formulario_id/questaos
   # Lista todas as questões ou questões de um formulário específico
   #
   # === Argumentos
-  # Rota: GET /questaos or /formularios/:formulario_id/questaos
+  # * +formulario_id+ (opcional) - ID do formulário para filtrar questões
   #
   # === Retorno
   # Array JSON contendo as questões (todas ou filtradas por formulário/template)
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum 
   def index
     if params[:formulario_id].present?
       formulario = Formulario.find_by(id: params[:formulario_id])
@@ -33,21 +38,23 @@ class QuestaosController < ApplicationController
   end
 
   ##
+  # Rota: GET /questaos/:id
   # Exibe os detalhes de uma questão específica
   #
   # === Argumentos
-  # Rota: GET /questaos/:id
+  # * +id+ - ID da questão
   #
   # === Retorno
   # JSON com os dados da questão encontrada
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum
   def show
     render json: @questao
   end
 
   ##
+  # Rota: GET /questaos/new
   # Prepara uma nova instância de questão para criação
   #
   # === Argumentos
@@ -63,24 +70,26 @@ class QuestaosController < ApplicationController
   end
 
   ##
+  # Rota: GET /questaos/:id/edit
   # Prepara uma questão existente para edição
   #
   # === Argumentos
-  # Rota: GET /questaos/:id/edit
+  # * +id+ - ID da questão
   #
   # === Retorno
-  # Implicitamente retorna a view de edição
+  # Nenhum, apenas prepara para edição
   #
   # === Efeitos Colaterais
-  # Nenhum - apenas preparação para edição
+  # Nenhum 
   def edit
   end
 
   ##
+  # Rota: POST /questaos
   # Cria uma nova questão no sistema
   #
   # === Argumentos
-  # Rota: POST /questaos
+  # * +questao+ - Hash com os dados da nova questão
   #
   # === Retorno
   # * HTML: Redirecionamento com notice (success) ou renderização do form com erros
@@ -95,7 +104,6 @@ class QuestaosController < ApplicationController
     if @questao.save
       render json: @questao, status: :created
     else
-      # Log dos erros para debug
       Rails.logger.error "Questao validation errors: #{@questao.errors.full_messages}"
       if @questao.alternativas.any?
         @questao.alternativas.each_with_index do |alt, index|
@@ -107,10 +115,11 @@ class QuestaosController < ApplicationController
   end
 
   ##
+  # Rota: PATCH/PUT /questaos/:id
   # Atualiza os dados de uma questão existente
   #
   # === Argumentos
-  # Rota: PATCH/PUT /questaos/:id
+  # * +id+ - ID da questão
   # * +questao+ - Hash com os novos dados da questão
   #
   # === Retorno
@@ -129,10 +138,11 @@ class QuestaosController < ApplicationController
   end
 
   ##
+  # Rota: DELETE /questaos/:id
   # Remove uma questão do sistema
   #
   # === Argumentos
-  # * +id+ - ID da questão a ser removida (através dos params)
+  # * +id+ - ID da questão a ser removida
   #
   # === Retorno
   # * HTML: Redirecionamento para índice com notice de sucesso

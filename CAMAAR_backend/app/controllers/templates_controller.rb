@@ -1,3 +1,8 @@
+##
+# TemplatesController
+#
+# Controller responsável por gerenciar templates de formulários
+
 class TemplatesController < ApplicationController
   before_action :set_template, only: [:show, :update, :destroy]
   rescue_from ActiveRecord::RecordNotFound, with: :template_not_found
@@ -12,7 +17,7 @@ class TemplatesController < ApplicationController
   # Retorna um JSON contendo um array de templates com suas questões e alternativas aninhadas
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum 
   #
   # Rota: GET /templates
   def index
@@ -31,12 +36,13 @@ class TemplatesController < ApplicationController
   # Se o template não for encontrado, retorna erro 404 via template_not_found
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum 
   #
   # Rota: GET /templates/:id
   def show
     render json: @template.as_json(include: { questoes: { include: :alternativas } })
   end
+
 
   ##
   # Cria um novo template com questões e alternativas associadas
@@ -57,23 +63,6 @@ class TemplatesController < ApplicationController
   # * Se não houver user_id válido, busca e atribui o primeiro admin encontrado
   #
   # Rota: POST /templates
-  ##
-  # Cria um novo template com questões e alternativas associadas
-  #
-  # === Argumentos
-  # * +template+ - Hash contendo os dados do template (content, admin_id ou user_id)
-  # * +questoes_attributes+ - Array ou Hash de questões com seus enunciados e alternativas (opcional)
-  # * +questoes+ - Array de questões para compatibilidade com versões anteriores (opcional)
-  #
-  # === Retorno
-  # Em caso de sucesso: JSON do template criado com status 201 (created)
-  # Em caso de erro: JSON com os erros de validação e status 422 (unprocessable_entity)
-  #
-  # === Efeitos Colaterais
-  # * Cria um novo registro de Template no banco de dados
-  # * Cria registros de Questao associados ao template
-  # * Cria registros de Alternativa associados às questões
-  # * Se não houver user_id válido, busca e atribui o primeiro admin encontrado
   def create
     user_id = params[:template][:admin_id] || params[:template][:user_id]
     unless user_id.present? && User.exists?(user_id)
@@ -109,7 +98,7 @@ class TemplatesController < ApplicationController
   #
   # === Efeitos Colaterais
   # * Atualiza o registro do Template no banco de dados
-  # * Pode atualizar, criar ou deletar questões e alternativas associadas (via nested attributes)
+  # * Pode atualizar, criar ou deletar questões e alternativas associadas
   #
   # Rota: PATCH/PUT /templates/1
   def update
@@ -132,7 +121,7 @@ class TemplatesController < ApplicationController
   #
   # === Efeitos Colaterais
   # * Remove permanentemente o template do banco de dados
-  # * Remove todas as questões e alternativas associadas (via dependent: :destroy nas associações)
+  # * Remove todas as questões e alternativas associadas 
   #
   # DELETE /templates/1
   def destroy
@@ -159,11 +148,10 @@ class TemplatesController < ApplicationController
     #
     # === Retorno
     # Define a variável de instância @template com o objeto Template encontrado
-    # Se não encontrar, dispara ActiveRecord::RecordNotFound que é capturado pelo rescue_from
+    # Se não encontrar, dispara ActiveRecord::RecordNotFound 
     #
     # === Efeitos Colaterais
     # * Define @template como variável de instância
-    # * Consulta o banco de dados
     def set_template
       @template = Template.find(params[:id])
     end
@@ -183,7 +171,7 @@ class TemplatesController < ApplicationController
     #   * alternativas_attributes: array de alternativas (id, content, _destroy)
     #
     # === Efeitos Colaterais
-    # Nenhum efeito colateral - apenas filtra parâmetros de entrada
+    # Nenhum
     def template_params
       params.require(:template).permit(
         :content, 

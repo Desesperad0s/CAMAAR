@@ -1,9 +1,17 @@
 ##
-# Modelo representando usuários do sistema CAMAAR
+##
+# User
 #
-# Os usuários podem ter diferentes roles: student, professor ou admin.
-# Estudantes são associados a turmas através da model TurmaAluno.
-# Professores e admins podem criar templates de formulários.
+# Model responsável por representar usuários do sistema.
+# Gerencia autenticação, permissões, associação a turmas e envio de emails de acesso.
+#
+# Principais responsabilidades:
+# - Armazenar dados de login, senha, nome, email, role
+# - Relacionar usuários a turmas e respostas
+# - Gerenciar tokens de acesso e redefinição de senha
+# - Validar dados obrigatórios
+#
+
 #
 class User < ApplicationRecord
   has_many :turma_alunos, foreign_key: :aluno_id
@@ -30,7 +38,7 @@ class User < ApplicationRecord
   # Boolean - true se o role for 'student', false caso contrário
   #
   # === Efeitos Colaterais
-  # Nenhum - método apenas de consulta
+  # Nenhum
   def estudante?
     role == 'student'
   end
@@ -45,7 +53,7 @@ class User < ApplicationRecord
   # Boolean - true se o role for 'professor', false caso contrário
   #
   # === Efeitos Colaterais
-  # Nenhum - método apenas de consulta
+  # Nenhum
   def professor?
     role == 'professor'
   end
@@ -60,7 +68,7 @@ class User < ApplicationRecord
   # Boolean - true se o role for 'admin', false caso contrário
   #
   # === Efeitos Colaterais
-  # Nenhum - método apenas de consulta
+  # Nenhum
   def admin?
     role == 'admin'
   end
@@ -80,10 +88,6 @@ class User < ApplicationRecord
   # * Consulta o banco de dados para encontrar usuário por email
   # * Compara senha fornecida com senha armazenada
   #
-  # === Nota
-  # ATENÇÃO: Este método compara senhas em texto plano, 
-  # o que não é uma prática segura para produção.
-  # Recomenda-se usar has_secure_password do Rails.
   def self.authenticate(email, password)
     user = find_by(email: email)
     return user if user && user.password == password
@@ -105,7 +109,6 @@ class User < ApplicationRecord
   # * Salva o usuário no banco de dados
   def generate_reset_password_token!
     self.reset_password_token = SecureRandom.urlsafe_base64
-    # Vamos usar um campo virtual para simplificar (sem mudança no banco)
     save!
     reset_password_token
   end
@@ -124,7 +127,6 @@ class User < ApplicationRecord
   # * Não salva no banco (apenas retorna o token)
   def generate_first_access_token!
     self.first_access_token = SecureRandom.urlsafe_base64
-    # Como não vamos alterar o banco, apenas retornamos o token
     first_access_token
   end
 
@@ -138,9 +140,8 @@ class User < ApplicationRecord
   # Boolean - true se a senha for a padrão, false caso contrário
   #
   # === Efeitos Colaterais
-  # Nenhum - apenas consulta o valor da senha
+  # Nenhum
   def needs_password_reset?
-    # Lógica simples: se a senha é padrão, precisa redefinir
     password == 'padrao123'
   end
 end

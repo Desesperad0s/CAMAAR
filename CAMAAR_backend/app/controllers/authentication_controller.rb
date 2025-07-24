@@ -1,3 +1,7 @@
+##
+# AuthenticationController
+#
+# Controller responsável por autenticação de usuários no sistema.
 class AuthenticationController < ApplicationController
   skip_before_action :authenticate_request, only: [:login]
 

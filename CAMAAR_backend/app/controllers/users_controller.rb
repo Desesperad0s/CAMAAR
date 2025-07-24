@@ -1,3 +1,8 @@
+##
+# UsersController
+#
+# Controller responsável por gerenciar usuários do sistema
+
 class UsersController < ApplicationController
   skip_before_action :authenticate_request, only: [:register]
   before_action :set_user, only: [:show, :update, :destroy]
@@ -13,7 +18,7 @@ class UsersController < ApplicationController
   # JSON contendo array de todos os usuários
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum 
   #
   # Rota: GET /users
   def index
@@ -32,7 +37,7 @@ class UsersController < ApplicationController
   # Se o usuário não for encontrado, retorna erro 404 via user_not_found
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum 
   #
   # Rota: GET /users/:id
   def show
@@ -155,7 +160,7 @@ class UsersController < ApplicationController
   # JSON contendo array das turmas nas quais o usuário está matriculado
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum
   #
   # Rota: GET /user/turmas
   def turmas
@@ -195,8 +200,7 @@ class UsersController < ApplicationController
     # * registration, name, email, password, forms_answered, major, role
     #
     # === Efeitos Colaterais
-    # Nenhum efeito colateral - apenas filtra parâmetros de entrada
-    #
+    # Nenhum
     def user_params
       params.require(:user).permit(:registration, :name, :email, :password, :forms_answered, :major, :role)
     end

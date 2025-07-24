@@ -1,3 +1,7 @@
+##
+# Turma
+#
+# Model responsável por representar turmas acadêmicas
 class Turma < ApplicationRecord
   belongs_to :disciplina
   has_many :formularios
