@@ -17,39 +17,75 @@ class FormulariosController < ApplicationController
     }
   end
 
-  # Helper for worksheet headers in excel_report
+
+  ##
+  # Gera lista de cabeçalhos para o relatório Excel
+  #
+  # === Argumentos
+  # * +formularios+ - Array de formulários
+  #
+  # === Retorno
+  # Array de strings com os cabeçalhos
   def all_questions_headers(formularios)
-    all_questions = formularios.flat_map do |formulario|
-      formulario.respostas.map do |resposta|
-        if resposta.questao
-          resposta.questao.enunciado || "Questão #{resposta.questao.id}"
-        end
-      end
-    end.compact.uniq
-    ["ID", "Formulário", "Data de Criação"] + all_questions
+    ["ID", "Formulário", "Data de Criação"] + unique_question_headers(formularios)
   end
 
-  # Helper to build a row for Excel report
+  ##
+  # Extrai e retorna cabeçalhos únicos das questões
+  def unique_question_headers(formularios)
+    formularios.flat_map do |formulario|
+      formulario.respostas.map do |resposta|
+        resposta.questao&.enunciado || (resposta.questao ? "Questão #{resposta.questao.id}" : nil)
+      end
+    end.compact.uniq
+  end
+
+
+  ##
+  # Monta uma linha para o relatório Excel
+  #
+  # === Argumentos
+  # * +formulario+ - Formulário
+  # * +headers+ - Array de cabeçalhos
+  #
+  # === Retorno
+  # Array com dados da linha
   def build_excel_row(formulario, headers)
-    row_data = [
+    base_row = [
       formulario.id,
       formulario.name || "Formulário #{formulario.id}",
       formulario.created_at&.strftime("%d/%m/%Y %H:%M")
     ]
-    (headers.length - 3).times { row_data << "" }
-    formulario.respostas.each do |resposta|
-      if resposta.questao
-        question_title = resposta.questao.enunciado || "Questão #{resposta.questao.id}"
-        col_index = headers.index(question_title)
-        if col_index && resposta.content.present?
-          row_data[col_index] = resposta.content
-        end
-      end
+    respostas_hash = respostas_hash_for_excel(formulario)
+    row = base_row + Array.new(headers.length - 3, "")
+    respostas_hash.each do |question_title, content|
+      col_index = headers.index(question_title)
+      row[col_index] = content if col_index
     end
-    row_data
+    row
   end
 
-  # Helper to render formulario as_json
+  ##
+  # Cria hash de respostas para facilitar montagem da linha Excel
+  def respostas_hash_for_excel(formulario)
+    formulario.respostas.each_with_object({}) do |resposta, hash|
+      if resposta.questao
+        question_title = resposta.questao.enunciado || "Questão #{resposta.questao.id}"
+        hash[question_title] = resposta.content if resposta.content.present?
+      end
+    end
+  end
+
+
+  ##
+  # Renderiza o formulário como JSON
+  #
+  # === Argumentos
+  # * +formulario+ - Formulário
+  # * +status+ - Status HTTP (default :ok)
+  #
+  # === Retorno
+  # Renderiza JSON do formulário
   def render_formulario_json(formulario, status = :ok)
     render json: formulario.as_json(formulario_json_options), status: status
   end
@@ -192,37 +228,57 @@ class FormulariosController < ApplicationController
   # * Cria, atualiza ou remove respostas associadas ao formulário
   #
   # Rota: PATCH/PUT /formularios/1
+
   def update
     ActiveRecord::Base.transaction do
-      respostas_to_destroy_ids = []
-      respostas_to_add = []
-      if params[:formulario] && params[:formulario][:respostas_attributes].present?
-        attributes = params[:formulario][:respostas_attributes]
-        if attributes.is_a?(Array)
-          attributes.each { |resposta_attr| process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add) }
-        elsif attributes.is_a?(Hash)
-          attributes.each { |_, resposta_attr| process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add) }
-        end
-      end
+      respostas_to_destroy_ids, respostas_to_add = respostas_update_arrays
       @formulario.assign_attributes(formulario_params.except(:respostas_attributes))
       if @formulario.save
-        if respostas_to_destroy_ids.any?
-          @formulario.respostas.where(id: respostas_to_destroy_ids).destroy_all
-        end
-        respostas_to_add.each { |resposta_data| @formulario.respostas.create!(resposta_data) }
-        if params[:formulario] && params[:formulario][:respostas_attributes].present?
-          attributes = params[:formulario][:respostas_attributes]
-          if attributes.is_a?(Hash)
-            attributes.each { |_, resposta_attr| update_existing_resposta(resposta_attr) }
-          elsif attributes.is_a?(Array)
-            attributes.each { |resposta_attr| update_existing_resposta(resposta_attr) }
-          end
-        end
+        destroy_and_add_respostas(respostas_to_destroy_ids, respostas_to_add)
+        update_respostas_from_params
         render_formulario_json(@formulario)
       else
         Rails.logger.error "FORMULARIO UPDATE ERRORS: #{@formulario.errors.full_messages.join(', ')}"
         render json: { errors: @formulario.errors }, status: :unprocessable_entity
         raise ActiveRecord::Rollback
+      end
+    end
+  end
+
+  ##
+  # Inicializa arrays para respostas a serem removidas/adicionadas no update
+  def respostas_update_arrays
+    respostas_to_destroy_ids = []
+    respostas_to_add = []
+    if params[:formulario] && params[:formulario][:respostas_attributes].present?
+      attributes = params[:formulario][:respostas_attributes]
+      if attributes.is_a?(Array)
+        attributes.each { |resposta_attr| process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add) }
+      elsif attributes.is_a?(Hash)
+        attributes.each { |_, resposta_attr| process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add) }
+      end
+    end
+    [respostas_to_destroy_ids, respostas_to_add]
+  end
+
+  ##
+  # Remove e adiciona respostas após update
+  def destroy_and_add_respostas(respostas_to_destroy_ids, respostas_to_add)
+    if respostas_to_destroy_ids.any?
+      @formulario.respostas.where(id: respostas_to_destroy_ids).destroy_all
+    end
+    respostas_to_add.each { |resposta_data| @formulario.respostas.create!(resposta_data) }
+  end
+
+  ##
+  # Atualiza respostas existentes a partir dos parâmetros
+  def update_respostas_from_params
+    if params[:formulario] && params[:formulario][:respostas_attributes].present?
+      attributes = params[:formulario][:respostas_attributes]
+      if attributes.is_a?(Hash)
+        attributes.each { |_, resposta_attr| update_existing_resposta(resposta_attr) }
+      elsif attributes.is_a?(Array)
+        attributes.each { |resposta_attr| update_existing_resposta(resposta_attr) }
       end
     end
   end
@@ -475,55 +531,41 @@ class FormulariosController < ApplicationController
     # === Efeitos Colaterais
     # * Converte diferentes formatos de respostas para respostas_attributes padronizado
     # * Registra parâmetros processados no log para debugging
-    def formulario_params
-      # Primeiro, obtemos os parâmetros básicos permitidos
-      permitted = params.require(:formulario).permit(
-        :name, 
-        :date, 
-        :template_id, 
-        :turma_id,
-        :publico_alvo,
-        :remove_missing_respostas,
-        respostas_attributes: [
-          :id, 
-          :questao_id, 
-          :content, 
-          :_destroy
-        ]
-      )
-      
-      # Se houver respostas_attributes como um hash, precisamos normalizá-lo
-      if params[:formulario][:respostas_attributes].present?
-        if params[:formulario][:respostas_attributes].is_a?(Hash)
-          # Já está no formato correto como hash
-          # permitted[:respostas_attributes] já está definido pelo permit
-        elsif params[:formulario][:respostas_attributes].is_a?(Array)
-          # Converter de array para hash com índices como chaves
-          permitted[:respostas_attributes] = params[:formulario][:respostas_attributes].each_with_index.map do |attrs, i|
-            [i.to_s, attrs.permit(:id, :questao_id, :content, :_destroy)]
-          end.to_h
-        end
+
+  def formulario_params
+    permitted = params.require(:formulario).permit(
+      :name, :date, :template_id, :turma_id,
+      :publico_alvo, :remove_missing_respostas,
+      respostas_attributes: [:id, :questao_id, :content, :_destroy]
+    )
+    permitted[:respostas_attributes] = normalize_respostas_attributes(permitted)
+    Rails.logger.debug "PERMITTED PARAMS: #{permitted.inspect}"
+    permitted
+  end
+
+  ##
+  # Normaliza respostas_attributes para o formato hash
+  def normalize_respostas_attributes(permitted)
+    attrs = params[:formulario][:respostas_attributes]
+    if attrs.present?
+      if attrs.is_a?(Hash)
+        attrs
+      elsif attrs.is_a?(Array)
+        attrs.each_with_index.map { |a, i| [i.to_s, a.permit(:id, :questao_id, :content, :_destroy)] }.to_h
       end
-      
-      # Se houver respostas como um array separado, vamos convertê-las para o formato respostas_attributes
-      if params[:formulario][:respostas].present? && params[:formulario][:respostas].is_a?(Array)
-        respostas_hash = {}
-        params[:formulario][:respostas].each_with_index do |r, i|
-          attrs = {}
-          attrs[:id] = r[:id] if r[:id].present?
-          attrs[:questao_id] = r[:questao_id] if r[:questao_id].present?
-          attrs[:content] = r[:content] if r[:content].present?
-          attrs[:_destroy] = r[:_destroy] if r[:_destroy].present?
-          
-          respostas_hash[i.to_s] = attrs
-        end
-        
-        permitted[:respostas_attributes] ||= {}
-        permitted[:respostas_attributes].merge!(respostas_hash)
+    elsif params[:formulario][:respostas].present? && params[:formulario][:respostas].is_a?(Array)
+      respostas_hash = {}
+      params[:formulario][:respostas].each_with_index do |r, i|
+        attrs = {}
+        attrs[:id] = r[:id] if r[:id].present?
+        attrs[:questao_id] = r[:questao_id] if r[:questao_id].present?
+        attrs[:content] = r[:content] if r[:content].present?
+        attrs[:_destroy] = r[:_destroy] if r[:_destroy].present?
+        respostas_hash[i.to_s] = attrs
       end
-      
-      # Adicionar debugging
-      Rails.logger.debug "PERMITTED PARAMS: #{permitted.inspect}"
-      permitted
+      respostas_hash
+    else
+      permitted[:respostas_attributes]
     end
+  end
 end

@@ -63,14 +63,34 @@ class DataImportController < ApplicationController
 
   private
 
+
+
   ##
   # Verifica se os arquivos JSON existem
+  #
+  # === Argumentos
+  # * +classes_path+ - Caminho do arquivo classes.json
+  # * +members_path+ - Caminho do arquivo class_members.json
+  #
+  # === Retorno
+  # Boolean - true se ambos os arquivos existem, false caso contrário
+  # === Efeitos Colaterais
+  # Nenhum
   def json_files_exist?(classes_path, members_path)
     File.exist?(classes_path) && File.exist?(members_path)
   end
 
   ##
   # Retorna resposta de erro para arquivos ausentes
+  #
+  # === Argumentos
+  # * +classes_path+ - Caminho do arquivo classes.json
+  # * +members_path+ - Caminho do arquivo class_members.json
+  #
+  # === Retorno
+  # Hash com detalhes dos arquivos ausentes
+  # === Efeitos Colaterais
+  # Nenhum
   def json_files_missing_response(classes_path, members_path)
     {
       success: false,
@@ -86,12 +106,29 @@ class DataImportController < ApplicationController
 
   ##
   # Lê os arquivos JSON
+  #
+  # === Argumentos
+  # * +classes_path+ - Caminho do arquivo classes.json
+  # * +members_path+ - Caminho do arquivo class_members.json
+  #
+  # === Retorno
+  # Array com o conteúdo dos arquivos [classes_data, members_data]
+  # === Efeitos Colaterais
+  # Nenhum
   def read_json_files(classes_path, members_path)
     [File.read(classes_path), File.read(members_path)]
   end
 
   ##
   # Valida se o conteúdo é um JSON válido
+  #
+  # === Argumentos
+  # * +data+ - String com conteúdo JSON
+  #
+  # === Retorno
+  # Boolean - true se o JSON é válido, false caso contrário
+  # === Efeitos Colaterais
+  # Nenhum
   def valid_json?(data)
     JSON.parse(data)
     true
@@ -101,6 +138,14 @@ class DataImportController < ApplicationController
 
   ##
   # Retorna resposta de erro para JSON inválido
+  #
+  # === Argumentos
+  # Nenhum
+  #
+  # === Retorno
+  # Hash com mensagem de erro
+  # === Efeitos Colaterais
+  # Nenhum
   def json_invalid_response
     {
       success: false,
@@ -111,6 +156,14 @@ class DataImportController < ApplicationController
 
   ##
   # Envia emails de primeiro acesso se houver novos usuários
+  #
+  # === Argumentos
+  # * +new_users+ - Array de novos usuários
+  #
+  # === Retorno
+  # Array com resultados do envio de email
+  # === Efeitos Colaterais
+  # Envia emails reais para novos usuários
   def send_first_access_emails_if_needed(new_users)
     return [] unless new_users && new_users.any?
     Rails.logger.info("Enviando emails de primeiro acesso para #{new_users.size} novos usuários")
@@ -119,6 +172,16 @@ class DataImportController < ApplicationController
 
   ##
   # Monta resposta de sucesso
+  #
+  # === Argumentos
+  # * +discentes_result+ - Hash com resultado do processamento de discentes
+  # * +classes_result+ - Hash com resultado do processamento de turmas
+  # * +email_results+ - Array com resultados do envio de email
+  #
+  # === Retorno
+  # Hash com dados de sucesso da importação
+  # === Efeitos Colaterais
+  # Nenhum
   def success_response(discentes_result, classes_result, email_results)
     {
       success: true,
@@ -136,6 +199,17 @@ class DataImportController < ApplicationController
 
   ##
   # Monta resposta de erro
+  #
+  # === Argumentos
+  # * +discentes_result+ - Hash com resultado do processamento de discentes
+  # * +classes_result+ - Hash com resultado do processamento de turmas
+  # * +all_errors+ - Array de erros
+  # * +email_results+ - Array com resultados do envio de email
+  #
+  # === Retorno
+  # Hash com dados de erro da importação
+  # === Efeitos Colaterais
+  # Nenhum
   def error_response(discentes_result, classes_result, all_errors, email_results)
     {
       success: false,
@@ -153,6 +227,14 @@ class DataImportController < ApplicationController
 
   ##
   # Monta resposta de erro interno
+  #
+  # === Argumentos
+  # * +e+ - Exceção capturada
+  #
+  # === Retorno
+  # Hash com dados do erro interno
+  # === Efeitos Colaterais
+  # Nenhum
   def internal_error_response(e)
     {
       success: false,
