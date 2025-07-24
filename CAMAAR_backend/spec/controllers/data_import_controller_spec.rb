@@ -104,6 +104,7 @@ RSpec.describe DataImportController, type: :controller do
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['success']).to be false
         expect(JSON.parse(response.body)['message']).to eq('Dados importados com erros')
+        expect(JSON.parse(response.body)['errors']).to include('Erro de processamento')
       end
     end
 
@@ -161,14 +162,19 @@ RSpec.describe DataImportController, type: :controller do
         allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return(empty_json)
         allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(empty_json)
         allow(controller).to receive(:ensure_database_structure)
+
+        allow(JsonProcessorService).to receive(:process_discentes).and_return({
+          success: false,
+          total_processed: 0,
+          errors: ['Nenhum dado para importar']
+        })
       end
 
-      it 'processes successfully but imports no data' do
+      it 'processes but imports no data with error message' do
         post :import
         expect(response).to have_http_status(:ok)
-        # Ajuste aqui para o esperado pelo seu controller
         expect(JSON.parse(response.body)['success']).to be false
-        expect(JSON.parse(response.body)['message']).to eq('Data imported successfully')
+        expect(JSON.parse(response.body)['message']).to eq('Dados importados com erros')
       end
 
       it 'calls process_discentes with string JSON "{}"' do
@@ -197,3 +203,5 @@ RSpec.describe DataImportController, type: :controller do
     end
   end
 end
+
+
