@@ -172,6 +172,26 @@ class JsonProcessorService
     true
   end
 
+  ##
+  # Processa dados de discentes/alunos do arquivo JSON, criando/atualizando usuários e associando à turma padrão
+  #
+  # === Argumentos
+  # * +data+ - String contendo dados JSON dos alunos organizados por turma
+  #
+  # === Retorno
+  # Hash contendo:
+  # * +:success+ - Boolean indicando se o processamento foi bem-sucedido
+  # * +:total_processed+ - Integer com número de usuários processados
+  # * +:new_users+ - Array de usuários criados/atualizados
+  # * +:errors+ - Array com mensagens de erro encontradas
+  #
+  # === Efeitos Colaterais
+  # * Verifica existência da turma padrão (ID 1)
+  # * Cria novos usuários no banco de dados com role 'student' ou 'professor'
+  # * Associa usuários existentes e novos à turma padrão
+  # * Define senha padrão ("padrao123") para novos usuários
+  # * Registra logs detalhados de cada operação
+  # * Trata erros individualmente por aluno sem interromper o processo
   def self.process_discentes(data)
     errors = []
     processed_users = 0
