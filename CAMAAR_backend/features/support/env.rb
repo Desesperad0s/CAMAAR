@@ -37,7 +37,3 @@ Capybara.register_driver :selenium_chrome_headless do |app|
   
   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end
-
-class ApplicationController
-  skip_before_action :authenticate_request, if: -> { Rails.env.test? }
-end
