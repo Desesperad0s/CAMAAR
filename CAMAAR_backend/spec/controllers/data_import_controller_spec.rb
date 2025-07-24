@@ -101,10 +101,11 @@ RSpec.describe DataImportController, type: :controller do
 
       it 'returns error with details' do
         post :import
+        body = JSON.parse(response.body)
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)['success']).to be false
-        expect(JSON.parse(response.body)['message']).to eq('Dados importados com erros')
-        expect(JSON.parse(response.body)['errors']).to include('Erro de processamento')
+        expect(body['success']).to be false
+        expect(body['message']).to eq('Dados importados com erros')
+        expect(body['errors'] || []).to include('Erro de processamento')
       end
     end
 
@@ -203,5 +204,6 @@ RSpec.describe DataImportController, type: :controller do
     end
   end
 end
+
 
 
