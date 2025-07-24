@@ -48,7 +48,7 @@ docker-compose up --build
 
 O backend Rails estará disponível na porta definida em `BACKEND_PORT`.
 O frontend React estará disponível na porta definida em `FRONTEND_PORT`.
-
+Segue orientação para comandos relevantes (todos necessitam estar com o docker compose em execução)
 - Rodar testes unitários (com o docker compose em execução)
 ```
 docker exec -it camaar_rails bash
@@ -67,6 +67,9 @@ docker exec -it camaar_rails bash
 rdoc -all app/controllers app/services app/models -o doc/html --title "CAMAAR Backend Documentation"
 
 ```
+Um novo diretório chamado 'doc' será criado, contendo os arquivos HTML com a documentação do código (a página 'index.html' centraliza todas as classes/controllers/models do projeto).
+
+Cabe ressaltar que, como a maioria dos métodos estão na Controller, algumas models não possuem método e, portanto, não possuem comentários de documentação.
 ---
 
 - Executar os passos dos cenários BDD
@@ -74,7 +77,23 @@ rdoc -all app/controllers app/services app/models -o doc/html --title "CAMAAR Ba
 docker exec -it camaar_rails bash
 bundle exec cucumber features/nome-da-feature.feature
 ```
+---
 
+- Gerar ABC Score utilizando rubycritic
+```
+docker exec -it camaar_rails bash
+bundle exec rubycritic
+```
+O arquivo 'overview.html' com a revisão do código deste projeto estará no diretório "/app/tmp/rubycritic". Abra esta página em algum navegador/servidor (utilizando a extensão Five Server do VSCode, por exemplo) para visualizá-la. Apenas os arquivos de models/controllers são relevantes nesta página.
+
+---
+
+- Verificar cobertura de testes utilizando SimpleCov
+```
+docker exec -it camaar_rails bash
+bundle exec rspec
+```
+Ao executar os arquivos de teste RSpec, automaticamente será criada um diretório 'coverage', onde dentro dele estará um arquivo HTML contendo a análise de cobertura de testes do nosso programa. 
 ## ⚙️ Configuração Manual (Sem Docker)
 
 ### Backend (Rails)
@@ -120,12 +139,6 @@ O backend estará disponível em `http://localhost:3333` (ou na porta configurad
    ```
 
 O frontend estará disponível em `http://localhost:3000` (ou na porta configurada).
-
-## ABC Score
-Para gerar o ABC Score do nosso projeto, execute o seguinte comando:
-docker compose run --rm backend bundle exec rubycritic
-
-O arquivo 'overview.html' com a revisão do código deste projeto estará no diretório "/app/tmp/rubycritic". Abra esta página em algum navegador/servidor (utilizando a extensão Five Server do VSCode, por exemplo) para visualizá-la.
 
 <h2>🧭 Behavior Driven Design</h2>
 <p>O projeto utiliza a abordagem de Behavior Driven Design (BDD) para descrever e organizar os comportamentos esperados do sistema. Para facilitar a visualização e o acompanhamento das features, utilizamos um quadro no Miro:</p>
