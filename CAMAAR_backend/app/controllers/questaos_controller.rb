@@ -92,14 +92,17 @@ class QuestaosController < ApplicationController
   def create
     @questao = Questao.new(questao_params)
 
-    respond_to do |format|
-      if @questao.save
-        format.html { redirect_to @questao, notice: "Questao was successfully created." }
-        format.json { render :show, status: :created, location: @questao }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @questao.errors, status: :unprocessable_entity }
+    if @questao.save
+      render json: @questao, status: :created
+    else
+      # Log dos erros para debug
+      Rails.logger.error "Questao validation errors: #{@questao.errors.full_messages}"
+      if @questao.alternativas.any?
+        @questao.alternativas.each_with_index do |alt, index|
+          Rails.logger.error "Alternativa #{index} errors: #{alt.errors.full_messages}" if alt.errors.any?
+        end
       end
+      render json: @questao.errors, status: :unprocessable_entity
     end
   end
 
@@ -118,14 +121,10 @@ class QuestaosController < ApplicationController
   # * Atualiza o registro da questão no banco de dados
   # * Pode atualizar/criar/remover alternativas associadas
   def update
-    respond_to do |format|
-      if @questao.update(questao_params)
-        format.html { redirect_to @questao, notice: "Questao was successfully updated." }
-        format.json { render :show, status: :ok, location: @questao }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @questao.errors, status: :unprocessable_entity }
-      end
+    if @questao.update(questao_params)
+      render json: @questao, status: :ok
+    else
+      render json: @questao.errors, status: :unprocessable_entity
     end
   end
 
@@ -144,11 +143,7 @@ class QuestaosController < ApplicationController
   # * Remove alternativas associadas (dependendo das configurações do modelo)
   def destroy
     @questao.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to questaos_path, status: :see_other, notice: "Questao was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    head :no_content
   end
 
   private
