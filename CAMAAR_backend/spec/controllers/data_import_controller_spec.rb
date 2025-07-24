@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe DataImportController, type: :controller do
   let(:user) { FactoryBot.create(:user, :admin) }
   let(:token) { JwtService.encode(user_id: user.id) }
-  
+
   before do
     request.headers['Authorization'] = "Bearer #{token}"
     allow(controller).to receive(:current_user).and_return(user)
@@ -26,6 +26,11 @@ RSpec.describe DataImportController, type: :controller do
         expect(JSON.parse(response.body)['success']).to be false
         expect(JSON.parse(response.body)['message']).to eq('Arquivos não encontrados')
       end
+
+      it 'does not call JsonProcessorService' do
+        expect(JsonProcessorService).not_to receive(:process_discentes)
+        post :import
+      end
     end
 
     context 'when files exist but have invalid JSON' do
@@ -40,6 +45,10 @@ RSpec.describe DataImportController, type: :controller do
         expect(JSON.parse(response.body)['success']).to be false
         expect(JSON.parse(response.body)['message']).to eq('Arquivo JSON inválido')
       end
+
+      it 'does not raise an exception' do
+        expect { post :import }.not_to raise_error
+      end
     end
 
     context 'when files exist and have valid JSON' do
@@ -47,15 +56,13 @@ RSpec.describe DataImportController, type: :controller do
         allow(File).to receive(:exist?).and_return(true)
         allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return(classes_json)
         allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(members_json)
-        
-        # Mock do serviço de processamento
+
         allow(JsonProcessorService).to receive(:process_discentes).and_return({
           success: true,
           total_processed: 1,
           errors: []
         })
-        
-        # Mock dos métodos privados
+
         allow(controller).to receive(:ensure_database_structure)
       end
 
@@ -65,6 +72,16 @@ RSpec.describe DataImportController, type: :controller do
         expect(JSON.parse(response.body)['success']).to be true
         expect(JSON.parse(response.body)['message']).to eq('Dados importados com sucesso')
       end
+
+      it 'calls JsonProcessorService with correct parsed data' do
+        expect(JsonProcessorService).to receive(:process_discentes).with(hash_including('discentes' => include(hash_including('email' => 'joao@test.com'))))
+        post :import
+      end
+
+      it 'calls ensure_database_structure' do
+        expect(controller).to receive(:ensure_database_structure)
+        post :import
+      end
     end
 
     context 'when processing fails' do
@@ -72,14 +89,13 @@ RSpec.describe DataImportController, type: :controller do
         allow(File).to receive(:exist?).and_return(true)
         allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return(classes_json)
         allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(members_json)
-        
-        # Mock do serviço com falha
+
         allow(JsonProcessorService).to receive(:process_discentes).and_return({
           success: false,
           total_processed: 0,
           errors: ['Erro de processamento']
         })
-        
+
         allow(controller).to receive(:ensure_database_structure)
       end
 
@@ -88,6 +104,7 @@ RSpec.describe DataImportController, type: :controller do
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['success']).to be false
         expect(JSON.parse(response.body)['message']).to eq('Dados importados com erros')
+        expect(JSON.parse(response.body)['errors']).to include('Erro de processamento')
       end
     end
 
@@ -102,6 +119,62 @@ RSpec.describe DataImportController, type: :controller do
         expect(JSON.parse(response.body)['success']).to be false
         expect(JSON.parse(response.body)['message']).to eq('Erro ao processar importação')
       end
+
+      it 'handles unexpected exceptions gracefully' do
+        expect { post :import }.not_to raise_error
+      end
+    end
+
+    context 'when classes.json exists but class_members.json does not' do
+      before do
+        allow(File).to receive(:exist?).with(Rails.root.join('classes.json').to_s).and_return(true)
+        allow(File).to receive(:exist?).with(Rails.root.join('class_members.json').to_s).and_return(false)
+      end
+
+      it 'returns file not found error' do
+        post :import
+        expect(response).to have_http_status(:not_found)
+        expect(JSON.parse(response.body)['success']).to be false
+        expect(JSON.parse(response.body)['message']).to eq('Files not found')
+      end
+    end
+
+    context 'when only one file has invalid JSON' do
+      before do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return('invalid json')
+        allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(members_json)
+      end
+
+      it 'returns invalid JSON error' do
+        post :import
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['success']).to be false
+        expect(JSON.parse(response.body)['message']).to eq('Invalid JSON file')
+      end
+    end
+
+    context 'when files are empty' do
+      let(:empty_json) { '{}' }
+
+      before do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return(empty_json)
+        allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(empty_json)
+        allow(controller).to receive(:ensure_database_structure)
+      end
+
+      it 'processes successfully but imports no data' do
+        post :import
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['success']).to be true
+        expect(JSON.parse(response.body)['message']).to eq('Data imported successfully')
+      end
+
+      it 'calls process_discentes with empty data' do
+        expect(JsonProcessorService).to receive(:process_discentes).with({})
+        post :import
+      end
     end
   end
 
@@ -109,7 +182,7 @@ RSpec.describe DataImportController, type: :controller do
     context 'when user is not admin' do
       let(:regular_user) { FactoryBot.create(:user, :student) }
       let(:regular_token) { JwtService.encode(user_id: regular_user.id) }
-      
+
       before do
         request.headers['Authorization'] = "Bearer #{regular_token}"
         allow(controller).to receive(:current_user).and_return(regular_user)
