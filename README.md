@@ -75,7 +75,7 @@ Cabe ressaltar que, como a maioria dos métodos estão na Controller, algumas mo
 - Executar os passos dos cenários BDD
 ```
 docker exec -it camaar_rails bash
-bundle exec cucumber features/nome-da-feature.feature
+bundle exec cucumber --tags @api --format pretty
 ```
 ---
 
