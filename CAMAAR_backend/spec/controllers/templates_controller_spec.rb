@@ -3,12 +3,13 @@ require 'rails_helper'
 RSpec.describe TemplatesController, type: :controller do
   # Ignorar autenticação para testes de controller
   before(:each) do
+    @admin_user = create(:user, :admin)
     allow_any_instance_of(described_class).to receive(:authenticate_request).and_return(true)
-    allow_any_instance_of(described_class).to receive(:current_user).and_return(create(:user, :admin))
+    allow_any_instance_of(described_class).to receive(:current_user).and_return(@admin_user)
+    allow_any_instance_of(described_class).to receive(:authorize_admin).and_return(true)
   end
 
   before(:each) do
-    @admin_user = create(:user, :admin)
     @template = Template.create(content: "Template de teste", user_id: @admin_user.id)
   end
 

@@ -75,7 +75,7 @@ Cabe ressaltar que, como a maioria dos métodos estão na Controller, algumas mo
 - Executar os passos dos cenários BDD
 ```
 docker exec -it camaar_rails bash
-bundle exec cucumber features/nome-da-feature.feature
+bundle exec cucumber --tags @api --format pretty
 ```
 ---
 
@@ -185,8 +185,13 @@ Deve ter seguinte formato {prefixo}+':'+{mensagem com verbo conjugado na 3º pes
 ### Nomes de Branches
 Deve ter o seguinte foramto {prefixo} + '/' + {nome da branch em kebab case}. Os prefixos são os mesmo das mensagens de commit. Por exemplo:
 `docs/corrige-documentacao-das-noticias`
+### Documentação da primeira sprint
+https://github.com/Desesperad0s/CAMAAR/wiki/Documenta%C3%A7%C3%A3o-da-implementa%C3%A7%C3%A3o-do-projeto-%E2%80%90-Primeira-Sprint
 
 ### Branch e documentação/kanban da Sprint 2
 <p> Nome da branch da sprint 2: Sprint 2 </p>
 <p><a href="https://github.com/Desesperad0s/CAMAAR/wiki/Documenta%C3%A7%C3%A3o-da-implementa%C3%A7%C3%A3o-do-projeto-%E2%80%90-Segunda-sprint" target="_blank">Documentação da Sprint 2 </a> (https://github.com/Desesperad0s/CAMAAR/wiki/Documenta%C3%A7%C3%A3o-da-implementa%C3%A7%C3%A3o-do-projeto-%E2%80%90-Segunda-sprint)</p>
 <p><a href="https://github.com/orgs/Desesperad0s/projects/1" target="_blank">Quadro Kanban com o progresso das issues </a>(https://github.com/orgs/Desesperad0s/projects/1)</p>
+
+### Documentação da terceira sprint 
+https://github.com/Desesperad0s/CAMAAR/wiki/Documenta%C3%A7%C3%A3o-da-implementa%C3%A7%C3%A3o-do-projeto-%E2%80%90-Terceira-Sprint
