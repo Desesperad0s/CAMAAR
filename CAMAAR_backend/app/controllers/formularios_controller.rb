@@ -87,7 +87,17 @@ class FormulariosController < ApplicationController
   # === Retorno
   # Renderiza JSON do formulário
   def render_formulario_json(formulario, status = :ok)
-    render json: formulario.as_json(formulario_json_options), status: status
+    render  json: @formulario.as_json(
+          include: { 
+            respostas: { 
+              include: { 
+                questao: { include: :alternativas }
+              }
+            },
+            template: { only: [:id, :name, :user_id] }
+          },
+          methods: [:template_id]
+        ), status: status
   end
 
   ##
@@ -194,22 +204,26 @@ class FormulariosController < ApplicationController
   # * Cria respostas associadas ao formulário
   #
   # Rota: POST /formularios
-  def create
-    ActiveRecord::Base.transaction do
-      formulario_attrs = formulario_params.to_h
-      process_resposta_attributes_for_create(formulario_attrs)
-      @formulario = Formulario.new(formulario_attrs)
-      Rails.logger.debug "Creating formulario with attributes: #{formulario_attrs.inspect}"
-      if @formulario.save
-        process_additional_respostas
-        @formulario.reload
-        render_formulario_json(@formulario, :created)
-      else
-        render json: { errors: @formulario.errors }, status: :unprocessable_entity
-        raise ActiveRecord::Rollback
-      end
+def create
+  # Convert respostas array to respostas_attributes array if present
+  if params[:formulario] && params[:formulario][:respostas].present? && params[:formulario][:respostas].is_a?(Array)
+    params[:formulario][:respostas_attributes] = params[:formulario][:respostas].map do |resposta|
+      ActionController::Parameters.new(resposta).permit(:id, :questao_id, :content, :_destroy)
     end
   end
+  ActiveRecord::Base.transaction do
+    @formulario = Formulario.new(formulario_params)
+    Rails.logger.debug "Creating formulario with attributes: #{formulario_params.inspect}"
+    if @formulario.save
+      @formulario.reload
+      render_formulario_json(@formulario, :created)
+    else
+      render json: { errors: @formulario.errors }, status: :unprocessable_entity
+      raise ActiveRecord::Rollback
+    end
+  end
+end
+
 
 
   ##
@@ -430,10 +444,9 @@ class FormulariosController < ApplicationController
     # * Converte array de respostas em hash respostas_attributes
     # * Mescla com respostas_attributes existentes se houver
     def process_resposta_attributes_for_create(formulario_attrs)
-      # Verifica e converte respostas em respostas_attributes se necessário
       if params[:formulario] && params[:formulario][:respostas].present? && params[:formulario][:respostas].is_a?(Array)
         respostas_attributes = {}
-        
+
         params[:formulario][:respostas].each_with_index do |resposta, index|
           if resposta[:questao_id].present?
             respostas_attributes[index.to_s] = {
@@ -442,7 +455,7 @@ class FormulariosController < ApplicationController
             }
           end
         end
-        
+
         formulario_attrs[:respostas_attributes] ||= {}
         formulario_attrs[:respostas_attributes].merge!(respostas_attributes)
       end
@@ -538,8 +551,10 @@ class FormulariosController < ApplicationController
       :publico_alvo, :remove_missing_respostas,
       respostas_attributes: [:id, :questao_id, :content, :_destroy]
     )
-    permitted[:respostas_attributes] = normalize_respostas_attributes(permitted)
-    Rails.logger.debug "PERMITTED PARAMS: #{permitted.inspect}"
+    # Normalize respostas_attributes to array if present as hash
+    if permitted[:respostas_attributes].is_a?(Hash)
+      permitted[:respostas_attributes] = permitted[:respostas_attributes].values
+    end
     permitted
   end
 
