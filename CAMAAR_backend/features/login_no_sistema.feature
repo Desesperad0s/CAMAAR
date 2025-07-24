@@ -1,5 +1,6 @@
 # language: pt
 
+@api
 Funcionalidade: Login no sistema
   Como um usuário do sistema CAMAAR
   Eu quero me autenticar na aplicação

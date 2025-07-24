@@ -19,6 +19,15 @@ class AuthenticationController < ApplicationController
   #
   # Rota: POST /auth/login
   def login
+    Rails.logger.debug "DEBUG Auth - Params: #{params.inspect}"
+    Rails.logger.debug "DEBUG Auth - Request body: #{request.body.read}"
+    request.body.rewind
+    
+    if params[:email].blank? || params[:password].blank?
+      Rails.logger.debug "DEBUG Auth - Email ou senha em branco"
+      return render json: { error: 'Email e senha são obrigatórios' }, status: :bad_request
+    end
+    
     @user = User.authenticate(params[:email], params[:password])
     
     if @user

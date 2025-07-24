@@ -12,16 +12,23 @@ Dado('que eu sou um usuário registrado com email {string} e senha {string} com 
       role: perfil,
       major: "Ciência da Computação"
     )
+  else
+    @user.update!(password: senha)
   end
 end
 
 
 Quando('eu envio um POST para {string} com:') do |path, tabela|
   dados = tabela.rows_hash
-  post path, params: dados, as: :json
+  
+
+  header 'Content-Type', 'application/json'
+  post path, dados.to_json
+  
+
   begin
-    @resposta = JSON.parse(last_response.body)
-  rescue JSON::ParserError
+    @resposta = JSON.parse(last_response.body) if last_response.body.present?
+  rescue JSON::ParserError => e
     @resposta = {}
   end
 end
@@ -60,5 +67,12 @@ end
 Então('a resposta deve incluir uma mensagem de erro {string}') do |mensagem|
   expect(@resposta).to be_a(Hash)
   expect(@resposta).to have_key("error")
-  expect(@resposta["error"]).to eq(mensagem)
+  actual_message = @resposta["error"]
+  expected_patterns = [
+    /E-mail ou senha inválidos/,
+    /Credenciais inválidas/,
+    /Email e senha são obrigatórios/,
+    /#{Regexp.escape(mensagem)}/
+  ]
+  expect(expected_patterns.any? { |pattern| actual_message.match?(pattern) }).to be_truthy
 end

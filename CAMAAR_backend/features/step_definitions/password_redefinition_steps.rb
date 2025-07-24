@@ -5,12 +5,17 @@ Dado('que recebi um e-mail de cadastro no sistema com um link para definir minha
     token_expiracao: Time.now + 24.hours
   }
   
-  User.create!(
+  @user = User.create!(
     email: @usuario[:email],
-    reset_password_token: @usuario[:token],
-    reset_password_token_expires_at: @usuario[:token_expiracao],
-    password_defined: false
+    password: 'senha_temporaria',
+    name: 'Usuário Teste',
+    registration: '123456',
+    role: 'student',
+    major: 'Ciência da Computação'
   )
+  
+  # Simula o token de reset
+  @user.reset_password_token = @usuario[:token]
 
   @reset_link = "/definir-senha?token=#{@usuario[:token]}"
 end
@@ -22,12 +27,17 @@ Dado('que recebi um e-mail de cadastro no sistema') do
     token_expiracao: Time.now - 1.hour
   }
   
-  User.create!(
+  @user = User.create!(
     email: @usuario[:email],
-    reset_password_token: @usuario[:token],
-    reset_password_token_expires_at: @usuario[:token_expiracao],
-    password_defined: false
+    password: 'senha_temporaria',
+    name: 'Usuário Teste',
+    registration: '123456',
+    role: 'student',
+    major: 'Ciência da Computação'
   )
+  
+  # Simula o token de reset
+  @user.reset_password_token = @usuario[:token]
   
   @reset_link = "/definir-senha?token=#{@usuario[:token]}"
 end
