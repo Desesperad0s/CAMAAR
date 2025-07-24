@@ -263,15 +263,3 @@ end
 
 ---
 
-## Impact
-
-- **Code Quality:**
-  - Both files now have significantly reduced method complexity and improved maintainability.
-- **Documentation:**
-  - All new and refactored methods are documented with RDoc comments.
-- **Testability:**
-  - Helper extraction makes unit testing easier and more focused.
-
----
-
-*This report summarizes the main refactoring steps and their impact. For full diffs or further details, please request them.*

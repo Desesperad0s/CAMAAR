@@ -57,73 +57,38 @@ class TemplatesController < ApplicationController
   # * Se não houver user_id válido, busca e atribui o primeiro admin encontrado
   #
   # Rota: POST /templates
+  ##
+  # Cria um novo template com questões e alternativas associadas
+  #
+  # === Argumentos
+  # * +template+ - Hash contendo os dados do template (content, admin_id ou user_id)
+  # * +questoes_attributes+ - Array ou Hash de questões com seus enunciados e alternativas (opcional)
+  # * +questoes+ - Array de questões para compatibilidade com versões anteriores (opcional)
+  #
+  # === Retorno
+  # Em caso de sucesso: JSON do template criado com status 201 (created)
+  # Em caso de erro: JSON com os erros de validação e status 422 (unprocessable_entity)
+  #
+  # === Efeitos Colaterais
+  # * Cria um novo registro de Template no banco de dados
+  # * Cria registros de Questao associados ao template
+  # * Cria registros de Alternativa associados às questões
+  # * Se não houver user_id válido, busca e atribui o primeiro admin encontrado
   def create
-    # Create a new template based on basic attributes
-    # Obter o user_id do parâmetro admin_id ou user_id
     user_id = params[:template][:admin_id] || params[:template][:user_id]
-    
-    # Se não houver um user_id válido, tenta encontrar um admin
     unless user_id.present? && User.exists?(user_id)
       admin = User.where(role: 'admin').first
       user_id = admin&.id
     end
-    
+
     @template = Template.new(
       content: params[:template][:content],
       user_id: user_id
     )
-    
+
     if @template.save
-      if params[:template][:questoes_attributes].present?
-        if params[:template][:questoes_attributes].is_a?(Array)
-          params[:template][:questoes_attributes].each do |questao_attrs|
-            questao = @template.questoes.create!(
-              enunciado: questao_attrs[:enunciado]
-            )
-            
-            # Process alternativas if present
-            if questao_attrs[:alternativas_attributes].present?
-              if questao_attrs[:alternativas_attributes].is_a?(Array)
-                questao_attrs[:alternativas_attributes].each do |alt_attrs|
-                  questao.alternativas.create!(content: alt_attrs[:content])
-                end
-              else
-                questao_attrs[:alternativas_attributes].each do |_, alt_attrs|
-                  questao.alternativas.create!(content: alt_attrs[:content])
-                end
-              end
-            end
-          end
-        else
-          params[:template][:questoes_attributes].each do |_, questao_attrs|
-            questao = @template.questoes.create!(
-              enunciado: questao_attrs[:enunciado]
-            )
-            
-            if questao_attrs[:alternativas_attributes].present?
-              questao_attrs[:alternativas_attributes].each do |_, alt_attrs|
-                questao.alternativas.create!(content: alt_attrs[:content])
-              end
-            end
-          end
-        end
-      end
-      
-      # Handle questões provided as a separate array (for backward compatibility)
-      if params[:questoes].present? && params[:questoes].is_a?(Array)
-        params[:questoes].each do |questao_params|
-          questao = @template.questoes.create!(
-            enunciado: questao_params[:enunciado]
-          )
-          
-          if questao_params[:alternativas].present? && questao_params[:alternativas].is_a?(Array)
-            questao_params[:alternativas].each do |alternativa_content|
-              questao.alternativas.create!(content: alternativa_content)
-            end
-          end
-        end
-      end
-      
+      process_questoes_attributes(@template, params[:template][:questoes_attributes]) if params[:template][:questoes_attributes].present?
+      process_legacy_questoes(@template, params[:questoes]) if params[:questoes].present? && params[:questoes].is_a?(Array)
       @template.reload
       render json: @template.as_json(include: { questoes: { include: :alternativas } }), status: :created, location: @template
     else
@@ -186,7 +151,6 @@ class TemplatesController < ApplicationController
     }, status: :ok
   end
 
-  private
     ##
     # Busca e define o template baseado no ID fornecido
     #
@@ -200,7 +164,6 @@ class TemplatesController < ApplicationController
     # === Efeitos Colaterais
     # * Define @template como variável de instância
     # * Consulta o banco de dados
-    #
     def set_template
       @template = Template.find(params[:id])
     end
@@ -221,7 +184,6 @@ class TemplatesController < ApplicationController
     #
     # === Efeitos Colaterais
     # Nenhum efeito colateral - apenas filtra parâmetros de entrada
-    #
     def template_params
       params.require(:template).permit(
         :content, 
@@ -247,8 +209,72 @@ class TemplatesController < ApplicationController
     # === Efeitos Colaterais
     # * Renderiza resposta JSON de erro
     # * Define status HTTP como 404
-    #
     def template_not_found
       render json: { error: "Template não encontrado" }, status: :not_found
+    end
+
+    ##
+    # Processa os atributos de questões e alternativas recebidos via params
+    #
+    # === Argumentos
+    # * +template+ - Template ao qual as questões serão associadas
+    # * +questoes_attrs+ - Array ou Hash de questões e alternativas
+    #
+    # === Retorno
+    # Cria questões e alternativas associadas ao template
+    # === Efeitos Colaterais
+    # Cria registros no banco de dados
+    def process_questoes_attributes(template, questoes_attrs)
+      return unless questoes_attrs.present?
+      if questoes_attrs.is_a?(Array)
+        questoes_attrs.each { |q| create_questao_with_alternativas(template, q) }
+      else
+        questoes_attrs.each { |_, q| create_questao_with_alternativas(template, q) }
+      end
+    end
+
+    ##
+    # Processa questões recebidas via params para compatibilidade antiga
+    #
+    # === Argumentos
+    # * +template+ - Template ao qual as questões serão associadas
+    # * +questoes+ - Array de questões (legacy)
+    #
+    # === Retorno
+    # Cria questões e alternativas associadas ao template
+    # === Efeitos Colaterais
+    # Cria registros no banco de dados
+    def process_legacy_questoes(template, questoes)
+      questoes.each do |questao_params|
+        questao = template.questoes.create!(enunciado: questao_params[:enunciado])
+        if questao_params[:alternativas].present? && questao_params[:alternativas].is_a?(Array)
+          questao_params[:alternativas].each do |alternativa_content|
+            questao.alternativas.create!(content: alternativa_content)
+          end
+        end
+      end
+    end
+
+    ##
+    # Cria uma questão e suas alternativas associadas
+    #
+    # === Argumentos
+    # * +template+ - Template ao qual a questão será associada
+    # * +questao_attrs+ - Hash de atributos da questão e alternativas
+    #
+    # === Retorno
+    # Cria questão e alternativas associadas
+    # === Efeitos Colaterais
+    # Cria registros no banco de dados
+    def create_questao_with_alternativas(template, questao_attrs)
+      questao = template.questoes.create!(enunciado: questao_attrs[:enunciado])
+      if questao_attrs[:alternativas_attributes].present?
+        alts = questao_attrs[:alternativas_attributes]
+        if alts.is_a?(Array)
+          alts.each { |alt| questao.alternativas.create!(content: alt[:content]) }
+        else
+          alts.each { |_, alt| questao.alternativas.create!(content: alt[:content]) }
+        end
+      end
     end
 end
