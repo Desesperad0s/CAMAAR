@@ -1,5 +1,6 @@
 class TemplatesController < ApplicationController
   before_action :set_template, only: [:show, :update, :destroy]
+  before_action :authorize_admin, only: [:create, :update, :destroy]
   rescue_from ActiveRecord::RecordNotFound, with: :template_not_found
 
   ##
@@ -250,5 +251,24 @@ class TemplatesController < ApplicationController
     #
     def template_not_found
       render json: { error: "Template não encontrado" }, status: :not_found
+    end
+
+    ##
+    # Autoriza apenas usuários administradores para determinadas ações
+    #
+    # === Argumentos
+    # Nenhum argumento
+    #
+    # === Retorno
+    # * Se autorizado: permite continuar o fluxo
+    # * Se não autorizado: retorna JSON com erro e status 403 (forbidden)
+    #
+    # === Efeitos Colaterais
+    # * Interrompe o fluxo do controller se não autorizado
+    #
+    def authorize_admin
+      unless @current_user && @current_user.admin?
+        render json: { error: 'Acesso negado. Apenas administradores podem realizar esta operação.' }, status: :forbidden
+      end
     end
 end
