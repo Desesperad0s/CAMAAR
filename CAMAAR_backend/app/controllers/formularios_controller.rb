@@ -2,7 +2,6 @@
 class FormulariosController < ApplicationController
   before_action :set_formulario, only: %i[show update destroy]
 
-  private
   # Helper for as_json options used in index, show, create, update, create_with_questions
   def formulario_json_options
     {
