@@ -1,5 +1,59 @@
+#Esta classe controla as ações CRUDs para formulários, além de controlar a exportação para um arquivo de Excel
 class FormulariosController < ApplicationController
   before_action :set_formulario, only: %i[show update destroy]
+
+  private
+  # Helper for as_json options used in index, show, create, update, create_with_questions
+  def formulario_json_options
+    {
+      include: {
+        respostas: {
+          include: {
+            questao: { include: :alternativas }
+          }
+        },
+        template: { only: [:id, :name, :user_id] }
+      },
+      methods: [:template_id]
+    }
+  end
+
+  # Helper for worksheet headers in excel_report
+  def all_questions_headers(formularios)
+    all_questions = formularios.flat_map do |formulario|
+      formulario.respostas.map do |resposta|
+        if resposta.questao
+          resposta.questao.enunciado || "Questão #{resposta.questao.id}"
+        end
+      end
+    end.compact.uniq
+    ["ID", "Formulário", "Data de Criação"] + all_questions
+  end
+
+  # Helper to build a row for Excel report
+  def build_excel_row(formulario, headers)
+    row_data = [
+      formulario.id,
+      formulario.name || "Formulário #{formulario.id}",
+      formulario.created_at&.strftime("%d/%m/%Y %H:%M")
+    ]
+    (headers.length - 3).times { row_data << "" }
+    formulario.respostas.each do |resposta|
+      if resposta.questao
+        question_title = resposta.questao.enunciado || "Questão #{resposta.questao.id}"
+        col_index = headers.index(question_title)
+        if col_index && resposta.content.present?
+          row_data[col_index] = resposta.content
+        end
+      end
+    end
+    row_data
+  end
+
+  # Helper to render formulario as_json
+  def render_formulario_json(formulario, status = :ok)
+    render json: formulario.as_json(formulario_json_options), status: status
+  end
 
   ##
   # Lista todos os formulários do sistema
@@ -16,17 +70,7 @@ class FormulariosController < ApplicationController
   # Rota: GET /formularios
   def index
     @formularios = Formulario.all
-    render json: @formularios.as_json(
-      include: { 
-        respostas: { 
-          include: { 
-            questao: { include: :alternativas }
-          }
-        },
-        template: { only: [:id, :name, :user_id] }
-      },
-      methods: [:template_id]
-    )
+    render json: @formularios.as_json(formulario_json_options)
   end
 
   ##
@@ -44,17 +88,7 @@ class FormulariosController < ApplicationController
   #
   # Rota: GET /formularios/1
   def show
-    render json: @formulario.as_json(
-      include: { 
-        respostas: { 
-          include: { 
-            questao: { include: :alternativas }
-          }
-        },
-        template: { only: [:id, :name, :user_id] }
-      },
-      methods: [:template_id]
-    )
+    render_formulario_json(@formulario)
   end
 
   ##
@@ -76,59 +110,23 @@ class FormulariosController < ApplicationController
   def excel_report
     begin
       require 'caxlsx'
-      
       formularios = Formulario.includes(respostas: { questao: :alternativas }).all
-      
       begin
         if formularios.first && formularios.first.respostas.first && formularios.first.respostas.first.questao
           sample_questao = formularios.first.respostas.first.questao
           Rails.logger.info "Questao attributes available: #{sample_questao.attributes.keys.join(', ')}"
         end
-        
         package = Axlsx::Package.new
         workbook = package.workbook
-        
+        headers = all_questions_headers(formularios)
         workbook.add_worksheet(name: "Relatório de Formulários") do |sheet|
-          all_questions = []
-          formularios.each do |formulario|
-            formulario.respostas.each do |resposta|
-              if resposta.questao
-                question_title = resposta.questao.enunciado || "Questão #{resposta.questao.id}"
-                all_questions << question_title unless all_questions.include?(question_title)
-              end
-            end
-          end
-          
-          headers = ["ID", "Formulário", "Data de Criação"] + all_questions
-          
           header_row = sheet.add_row(headers)
           sheet.add_style "A1:#{Axlsx.cell_r(headers.length - 1, 0)}", b: true
-          
           formularios.each do |formulario|
-            row_data = [
-              formulario.id,
-              formulario.name || "Formulário #{formulario.id}",
-              formulario.created_at&.strftime("%d/%m/%Y %H:%M")
-            ]
-            
-            all_questions.each { |_| row_data << "" }
-            
-            formulario.respostas.each do |resposta|
-              if resposta.questao
-                question_title = resposta.questao.enunciado || "Questão #{resposta.questao.id}"
-                col_index = headers.index(question_title)
-                if col_index && resposta.content.present?
-                  row_data[col_index] = resposta.content
-                end
-              end
-            end
-            
-            sheet.add_row(row_data)
+            sheet.add_row(build_excel_row(formulario, headers))
           end
-          
           sheet.auto_filter = "A1:#{Axlsx.cell_r(headers.length - 1, 0)}"
         end
-        
         send_data package.to_stream.read, 
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
           filename: "relatorio_formularios_#{Time.now.strftime("%Y%m%d%H%M%S")}.xlsx",
@@ -170,17 +168,7 @@ class FormulariosController < ApplicationController
       if @formulario.save
         process_additional_respostas
         @formulario.reload
-        render json: @formulario.as_json(
-          include: { 
-            respostas: { 
-              include: { 
-                questao: { include: :alternativas }
-              }
-            },
-            template: { only: [:id, :name, :user_id] }
-          },
-          methods: [:template_id]
-        ), status: :created
+        render_formulario_json(@formulario, :created)
       else
         render json: { errors: @formulario.errors }, status: :unprocessable_entity
         raise ActiveRecord::Rollback
@@ -209,63 +197,29 @@ class FormulariosController < ApplicationController
     ActiveRecord::Base.transaction do
       respostas_to_destroy_ids = []
       respostas_to_add = []
-      
-      # Processar respostas_attributes se presente
       if params[:formulario] && params[:formulario][:respostas_attributes].present?
-        # Pode ser um array ou um hash
         attributes = params[:formulario][:respostas_attributes]
-        
         if attributes.is_a?(Array)
-          attributes.each do |resposta_attr|
-            process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add)
-          end
+          attributes.each { |resposta_attr| process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add) }
         elsif attributes.is_a?(Hash)
-          attributes.each do |_, resposta_attr|
-            process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add)
-          end
+          attributes.each { |_, resposta_attr| process_resposta_attributes(resposta_attr, respostas_to_destroy_ids, respostas_to_add) }
         end
       end
-      
-      # Atribuir os atributos ao formulário
       @formulario.assign_attributes(formulario_params.except(:respostas_attributes))
-      
       if @formulario.save
-        # Processar exclusões manualmente
         if respostas_to_destroy_ids.any?
           @formulario.respostas.where(id: respostas_to_destroy_ids).destroy_all
         end
-        
-        # Adicionar novas respostas manualmente
-        respostas_to_add.each do |resposta_data|
-          @formulario.respostas.create!(resposta_data)
-        end
-        
-        # Atualizar respostas existentes
+        respostas_to_add.each { |resposta_data| @formulario.respostas.create!(resposta_data) }
         if params[:formulario] && params[:formulario][:respostas_attributes].present?
           attributes = params[:formulario][:respostas_attributes]
-          
           if attributes.is_a?(Hash)
-            attributes.each do |_, resposta_attr|
-              update_existing_resposta(resposta_attr)
-            end
+            attributes.each { |_, resposta_attr| update_existing_resposta(resposta_attr) }
           elsif attributes.is_a?(Array)
-            attributes.each do |resposta_attr|
-              update_existing_resposta(resposta_attr)
-            end
+            attributes.each { |resposta_attr| update_existing_resposta(resposta_attr) }
           end
         end
-        
-        render json: @formulario.as_json(
-          include: { 
-            respostas: { 
-              include: { 
-                questao: { include: :alternativas }
-              }
-            },
-            template: { only: [:id, :name, :user_id] }
-          },
-          methods: [:template_id]
-        )
+        render_formulario_json(@formulario)
       else
         Rails.logger.error "FORMULARIO UPDATE ERRORS: #{@formulario.errors.full_messages.join(', ')}"
         render json: { errors: @formulario.errors }, status: :unprocessable_entity
@@ -317,24 +271,18 @@ class FormulariosController < ApplicationController
       if params[:respostas].present?
         questao_ids = params[:respostas].map { |r| r[:questao_id] }.compact
         existing_questoes = Questao.where(id: questao_ids)
-        
         if existing_questoes.count != questao_ids.uniq.count
           render json: { errors: "Uma ou mais questões não existem" }, status: :unprocessable_entity
           return
         end
       end
-      
       @formulario = Formulario.new(name: params[:name], date: params[:date])
       @formulario.template_id = params[:template_id] if params[:template_id].present?
       @formulario.turma_id = params[:turma_id] if params[:turma_id].present?
-      
       if @formulario.save
-        # Only create responses for existing questions
         if params[:respostas].present?
           params[:respostas].each do |resposta_params|
-            # We require a questao_id to create a response
             if resposta_params[:questao_id].present?
-              # Create the resposta using an existing question
               @formulario.respostas.create!(
                 questao_id: resposta_params[:questao_id],
                 content: resposta_params[:content]
@@ -342,7 +290,6 @@ class FormulariosController < ApplicationController
             end
           end
         elsif params[:formulario] && params[:formulario][:respostas_attributes].present?
-          # Support for nested attributes format
           params[:formulario][:respostas_attributes].each do |resposta_params|
             if resposta_params[:questao_id].present?
               @formulario.respostas.create!(
@@ -352,19 +299,7 @@ class FormulariosController < ApplicationController
             end
           end
         end
-        
-        # Return a comprehensive response with all related data
-        render json: @formulario.as_json(
-          include: { 
-            respostas: { 
-              include: { 
-                questao: { include: :alternativas }
-              }
-            },
-            template: { only: [:id, :name, :user_id] }
-          },
-          methods: [:template_id]
-        ), status: :created
+        render_formulario_json(@formulario, :created)
       else
         render json: { errors: @formulario.errors }, status: :unprocessable_entity
         raise ActiveRecord::Rollback

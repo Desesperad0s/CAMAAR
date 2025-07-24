@@ -82,9 +82,9 @@ bundle exec cucumber features/nome-da-feature.feature
 - Gerar ABC Score utilizando rubycritic
 ```
 docker exec -it camaar_rails bash
-bundle exec rubycritic
+bundle exec rubycritic app
 ```
-O arquivo 'overview.html' com a revisão do código deste projeto estará no diretório "/app/tmp/rubycritic". Abra esta página em algum navegador/servidor (utilizando a extensão Five Server do VSCode, por exemplo) para visualizá-la. Apenas os arquivos de models/controllers são relevantes nesta página.
+O arquivo 'overview.html' com a revisão do código deste projeto estará no diretório "/app/tmp/rubycritic". Abra esta página em algum navegador/servidor (utilizando a extensão Five Server do VSCode, por exemplo) para visualizá-la. Apenas os arquivos de models/controllers são relevantes nesta página, por isso foi restringido para 'app'.
 
 ---
 
