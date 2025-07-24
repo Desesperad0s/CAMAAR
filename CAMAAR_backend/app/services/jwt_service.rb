@@ -1,3 +1,4 @@
+#Serviço responsável pela geração e validação de tokens JWT
 class JwtService
   SECRET_KEY = Rails.application.credentials.secret_key_base || 'development_secret_key'
   
@@ -15,9 +16,6 @@ class JwtService
   # * Adiciona timestamp de expiração ao payload
   # * Utiliza SECRET_KEY para assinar o token
   #
-  # === Exemplo
-  #   token = JwtService.encode(user_id: 1, role: 'admin')
-  #   # => "eyJhbGciOiJIUzI1NiJ9..."
   def self.encode(payload, exp = 24.hours.from_now)
     payload[:exp] = exp.to_i
     JWT.encode(payload, SECRET_KEY)
@@ -37,10 +35,7 @@ class JwtService
   # * Verifica assinatura do token usando SECRET_KEY
   # * Valida expiração do token
   # * Captura exceções de token inválido ou expirado
-  #
-  # === Exemplo
-  #   payload = JwtService.decode(token)
-  #   # => { "user_id" => 1, "role" => "admin", "exp" => 1642781234 }
+  #  
   def self.decode(token)
     decoded = JWT.decode(token, SECRET_KEY)[0]
     HashWithIndifferentAccess.new(decoded)

@@ -1,3 +1,6 @@
+##
+# Serviço responsável pelo envio de emails
+#
 class EmailService
   class << self
     ##

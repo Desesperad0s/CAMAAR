@@ -1,9 +1,6 @@
 ##
-# Service responsável pelo processamento e importação de dados JSON
-# 
-# Este service processa arquivos JSON contendo informações de turmas e alunos,
-# criando usuários no sistema e associando-os a turmas existentes.
-#
+# ServiÇO responsável pelo processamento e importação de dados JSON
+
 class JsonProcessorService
   ##
   # Importa todos os dados dos arquivos JSON (classes.json e class_members.json)
@@ -24,9 +21,6 @@ class JsonProcessorService
   # * Associa usuários à turma padrão (ID 1)
   # * Registra logs detalhados do processo
   #
-  # === Exemplo
-  #   result = JsonProcessorService.import_all_data
-  #   # => { success: true, class_members: {...}, classes: {...} }
   def self.import_all_data
     begin
       # Carregar os arquivos JSON
@@ -81,8 +75,6 @@ class JsonProcessorService
   ##
   # Processa dados de turmas/classes do arquivo JSON
   # 
-  # NOTA: Este método está atualmente desativado conforme solicitação do projeto.
-  # O sistema usa uma turma padrão (ID 1) ao invés de criar novas turmas.
   #
   # === Argumentos
   # * +data+ - String contendo dados JSON das turmas
@@ -126,13 +118,6 @@ class JsonProcessorService
   # * Registra logs detalhados de cada operação
   # * Trata erros individualmente por aluno sem interromper o processo
   #
-  # === Validações
-  # * Email e matrícula são obrigatórios
-  # * Verifica duplicatas por email ou matrícula
-  # * Determina role baseado no campo 'ocupacao'
-  ##
-  # Refatoração: extrai métodos auxiliares para reduzir complexidade
-  # Cria ou atualiza usuário a partir dos dados do aluno
   def self.create_or_update_user(aluno_data, role)
     existing_user = User.find_by(email: aluno_data['email']) || User.find_by(registration: aluno_data['matricula'])
     if existing_user
@@ -162,77 +147,44 @@ class JsonProcessorService
   end
 
   ##
-  # Refatoração: associa usuário à turma padrão
+  # Associa um usuário à turma padrão (ID 1), se ainda não estiver associado
+  #
+  # === Argumentos
+  # * +aluno+ - Instância do usuário a ser associado
+  # * +turma+ - Instância da turma padrão
+  #
+  # === Retorno
+  # Boolean - true se associação realizada ou já existente, false se o usuário não está persistido
+  #
+  # === Efeitos Colaterais
+  # * Cria registro TurmaAluno se necessário
+  # * Registra logs informativos
   def self.associate_user_to_turma(aluno, turma)
-    if aluno.persisted?
-      unless TurmaAluno.exists?(turma_id: turma.id, aluno_id: aluno.id)
-        TurmaAluno.create!(turma_id: turma.id, aluno_id: aluno.id)
-        Rails.logger.info("Aluno associado à turma ID 1")
-      else
-        Rails.logger.info("Aluno já associado à turma ID 1")
-      end
-      true
-    else
-      false
+    return false unless aluno.persisted?
+
+    if TurmaAluno.exists?(turma_id: turma.id, aluno_id: aluno.id)
+      Rails.logger.info("Aluno já associado à turma ID 1")
+      return true
     end
+
+    TurmaAluno.create!(turma_id: turma.id, aluno_id: aluno.id)
+    Rails.logger.info("Aluno associado à turma ID 1")
+    true
   end
 
   def self.process_discentes(data)
-    parsed_data = JSON.parse(data)
     errors = []
     processed_users = 0
     new_users = []
 
-    begin
-      turma = Turma.find(1)
-      Rails.logger.info("Usando turma fixa com ID 1: #{turma.inspect}")
-    rescue => e
-      Rails.logger.error("Não foi possível encontrar a turma com ID 1: #{e.message}")
-      return {success: false, total_processed: 0, new_users: [], errors: ["Turma com ID 1 não encontrada. Certifique-se de que existe ao menos uma turma no sistema."]}
-    end
+    turma = find_turma(errors)
+    return turma if turma.is_a?(Hash)
 
-    parsed_data.each do |turma_data|
-      disciplina_code = turma_data['code']
-      Rails.logger.info("Processando dados para disciplina com código: #{disciplina_code} - (apenas para registro, não criando disciplinas)")
-      alunos = turma_data['dicente']
-
-      if alunos.nil? || !alunos.is_a?(Array)
-        errors << "Formato inválido para alunos na turma com código: #{disciplina_code}"
-        Rails.logger.error("Formato inválido para alunos na turma com código: #{disciplina_code}")
-        next
-      end
-
-      Rails.logger.info("Processando #{alunos.length} alunos")
-      alunos.each do |aluno_data|
-        begin
-          Rails.logger.info("Processando aluno: #{aluno_data.inspect}")
-          unless aluno_data['email'].present? && aluno_data['matricula'].present?
-            errors << "Dados incompletos para aluno: #{aluno_data.inspect}"
-            Rails.logger.error("Dados incompletos para aluno: #{aluno_data.inspect}")
-            next
-          end
-
-          # Determinar o papel do usuário
-          role = 'student'
-          if aluno_data['ocupacao'].present?
-            ocupacao = aluno_data['ocupacao'].to_s.downcase
-            role = (ocupacao == 'dicente' || ocupacao == 'aluno' || ocupacao == 'estudante') ? 'student' : 
-                   (ocupacao == 'professor' || ocupacao == 'docente') ? 'professor' : 'student'
-          end
-
-          aluno = create_or_update_user(aluno_data, role)
-          if associate_user_to_turma(aluno, turma)
-            processed_users += 1
-            new_users << aluno
-          else
-            errors << "Erro ao criar o usuário: #{aluno_data['email']} - #{aluno.errors.full_messages.join(', ')}"
-            Rails.logger.error("Erro ao criar o usuário: #{aluno_data['email']} - #{aluno.errors.full_messages.join(', ')}")
-          end
-        rescue => e
-          errors << "Erro ao processar aluno #{aluno_data['email'] || 'sem email'}: #{e.message}"
-          Rails.logger.error("Erro ao processar aluno #{aluno_data['email'] || 'sem email'}: #{e.message}")
-          Rails.logger.error(e.backtrace.join("\n"))
-        end
+    each_aluno(data) do |aluno_data, disciplina_code|
+      result = process_aluno(aluno_data, turma, errors)
+      if result.is_a?(User)
+        processed_users += 1
+        new_users << result
       end
     end
 
@@ -242,5 +194,106 @@ class JsonProcessorService
     Rails.logger.error("JSON inválido de discentes: #{e.message}")
     Rails.logger.error(e.backtrace.join("\n"))
     {success: false, total_processed: 0, new_users: [], errors: ["JSON inválido de discentes: #{e.message}"]}
+  end
+
+  ##
+  # Busca a turma padrão (ID 1) e registra log informativo
+  #
+  # === Argumentos
+  # * +errors+ - Array para registrar mensagens de erro
+  #
+  # === Retorno
+  # Instância da turma padrão ou hash de erro se não encontrada
+  #
+  # === Efeitos Colaterais
+  # * Registra logs informativos e de erro
+  def self.find_turma(errors)
+    Turma.find(1).tap { |turma| Rails.logger.info("Usando turma fixa com ID 1: #{turma.inspect}") }
+  rescue => e
+    Rails.logger.error("Não foi possível encontrar a turma com ID 1: #{e.message}")
+    {success: false, total_processed: 0, new_users: [], errors: ["Turma com ID 1 não encontrada. Certifique-se de que existe ao menos uma turma no sistema."]}
+  end
+
+  ##
+  # Itera sobre todos os alunos de cada turma presente no JSON
+  #
+  # === Argumentos
+  # * +data+ - String contendo dados JSON das turmas e alunos
+  #
+  # === Retorno
+  # Não retorna valor; executa bloco para cada aluno
+  #
+  # === Efeitos Colaterais
+  # * Registra logs informativos e de erro
+  def self.each_aluno(data)
+    parsed_data = JSON.parse(data)
+    parsed_data.each do |turma_data|
+      disciplina_code = turma_data['code']
+      Rails.logger.info("Processando dados para disciplina com código: #{disciplina_code} - (apenas para registro, não criando disciplinas)")
+      alunos = turma_data['dicente']
+      unless alunos.is_a?(Array)
+        Rails.logger.error("Formato inválido para alunos na turma com código: #{disciplina_code}")
+        yield nil, disciplina_code
+        next
+      end
+      Rails.logger.info("Processando #{alunos.length} alunos")
+      alunos.each { |aluno_data| yield aluno_data, disciplina_code }
+    end
+  end
+
+  ##
+  # Processa um aluno individualmente, criando/atualizando e associando à turma
+  #
+  # === Argumentos
+  # * +aluno_data+ - Hash com dados do aluno
+  # * +turma+ - Instância da turma padrão
+  # * +errors+ - Array para registrar mensagens de erro
+  #
+  # === Retorno
+  # Instância do usuário criado/atualizado ou nil em caso de erro
+  #
+  # === Efeitos Colaterais
+  # * Cria/atualiza usuário e associa à turma
+  # * Registra logs informativos e de erro
+  def self.process_aluno(aluno_data, turma, errors)
+    unless aluno_data && aluno_data['email'].present? && aluno_data['matricula'].present?
+      errors << "Dados incompletos para aluno: #{aluno_data.inspect}"
+      Rails.logger.error("Dados incompletos para aluno: #{aluno_data.inspect}")
+      return nil
+    end
+
+    role = determine_role(aluno_data)
+    aluno = create_or_update_user(aluno_data, role)
+    if associate_user_to_turma(aluno, turma)
+      aluno
+    else
+      errors << "Erro ao criar o usuário: #{aluno_data['email']} - #{aluno.errors.full_messages.join(', ')}"
+      Rails.logger.error("Erro ao criar o usuário: #{aluno_data['email']} - #{aluno.errors.full_messages.join(', ')}")
+      nil
+    end
+  rescue => e
+    errors << "Erro ao processar aluno #{aluno_data['email'] || 'sem email'}: #{e.message}"
+    Rails.logger.error("Erro ao processar aluno #{aluno_data['email'] || 'sem email'}: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    nil
+  end
+
+  ##
+  # Determina o papel (role) do usuário com base no campo 'ocupacao'
+  #
+  # === Argumentos
+  # * +aluno_data+ - Hash com dados do aluno
+  #
+  # === Retorno
+  # String com o papel do usuário ('student' ou 'professor')
+  #
+  # === Efeitos Colaterais
+  # Nenhum
+  def self.determine_role(aluno_data)
+    return 'student' unless aluno_data['ocupacao'].present?
+    ocupacao = aluno_data['ocupacao'].to_s.downcase
+    return 'student' if %w[dicente aluno estudante].include?(ocupacao)
+    return 'professor' if %w[professor docente].include?(ocupacao)
+    'student'
   end
 end
