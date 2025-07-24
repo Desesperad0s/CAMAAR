@@ -84,4 +84,5 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'rack-test'
   gem 'rubycritic'
+  gem "simplecov", require: false
 end
