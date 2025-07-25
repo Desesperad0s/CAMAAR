@@ -1,10 +1,8 @@
+
 ##
-# Modelo representando formulários do sistema CAMAAR
+# Formulario
 #
-# Os formulários podem ser baseados em templates e são aplicados a turmas específicas.
-# Contêm respostas que referenciam questões específicas.
-# Suporta criação e atualização de respostas através de nested attributes.
-#
+# Model responsável por representar formulários aplicados a turmas
 class Formulario < ApplicationRecord
   belongs_to :turma, optional: true
   belongs_to :template, optional: true
@@ -30,7 +28,7 @@ class Formulario < ApplicationRecord
   # Processa a remoção de respostas ausentes após atualização
   #
   # === Argumentos
-  # Nenhum argumento direto - utiliza attr_accessor remove_missing_respostas
+  # Nenhum argumento direto, utiliza attr_accessor remove_missing_respostas
   #
   # === Retorno
   # Nenhum retorno específico
@@ -40,10 +38,6 @@ class Formulario < ApplicationRecord
   # * Ação executada apenas se remove_missing_respostas estiver ativo
   # * Preserva respostas que foram atualizadas nos últimos 5 segundos
   #
-  # === Funcionamento
-  # 1. Verifica se remove_missing_respostas está ativo
-  # 2. Coleta IDs de respostas atualizadas recentemente
-  # 3. Remove respostas que não estão na lista de atualizadas
   def process_remove_missing_respostas
     return unless remove_missing_respostas == true || remove_missing_respostas == "1" || remove_missing_respostas == 1
     
@@ -64,14 +58,11 @@ class Formulario < ApplicationRecord
   # Nenhum argumento
   #
   # === Retorno
-  # Boolean - true se atributos de respostas foram modificados, false caso contrário
+  # Boolean: true se atributos de respostas foram modificados, false caso contrário
   #
   # === Efeitos Colaterais
-  # Nenhum - método apenas de consulta
+  # Nenhum
   #
-  # === Funcionamento
-  # Verifica se alguma chave em previous_changes começa com 'respostas_'
-  # ou é exatamente 'respostas_attributes'
   def respostas_attributes_changed?
     previous_changes.keys.any? { |key| key.start_with?('respostas_') || key == 'respostas_attributes' }
   end

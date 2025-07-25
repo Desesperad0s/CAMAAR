@@ -1,3 +1,8 @@
+##
+# DepartamentosController
+#
+# Controller responsável por gerenciar operações de departamentos acadêmicos
+
 class DepartamentosController < ApplicationController
   before_action :set_departamento, only: %i[ show edit update destroy ]
 
@@ -11,7 +16,7 @@ class DepartamentosController < ApplicationController
   # Variável de instância @departamentos com todos os registros
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum 
   def index
     @departamentos = Departamento.all
   end
@@ -26,7 +31,7 @@ class DepartamentosController < ApplicationController
   # JSON com os dados do departamento encontrado
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum 
   def show
 
     set_departamento

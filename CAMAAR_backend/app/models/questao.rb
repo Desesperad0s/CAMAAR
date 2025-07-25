@@ -1,3 +1,7 @@
+##
+# Questao
+#
+# Model responsável por representar questões de formulários e templates
 class Questao < ApplicationRecord
   self.table_name = "questoes"
   

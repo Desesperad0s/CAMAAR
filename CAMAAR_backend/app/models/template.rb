@@ -1,3 +1,7 @@
+##
+# Template
+#
+# Model responsável por representar templates de formulários
 class Template < ApplicationRecord
   belongs_to :user, foreign_key: :user_id, optional: true
   has_many :questoes, foreign_key: :templates_id, dependent: :nullify, inverse_of: :template

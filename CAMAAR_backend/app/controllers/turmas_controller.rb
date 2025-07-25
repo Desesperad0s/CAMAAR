@@ -1,8 +1,14 @@
+##
+# TurmasController
+#
+# Controller responsável por gerenciar as turmas do sistema
+
 class TurmasController < ApplicationController
   before_action :set_turma, only: %i[ show edit update destroy ]
   
 
   ##
+  # Rota: GET /turmas
   # Lista todas as turmas do sistema
   #
   # === Argumentos
@@ -12,7 +18,7 @@ class TurmasController < ApplicationController
   # Array JSON contendo todos os registros de turmas
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum
   def index
     if @current_user&.admin?
       @turmas = Turma.joins(:disciplina).where(disciplinas: { departamento_id: @current_user.departamento_id })
@@ -23,16 +29,17 @@ class TurmasController < ApplicationController
   end
 
   ##
+  # Rota: GET /turmas/:id
   # Exibe os detalhes de uma turma específica
   #
   # === Argumentos
-  # Rota: GET /turmas/:id
+  # * +id+ - ID da turma (através dos params)
   #
   # === Retorno
   # JSON com os dados da turma encontrada
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum
   def show
 
     
@@ -42,17 +49,18 @@ class TurmasController < ApplicationController
   end
 
   ##
+  # Rota: GET /turmas/find_by_code
   # Busca uma turma pelo código
   #
   # === Argumentos
-  # Rota: GET /turmas/find_by_code
+  # * +code+ - Código da turma (params)
   #
   # === Retorno
   # * JSON com os dados da turma encontrada e status 200 (success)
   # * JSON com mensagem de erro e status 404 (not found)
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum 
   def find_by_code
   @turma = Turma.find_by(code: params[:code])
   if @turma
@@ -63,6 +71,7 @@ class TurmasController < ApplicationController
 end
 
   ##
+  # Rota: GET /turmas/new
   # Prepara uma nova instância de turma para criação
   #
   # === Argumentos
@@ -80,6 +89,7 @@ end
   end
 
   ##
+  # Rota: GET /turmas/:id/edit
   # Prepara uma turma existente para edição
   #
   # === Argumentos
@@ -89,7 +99,7 @@ end
   # JSON com os dados da turma para edição
   #
   # === Efeitos Colaterais
-  # Nenhum - apenas preparação para edição
+  # Nenhum
   def edit
     
     set_turma
@@ -99,10 +109,11 @@ end
   end
 
   ##
+  # Rota: POST /turmas
   # Cria uma nova turma no sistema
   #
   # === Argumentos
-  # Rota: POST /turmas
+  # * +turma+ - Hash com os dados da nova turma
   #
   # === Retorno
   # * JSON com os dados da turma criada e status 201 (success)
@@ -122,10 +133,11 @@ end
   end
 
   ##
+  # Rota: PATCH/PUT /turmas/:id
   # Atualiza os dados de uma turma existente
   #
   # === Argumentos
-  # Rota: PATCH/PUT /turmas/:id
+  # * +id+ - ID da turma (através dos params)
   # * +turma+ - Hash com os novos dados da turma
   #
   # === Retorno
@@ -151,6 +163,7 @@ end
   end
 
   ##
+  # Rota: DELETE /turmas/:id
   # Remove uma turma do sistema
   #
   # === Argumentos
@@ -171,6 +184,7 @@ end
   end
   
   ##
+  # Rota: GET /turmas/:id/formularios
   # Retorna todos os formulários associados a uma turma específica
   #
   # === Argumentos
@@ -180,7 +194,7 @@ end
   # Array JSON contendo todos os formulários da turma
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum
   def formularios
     @turma = Turma.find(params[:id])
     if current_user.professor?
@@ -214,13 +228,13 @@ end
     # Filtra e permite apenas parâmetros confiáveis para criação/atualização de turmas
     #
     # === Argumentos
-    # Nenhum argumento direto - utiliza params
+    # Nenhum argumento direto, utiliza params
     #
     # === Retorno
     # Hash com parâmetros filtrados e permitidos
     #
     # === Efeitos Colaterais
-    # Nenhum - apenas filtragem de parâmetros
+    # Nenhum 
     def turma_params
       params.require(:turma).permit(:code, :number, :semester, :time, :disciplina_id)
     end

@@ -30,29 +30,30 @@ class UserMailer < ApplicationMailer
     mail(
       to: "231003406@aluno.unb.br",
       subject: 'Bem-vindo ao CAMAAR - Defina sua senha de acesso'
-    )
-  end
-
-  ##
-  # Envia email de redefinição de senha para o usuário
-  #
-  # === Argumentos
-  # * +user+ - Objeto User que receberá o email
-  # * +reset_token+ - Token de redefinição de senha
-  #
-  # === Retorno
-  # Email enviado para o usuário
-  #
-  # === Efeitos Colaterais
-  # * Gera link de redefinição de senha com token
-  # * Envia email para o usuário
-  def password_reset_email(user, reset_token)
-    @user = user
-    @reset_token = reset_token
-    @reset_url = "#{frontend_url}/redefinir-senha?token=#{@reset_token}&email=#{@user.email}"
+      )
+    end
     
+    ##
+    # Envia email de redefinição de senha para o usuário
+    #
+    # === Argumentos
+    # * +user+ - Objeto User que receberá o email
+    # * +reset_token+ - Token de redefinição de senha
+    #
+    # === Retorno
+    # Email enviado para o usuário
+    #
+    # === Efeitos Colaterais
+    # * Gera link de redefinição de senha com token
+    # * Envia email para o usuário
+    def password_reset_email(user, reset_token)
+      @user = user
+      @reset_token = reset_token
+      @reset_url = "#{frontend_url}/redefinir-senha?token=#{@reset_token}&email=#{@user.email}"
+      
+    # TODO: to: @user.email
     mail(
-      to: @user.email,
+      to: "231003406@aluno.unb.br",
       subject: 'CAMAAR - Redefinição de senha solicitada'
     )
   end

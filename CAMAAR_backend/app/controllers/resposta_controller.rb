@@ -1,3 +1,8 @@
+##
+# RespostaController
+#
+# Controller responsável por gerenciar respostas de usuários a questões
+
 class RespostaController < ApplicationController
   before_action :set_resposta, only: %i[show update destroy]
 
@@ -5,13 +10,13 @@ class RespostaController < ApplicationController
   # Lista todas as respostas do sistema
   #
   # === Argumentos
-  # Nenhum argumento é necessário
+  # Nenhum 
   #
   # === Retorno
   # JSON contendo array de todas as respostas
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum
   #
   # Rota: GET /resposta
   def index
@@ -30,7 +35,7 @@ class RespostaController < ApplicationController
   # Se a resposta não for encontrada, retorna erro 404
   #
   # === Efeitos Colaterais
-  # Nenhum efeito colateral - apenas consulta o banco de dados
+  # Nenhum
   #
   # Rota: GET /resposta/:id
   def show
@@ -225,13 +230,13 @@ class RespostaController < ApplicationController
     # Filtra e permite apenas parâmetros confiáveis para criação/atualização de respostas
     #
     # === Argumentos
-    # Nenhum argumento direto - utiliza params
+    # Nenhum argumento direto, utiliza params
     #
     # === Retorno
     # Hash com parâmetros filtrados e permitidos (content, questao_id, formulario_id)
     #
     # === Efeitos Colaterais
-    # Nenhum - apenas filtragem de parâmetros
+    # Nenhum 
     def resposta_params
       params.require(:resposta).permit(:content, :questao_id, :formulario_id)
     end

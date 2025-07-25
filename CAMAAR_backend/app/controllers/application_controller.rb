@@ -1,3 +1,8 @@
+##
+# ApplicationController
+#
+# Controller base do sistema, responsável por fornecer funcionalidades comuns a todos os controllers
+
 class ApplicationController < ActionController::API
   include AuthorizeApiRequest
   
@@ -9,6 +14,7 @@ class ApplicationController < ActionController::API
   
   ##
   # Rota: GET /health_check
+  # Retorna o status da aplicação
   #
   # === Argumentos
   # Nenhum argumento é necessário
@@ -18,7 +24,6 @@ class ApplicationController < ActionController::API
   #
   # === Efeitos Colaterais
   # Nenhum efeito colateral - apenas retorna status da aplicação
-  #
   def health_check
     render json: { status: 'online' }, status: :ok
   end

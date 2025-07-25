@@ -1,3 +1,6 @@
+##
+# Serviço responsável pelo envio de emails
+#
 class EmailService
   class << self
     ##
@@ -14,60 +17,48 @@ class EmailService
     # * Gera tokens de acesso para usuários que precisam redefinir senha
     def send_first_access_emails(users)
       results = []
-      
-      # Verificar se email está configurado
       unless email_delivery_available?
         Rails.logger.warn("Email não configurado. Simulando envio de emails...")
         return simulate_email_sending(users)
       end
-      
       users.each do |user|
-        begin
-          # Apenas enviar email se o usuário precisa redefinir senha (senha padrão)
-          next unless user.needs_password_reset?
-          
-          # Gerar token de redefinição
-          reset_token = user.generate_first_access_token!
-          
-          # Tentar enviar email
-          email = UserMailer.first_access_email(user, reset_token)
-          
-          if Rails.application.config.action_mailer.delivery_method == :file
-            # Modo desenvolvimento - salvar em arquivo
-            email.deliver_now
-            Rails.logger.info("Email salvo em arquivo para: #{user.email}")
-            status = 'saved_to_file'
-          else
-            # Modo produção - enviar via SMTP
-            email.deliver_now
-            Rails.logger.info("Email enviado via SMTP para: #{user.email}")
-            status = 'sent'
-          end
-          
-          results << {
-            user_id: user.id,
-            email: user.email,
-            name: user.name,
-            status: status,
-            sent_at: Time.current,
-            token: reset_token
-          }
-          
-        rescue => e
-          results << {
-            user_id: user.id,
-            email: user.email,
-            name: user.name,
-            status: 'error',
-            error: e.message,
-            sent_at: Time.current
-          }
-          
-          Rails.logger.error("Erro ao enviar email para #{user.email}: #{e.message}")
-        end
+        next unless user.needs_password_reset?
+        results << process_first_access_email(user)
       end
-      
-      results
+      results.compact
+    end
+
+    ##
+    # Processa o envio de email de primeiro acesso para um usuário
+    #
+    # === Argumentos
+    # * +user+ - Usuário para o qual o email será enviado
+    # === Retorno
+    # Hash com informações do envio ou erro
+    def process_first_access_email(user)
+      begin
+        reset_token = user.generate_first_access_token!
+        email = UserMailer.first_access_email(user, reset_token)
+        status = deliver_email(email, user, :first_access)
+        {
+          user_id: user.id,
+          email: user.email,
+          name: user.name,
+          status: status,
+          sent_at: Time.current,
+          token: reset_token
+        }
+      rescue => e
+        Rails.logger.error("Erro ao enviar email para #{user.email}: #{e.message}")
+        {
+          user_id: user.id,
+          email: user.email,
+          name: user.name,
+          status: 'error',
+          error: e.message,
+          sent_at: Time.current
+        }
+      end
     end
     
     ##
@@ -87,24 +78,36 @@ class EmailService
         unless email_delivery_available?
           return simulate_password_reset_email(user)
         end
-        
         reset_token = user.generate_reset_password_token!
         email = UserMailer.password_reset_email(user, reset_token)
-        
-        if Rails.application.config.action_mailer.delivery_method == :file
-          email.deliver_now
-          Rails.logger.info("Email de redefinição salvo em arquivo para: #{user.email}")
-          status_message = "Email salvo em arquivo"
-        else
-          email.deliver_now
-          Rails.logger.info("Email de redefinição enviado via SMTP para: #{user.email}")
-          status_message = "Email enviado com sucesso"
-        end
-        
+        status_message = deliver_email(email, user, :password_reset)
         { success: true, message: status_message, token: reset_token }
       rescue => e
         Rails.logger.error("Erro ao enviar email de redefinição para #{user.email}: #{e.message}")
         { success: false, message: "Erro ao enviar email: #{e.message}" }
+      end
+    end
+
+    ##
+    # Realiza a entrega do email e retorna mensagem de status
+    #
+    # === Argumentos
+    # * +email+ - Objeto de email a ser enviado
+    # * +user+ - Usuário destinatário
+    # * +type+ - Tipo de email (:first_access ou :password_reset)
+    # === Retorno
+    # String com mensagem de status
+    def deliver_email(email, user, type)
+      if Rails.application.config.action_mailer.delivery_method == :file
+        email.deliver_now
+        msg = type == :first_access ? "Email salvo em arquivo para: #{user.email}" : "Email de redefinição salvo em arquivo para: #{user.email}"
+        Rails.logger.info(msg)
+        type == :first_access ? 'saved_to_file' : 'Email salvo em arquivo'
+      else
+        email.deliver_now
+        msg = type == :first_access ? "Email enviado via SMTP para: #{user.email}" : "Email de redefinição enviado via SMTP para: #{user.email}"
+        Rails.logger.info(msg)
+        type == :first_access ? 'sent' : 'Email enviado com sucesso'
       end
     end
     

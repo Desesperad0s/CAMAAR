@@ -1,7 +1,12 @@
+##
+# AdminsController
+#
+# Controller responsável por gerenciar operações de administradores do sistema
 class AdminsController < ApplicationController
   before_action :set_admin, only: %i[show update destroy]
 
   ##
+  # Rota: GET /admins
   # Lista todos os administradores do sistema
   #
   # === Argumentos
@@ -11,32 +16,34 @@ class AdminsController < ApplicationController
   # Array JSON contendo todos os registros de administradores
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum 
   def index
     @admins = Admin.all
     render json: @admins
   end
 
   ##
+  # Rota: GET /admins/:id
   # Exibe os detalhes de um administrador específico
   #
   # === Argumentos
-  # Rota: GET /admins/:id
+  # Nenhum argumento recebido
   #
   # === Retorno
   # JSON com os dados do administrador encontrado
   #
   # === Efeitos Colaterais
-  # Nenhum - operação somente de leitura
+  # Nenhum 
   def show
     render json: @admin
   end
 
   ##
+  # Rota: POST /admins
   # Cria um novo administrador no sistema
   #
   # === Argumentos
-  # Rota: POST /admins
+  # * +admin+ - Hash com os dados do novo administrador
   #
   # === Retorno
   # * JSON com os dados do administrador criado e status 201 (success)
@@ -55,10 +62,10 @@ class AdminsController < ApplicationController
   end
 
   ##
+  # Rota: PUT/PATCH /admins/:id
   # Atualiza os dados de um administrador existente
   #
   # === Argumentos
-  # Rota: PATCH/PUT /admins/:id
   # * +admin+ - Hash com os novos dados do administrador
   #
   # === Retorno
@@ -76,10 +83,11 @@ class AdminsController < ApplicationController
   end
 
   ##
+  # Rota: DELETE /admins/:id
   # Remove um administrador do sistema
   #
   # === Argumentos
-  # * +id+ - ID do administrador a ser removido (através dos params)
+  # * +id+ - ID do administrador a ser removido
   #
   # === Retorno
   # Status 204 (no content) indicando remoção bem-sucedida
@@ -118,7 +126,7 @@ class AdminsController < ApplicationController
     # Hash com parâmetros filtrados e permitidos
     #
     # === Efeitos Colaterais
-    # Nenhum - apenas filtragem de parâmetros
+    # Nenhum 
     def admin_params
       params.require(:admin).permit(:registration, :name, :email, :password)
     end
