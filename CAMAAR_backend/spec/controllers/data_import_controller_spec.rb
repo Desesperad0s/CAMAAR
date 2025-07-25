@@ -159,29 +159,30 @@ RSpec.describe DataImportController, type: :controller do
       end
     end
 
-      context 'when processing fails' do
-        before do
-          allow(File).to receive(:exist?).and_return(true)
-          allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return(classes_json)
-          allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(members_json)
-          
-          # Mock do serviço com falha
-          allow(JsonProcessorService).to receive(:process_discentes).and_return({
-            success: false,
-            total_processed: 0,
-            errors: ['Erro de processamento']
-          })
-          
-          allow(controller).to receive(:ensure_database_structure)
-        end
-
-        it 'returns error with details' do
-          post :import
-          expect(response).to have_http_status(:ok)
-          expect(JSON.parse(response.body)['success']).to be false
-          expect(JSON.parse(response.body)['message']).to eq('Dados importados com erros')
-        end
+    context 'when processing fails' do
+      before do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(Rails.root.join('classes.json').to_s).and_return(classes_json)
+        allow(File).to receive(:read).with(Rails.root.join('class_members.json').to_s).and_return(members_json)
+        
+        # Mock do serviço com falha
+        allow(JsonProcessorService).to receive(:process_discentes).and_return({
+          success: false,
+          total_processed: 0,
+          errors: ['Erro de processamento']
+        })
+        
+        allow(controller).to receive(:ensure_database_structure)
       end
+
+      it 'returns error with details' do
+        post :import
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['success']).to be false
+        expect(JSON.parse(response.body)['message']).to eq('Dados importados com erros')
+      end
+    end
+  end  
 
   describe 'authorization' do
     context 'when user is not admin' do
@@ -200,9 +201,6 @@ RSpec.describe DataImportController, type: :controller do
         expect(JSON.parse(response.body)['error']).to include('Acesso negado')
       end
     end
-  end
-end
+  end  
 
-
-
-
+end  
